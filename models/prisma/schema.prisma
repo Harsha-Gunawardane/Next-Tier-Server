@@ -17,3 +17,9 @@ model users {
   password      String
   refresh_token String[] @default([])
 }
+
+model employees {
+  id         Int    @id @default(autoincrement())
+  first_name String
+  last_name  String
+}
