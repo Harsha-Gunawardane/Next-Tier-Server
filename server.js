@@ -62,5 +62,5 @@ app.all('*', (req, res) => {
 app.use(errorHandler);
 
 app.listen(PORT, () => {
-    console.log('listening on port ' + port);
+    console.log('listening on port ' + PORT);
 })

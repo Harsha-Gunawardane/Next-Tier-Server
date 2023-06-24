@@ -1,9 +1,15 @@
-const fsPromises = require("fs").promises;
-const path = require("path");
 const bcrypt = require("bcrypt");
 
-// work on database
-const { createNewUser, findUser } = require("../../models/users");
+// import ORM to handle Database
+const { PrismaClient } = require("@prisma/client");
+const prisma = new PrismaClient();
+
+/**
+ *
+ * @param {Object} req - the request object
+ * @param {Object} res - the response object
+ * @returns {Promise<void>} Promise that resolves when user is registered
+ */
 
 const handleNewUser = async (req, res) => {
   const { user, pwd } = req.body;
@@ -16,27 +22,30 @@ const handleNewUser = async (req, res) => {
 
   try {
     // check duplicates username
-    const duplicate = await findUser(user);
+    const duplicate = await prisma.users.findUnique({
+      where: {
+        username: user,
+      },
+    });
     if (duplicate) return res.sendStatus(409);
 
     // register new user
-
-    // encrypt password
-    const hashedPassword = await bcrypt.hash(pwd, 10);
+    const hashedPassword = await bcrypt.hash(pwd, 10); // encrypt password
 
     // store new user
-    const newUser = {
-      username: user,
-      roles: { User: 2001 },
-      password: hashedPassword,
-    };
+    const addedUser = await prisma.users.create({
+      data: {
+        username: user,
+        roles: JSON.stringify({ User: 2001 }),
+        password: hashedPassword,
+      },
+    });
 
-    const addedUser = await createNewUser(newUser);
     console.log(addedUser);
 
     res.status(201).json({ success: `New user ${user} registered` });
   } catch (error) {
-    res.sendStatus(500).json({ message: error.message });
+    res.status(500).json({ message: error.message });
   }
 };
 

@@ -3,7 +3,7 @@ const router = express.Router();
 const employeesController = require("../../controllers/employeesController");
 
 // verify roles
-const ROLES_LIST = require("../../config/rolesList");
+const ROLES_LIST = require("../../config/roleList");
 const verifyRoles = require("../../middleware/verifyRoles");
 
 router

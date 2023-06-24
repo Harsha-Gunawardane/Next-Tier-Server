@@ -1,21 +1,33 @@
-  
-  const jwt = require("jsonwebtoken");
-  require("dotenv").config();
-  
-  // work on database
-  const { findUserWithRefreshToken } = require("../../models/users");
-  
-  const handleRefreshToken = async (req, res) => {
-    const cookies = req.cookies;
-    if (!cookies?.jwt) return res.sendStatus(401);
-  
-    console.log(cookies.jwt);
-    const refreshToken = cookies.jwt;
-  
-    // check if there is a user which contains the refresh token
-    const foundUser = await findUserWithRefreshToken(refreshToken);
+const jwt = require("jsonwebtoken");
+require("dotenv").config();
+
+// import ORM to handle Database
+const { PrismaClient } = require("@prisma/client");
+const prisma = new PrismaClient();
+
+/**
+ * 
+ * @param {Object} req - the request object
+ * @param {Object} res - the response object
+ * @returns {Promise<void>} - the promise resolved when complete refreshed the access token
+ * @throws {Error} - if processing fails
+ */
+const handleRefreshToken = async (req, res) => {
+  const cookies = req.cookies;
+  if (!cookies?.jwt) return res.sendStatus(401);
+
+  const refreshToken = cookies.jwt;
+
+  try {
+    const foundUser = await prisma.users.findFirst({
+      where: {
+        refresh_token: {
+          hasSome: refreshToken,
+        },
+      },
+    });
     if (!foundUser) return res.sendStatus(403); // forbidden
-  
+
     // evaluate access token
     jwt.verify(
       refreshToken,
@@ -23,9 +35,9 @@
       (err, decoded) => {
         if (err || foundUser.username !== decoded.username)
           return res.sendStatus(403); // forbidden
-  
+
         const roles = Object.values(JSON.parse(foundUser.roles));
-  
+
         const accessToken = jwt.sign(
           {
             UserInfo: {
@@ -39,7 +51,10 @@
         res.json({ accessToken });
       }
     );
-  };
-  
-  module.exports = { handleRefreshToken };
-  
+  } catch (error) {
+    // res.status(500).json({ message: error.message });
+    throw error;
+  }
+};
+
+module.exports = { handleRefreshToken };
