@@ -36,7 +36,7 @@ const handleNewUser = async (req, res) => {
     const addedUser = await prisma.users.create({
       data: {
         username: user,
-        roles: JSON.stringify({ User: 2001 }),
+        roles: JSON.stringify({ User: 2001}),
         password: hashedPassword,
       },
     });
