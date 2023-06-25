@@ -88,3 +88,15 @@
 20230624	16:35:12	79dfbadd-8999-4498-8a5d-7e568ca05ca0	POST	undefined	/employees
 20230624	16:42:38	2fa4fdaa-8ed5-4879-9ea8-28905e06e282	POST	undefined	/auth
 20230624	16:43:16	2e4f9a2a-89b8-4d6e-9ae7-d387479ceea2	POST	undefined	/auth
+20230625	08:13:43	53a6da00-8908-4f71-9321-d984c25e1856	POST	undefined	/register
+20230625	08:14:05	0337b3d5-8530-46cb-8dde-42043f395d93	POST	undefined	/register
+20230625	08:14:25	e7a1f71a-441b-47b2-9294-b1ca8646b1d5	POST	undefined	/register
+20230625	08:14:32	83a3fa93-2f83-44f2-8fb0-62b824cb47c4	POST	undefined	/register
+20230625	08:14:55	53f131a6-4758-42bc-b6b5-cb652654df5d	POST	undefined	/register
+20230625	08:21:04	b9788ead-4460-4b11-bfff-704fefc2338e	POST	undefined	/register
+20230625	08:21:20	2480b959-10ab-4409-9872-34cb7dd7a7ad	POST	undefined	/register
+20230625	08:21:34	49f8d7a1-a2f0-4356-a36f-e128229a7c58	POST	undefined	/register
+20230625	08:26:24	7b65afcf-714c-41bd-ba4e-76449f841e8d	POST	undefined	/auth
+20230625	08:26:51	b1e93225-69de-4bdc-b5a6-5170acee8687	GET	undefined	/refresh
+20230625	08:27:02	12b5b230-ae50-45cd-8c95-c5e71aedd43b	GET	undefined	/logout
+20230625	08:27:22	f2aa5bd3-4ba1-483e-932c-e79c7cddfb23	POST	undefined	/auth
