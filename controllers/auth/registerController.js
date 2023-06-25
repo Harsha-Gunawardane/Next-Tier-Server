@@ -4,6 +4,9 @@ const bcrypt = require("bcrypt");
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
+// import register form validation schema
+const registerFormSchema = require('../../validators/registerFormValidator');
+
 /**
  *
  * @param {Object} req - the request object
@@ -12,13 +15,17 @@ const prisma = new PrismaClient();
  */
 
 const handleNewUser = async (req, res) => {
-  const { user, pwd } = req.body;
 
-  // check if required data is present
-  if (!user || !pwd)
+  // validate input form data
+  const { error, data } = registerFormSchema.validate(req.body);
+
+  if(error) {
     return res
       .status(400)
-      .json({ message: "Username and password are required" });
+      .json({ error: error.details[0].message });
+  }
+  
+  const { user, pwd } = req.body;
 
   try {
     // check duplicates username
