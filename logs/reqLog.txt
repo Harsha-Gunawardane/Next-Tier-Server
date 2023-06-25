@@ -100,3 +100,8 @@
 20230625	08:26:51	b1e93225-69de-4bdc-b5a6-5170acee8687	GET	undefined	/refresh
 20230625	08:27:02	12b5b230-ae50-45cd-8c95-c5e71aedd43b	GET	undefined	/logout
 20230625	08:27:22	f2aa5bd3-4ba1-483e-932c-e79c7cddfb23	POST	undefined	/auth
+20230625	09:03:12	d4fd681f-75cb-4b59-959e-e96847b40cdd	POST	undefined	/register
+20230625	09:03:18	411ec457-28ed-4216-ac3e-14dfd2059576	POST	undefined	/register
+20230625	09:03:31	42dac698-108f-4fe0-96c9-5c383dfc919a	POST	undefined	/register
+20230625	09:03:37	d4154887-4119-4f91-bcbf-3610f2766546	POST	undefined	/register
+20230625	09:03:42	026d169c-4365-4208-94ed-d6586af62e8e	POST	undefined	/register
