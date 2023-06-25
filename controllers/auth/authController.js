@@ -6,6 +6,9 @@ require("dotenv").config();
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
+// import login form validator
+const loginFormSchema = require('../../validators/loginFormValidator');
+
 /**
  * 
  * @param {Object} req - the request object
@@ -14,11 +17,17 @@ const prisma = new PrismaClient();
  */
 
 const handleLogin = async (req, res) => {
-  const { user, pwd } = req.body;
-  if (!user || !pwd)
+
+  // validate input form data
+  const { error, data } = loginFormSchema.validate(req.body);
+
+  if(error) {
     return res
       .status(400)
-      .json({ message: "USername and password are required" });
+      .json({ error: error.details[0].message });
+  }
+
+  const { user, pwd } = req.body;
 
   try {
     // find user registered or not
