@@ -1,0 +1,17 @@
+
+
+  handleNewUser
+{
+  id: 15,
+  username: 'testuser',
+  roles: '{"User":2001}',
+  password: '$2b$10$2EMp5Buw6.B5LxhoLxTa4eCe6fPEAtcLhr15w/AQxQ3.JE6CNWlnK',
+  refresh_token: []
+}
+    ✔ should register a new user (169ms)
+    ✔ should return an error if username is already taken (104ms)
+    ✔ should return an error if input form data is invalid
+
+
+  3 passing (396ms)
+

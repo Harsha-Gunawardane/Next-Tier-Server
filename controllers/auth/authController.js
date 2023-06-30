@@ -39,10 +39,11 @@ const handleLogin = async (req, res) => {
 
     if (!foundUser) return res.sendStatus(401); // unauhorized user
 
+    // console.log(foundUser.roles);
     // match password
     const matchPassword = await bcrypt.compare(pwd, foundUser.password);
     if (matchPassword) {
-      const roles = Object.values(JSON.parse(foundUser.roles));
+      const roles = Object.values(foundUser.roles);
       // create JWTs
       const accessToken = jwt.sign(
         {

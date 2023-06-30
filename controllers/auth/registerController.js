@@ -1,11 +1,12 @@
 const bcrypt = require("bcrypt");
+const { format } = require("date-fns");
 
 // import ORM to handle Database
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
 // import register form validation schema
-const registerFormSchema = require('../../validators/registerFormValidator');
+const registerFormSchema = require("../../validators/registerFormValidator");
 
 /**
  *
@@ -15,17 +16,14 @@ const registerFormSchema = require('../../validators/registerFormValidator');
  */
 
 const handleNewUser = async (req, res) => {
-
   // validate input form data
   const { error, data } = registerFormSchema.validate(req.body);
 
-  if(error) {
-    return res
-      .status(400)
-      .json({ error: error.details[0].message });
+  if (error) {
+    return res.status(400).json({ error: error.details[0].message });
   }
-  
-  const { user, pwd } = req.body;
+
+  const { user, pwd, fName, lName, phoneNo } = req.body;
 
   try {
     // check duplicates username
@@ -39,12 +37,19 @@ const handleNewUser = async (req, res) => {
     // register new user
     const hashedPassword = await bcrypt.hash(pwd, 10); // encrypt password
 
+    // get joined time of new user
+    const joinedTime = new Date();;
+
     // store new user
     const addedUser = await prisma.users.create({
       data: {
         username: user,
-        roles: JSON.stringify({ User: 2001}),
+        first_name: fName,
+        last_name: lName,
+        phone_number: phoneNo,
+        roles: { Student: 2001 },
         password: hashedPassword,
+        join_date: joinedTime,
       },
     });
 
@@ -52,7 +57,8 @@ const handleNewUser = async (req, res) => {
 
     res.status(201).json({ success: `New user ${user} registered` });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    // res.status(500).json({ error: error.message });
+    throw error;
   }
 };
 
