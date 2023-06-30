@@ -121,3 +121,4 @@
 20230626	07:08:46	605cbf1f-bdd6-441d-8f5a-5d34cc64edda	POST	undefined	/auth
 20230626	07:09:16	ea7d35de-644c-4bf7-bec1-fd81c406a635	POST	undefined	/auth
 20230626	07:10:22	8dff82bb-7386-4be4-a9f9-01ed7920c6dd	GET	undefined	/refresh
+20230625	09:25:02	30ef5b87-cb94-43e3-b7d9-de71f4564a20	POST	undefined	/register
