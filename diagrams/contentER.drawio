@@ -1,6 +1,10 @@
 <mxfile host="65bd71144e">
     <diagram id="T5tDFELJDlXW0OyZVLSW" name="Page-1">
+<<<<<<< Updated upstream
         <mxGraphModel dx="2857" dy="4057" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+=======
+        <mxGraphModel dx="2492" dy="2741" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+>>>>>>> Stashed changes
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -8,6 +12,9 @@
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
                 <mxCell id="22" style="edgeStyle=none;html=1;exitX=0;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;endArrow=none;endFill=0;" parent="1" source="2" target="5" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="97" style="edgeStyle=none;html=1;exitX=1;exitY=0.25;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;endArrow=none;endFill=0;" parent="1" source="2" target="95" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
                 <mxCell id="2" value="Content" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
@@ -83,6 +90,15 @@
                     </mxGeometry>
                 </mxCell>
                 <mxCell id="89" style="edgeStyle=none;html=1;exitX=0.25;exitY=0;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;endArrow=none;endFill=0;" parent="1" source="23" target="82" edge="1">
+<<<<<<< Updated upstream
+=======
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="96" style="edgeStyle=none;html=1;exitX=0.75;exitY=0;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;endArrow=none;endFill=0;" parent="1" source="23" target="95" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="110" style="edgeStyle=none;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;endArrow=none;endFill=0;" edge="1" parent="1" source="23" target="108">
+>>>>>>> Stashed changes
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
                 <mxCell id="23" value="Students" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
@@ -267,6 +283,42 @@
                 <mxCell id="91" value="type" style="ellipse;whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="-580" y="-820" width="100" height="50" as="geometry"/>
                 </mxCell>
+<<<<<<< Updated upstream
+=======
+                <mxCell id="103" style="edgeStyle=none;html=1;exitX=0;exitY=0;exitDx=0;exitDy=0;entryX=1;entryY=1;entryDx=0;entryDy=0;endArrow=none;endFill=0;" parent="1" source="95" target="100" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="104" style="edgeStyle=none;html=1;exitX=0.25;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;endArrow=none;endFill=0;" parent="1" source="95" target="99" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="105" style="edgeStyle=none;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0;entryY=1;entryDx=0;entryDy=0;endArrow=none;endFill=0;" parent="1" source="95" target="102" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="106" style="edgeStyle=none;html=1;exitX=0.75;exitY=0;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;endArrow=none;endFill=0;" parent="1" source="95" target="101" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="107" style="edgeStyle=none;html=1;exitX=1;exitY=0.25;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;endArrow=none;endFill=0;" parent="1" source="95" target="98" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="95" value="Comment" style="shape=associativeEntity;whiteSpace=wrap;html=1;align=center;" parent="1" vertex="1">
+                    <mxGeometry x="-610" y="-980" width="140" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="98" value="parent comment id" style="ellipse;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="-420" y="-980" width="100" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="99" value="date &amp;amp; time" style="ellipse;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="-640" y="-1100" width="100" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="100" value="Comment ID" style="ellipse;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="-720" y="-1060" width="100" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="101" value="comment" style="ellipse;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="-450" y="-1050" width="100" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="102" value="content id" style="ellipse;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="-530" y="-1090" width="100" height="50" as="geometry"/>
+                </mxCell>
+>>>>>>> Stashed changes
                 <mxCell id="111" style="edgeStyle=none;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.75;entryDx=0;entryDy=0;endArrow=none;endFill=0;" edge="1" parent="1" source="108" target="2">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
@@ -285,6 +337,7 @@
                 <mxCell id="116" value="Status : ENUM&lt;br&gt;Public&lt;br&gt;Paid&lt;br&gt;Hold" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
                     <mxGeometry x="-1420" y="-690" width="120" height="30" as="geometry"/>
                 </mxCell>
+<<<<<<< Updated upstream
                 <mxCell id="110" style="edgeStyle=none;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;endArrow=none;endFill=0;" edge="1" parent="1" source="23" target="108">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
@@ -533,6 +586,8 @@
                 <mxCell id="208" value="Type" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
                     <mxGeometry x="-820" y="-1330" width="100" height="50" as="geometry"/>
                 </mxCell>
+=======
+>>>>>>> Stashed changes
             </root>
         </mxGraphModel>
     </diagram>
