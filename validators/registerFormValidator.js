@@ -22,25 +22,25 @@ const registerFormSchema = Joi.object({
     'any.required': 'Repeat password is required',
     'any.only': 'Passwords do not match'
   }),
-  fName: Joi.string().min(3).max(50).required().messages({
-    'string.base': 'First name should be String',
-    'string.empty': 'First name is required',
-    'string.min': 'First name must be at least 3 characters long',
-    'string.max': 'First name must be at most 50 characters long',
-    'any.required': 'First name is required',
-  }),
-  lName: Joi.string().min(3).max(50).required().messages({
-    'string.base': 'First name should be String',
-    'string.empty': 'First name is required',
-    'string.min': 'First name must be at least 3 characters long',
-    'string.max': 'First name must be at most 50 characters long',
-    'any.required': 'First name is required',
-  }),
-  phoneNo: Joi.string().regex(phoneNoRegExPattern).required().messages({
-    'strint.empty': 'Phone number is required',
-    'string.pattern.base': 'Enter valid phone number in Sri Lanka',
-    'any.required': 'Phone number is required',
-  })
+  // fName: Joi.string().min(3).max(50).required().messages({
+  //   'string.base': 'First name should be String',
+  //   'string.empty': 'First name is required',
+  //   'string.min': 'First name must be at least 3 characters long',
+  //   'string.max': 'First name must be at most 50 characters long',
+  //   'any.required': 'First name is required',
+  // }),
+  // lName: Joi.string().min(3).max(50).required().messages({
+  //   'string.base': 'First name should be String',
+  //   'string.empty': 'First name is required',
+  //   'string.min': 'First name must be at least 3 characters long',
+  //   'string.max': 'First name must be at most 50 characters long',
+  //   'any.required': 'First name is required',
+  // }),
+  // phoneNo: Joi.string().regex(phoneNoRegExPattern).required().messages({
+  //   'strint.empty': 'Phone number is required',
+  //   'string.pattern.base': 'Enter valid phone number in Sri Lanka',
+  //   'any.required': 'Phone number is required',
+  // })
 });
 
 module.exports = registerFormSchema;

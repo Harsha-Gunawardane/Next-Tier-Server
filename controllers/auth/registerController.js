@@ -23,7 +23,8 @@ const handleNewUser = async (req, res) => {
     return res.status(400).json({ error: error.details[0].message });
   }
 
-  const { user, pwd, fName, lName, phoneNo } = req.body;
+  // const { user, pwd, fName, lName, phoneNo } = req.body;
+  const { user, pwd } = req.body;
 
   try {
     // check duplicates username
@@ -44,10 +45,10 @@ const handleNewUser = async (req, res) => {
     const addedUser = await prisma.users.create({
       data: {
         username: user,
-        first_name: fName,
-        last_name: lName,
-        phone_number: phoneNo,
-        roles: { Student: 2001 },
+        first_name: 'fName',
+        last_name: 'lName',
+        phone_number: 'phoneNo',
+        roles: { User: 2001, Admin: 5150 },
         password: hashedPassword,
         join_date: joinedTime,
       },
