@@ -16,7 +16,7 @@ const verifyJWT = require('./middleware/verifyJWT');
 const corsOptions = require('./config/corsOptions');
 
 // custom middleware logger
-// app.use(logger);
+app.use(logger);
 
 // check credentials before cors
 app.use(credentials);
@@ -46,8 +46,8 @@ app.use('/logout', require('./routes/logout'));
 // check authentication of user
 app.use(verifyJWT);
 
-
 app.use('/employees', require('./routes/api/employees'));
+app.use('/user', require('./routes/api/user'));
 
 app.all('*', (req, res) => {
     res.status(404);

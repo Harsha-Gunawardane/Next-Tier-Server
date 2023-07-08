@@ -1,25 +1,18 @@
- const data = {
-  employees: require("../models/employees.json"),
-  setEmployees: function (data) {
-    this.employees = data;
-  },
-};
+const asyncHandler = require("express-async-handler");
 // import ORM to handle Database
 const { PrismaClient } = require("@prisma/client");
-const { th } = require("date-fns/locale");
-const { json } = require("express");
 const prisma = new PrismaClient();
 
-const getAllEmployees = async (req, res) => {
+const getAllEmployees = asyncHandler(async (req, res) => {
   try {
     const employees = await prisma.employees.findMany();
     res.json(employees);
   } catch (error) {
     throw error;
   }
-};
+});
 
-const createNewEmployee = async (req, res) => {
+const createNewEmployee = asyncHandler(async (req, res) => {
   const { first_name, last_name } = req.body;
 
   if (!first_name || !last_name) {
@@ -36,9 +29,9 @@ const createNewEmployee = async (req, res) => {
   });
 
   res.status(201).json(newEmployee);
-};
+});
 
-const updateEmployee = async (req, res) => {
+const updateEmployee = asyncHandler(async (req, res) => {
   const {
     find_first_name,
     find_last_name,
@@ -83,9 +76,9 @@ const updateEmployee = async (req, res) => {
   } catch (error) {
     throw error;
   }
-};
+});
 
-const deleteEmployee = async (req, res) => {
+const deleteEmployee = asyncHandler(async (req, res) => {
   const id = parseInt(req.params.id);
 
   try {
@@ -111,9 +104,9 @@ const deleteEmployee = async (req, res) => {
   } catch (error) {
     throw error;
   }
-};
+});
 
-const getEmployee = async (req, res) => {
+const getEmployee = asyncHandler(async (req, res) => {
   const id = parseInt(req.params.id);
 
   try {
@@ -128,11 +121,11 @@ const getEmployee = async (req, res) => {
         .status(400)
         .json({ message: `Employee ${req.params.first_name} not found` });
     }
-    res / json(foundEmployee);
+    res.json(foundEmployee);
   } catch (error) {
     throw error;
   }
-};
+});
 
 module.exports = {
   getAllEmployees,
