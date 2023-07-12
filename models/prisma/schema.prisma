@@ -116,8 +116,8 @@ model content {
 model content_reactions {
   id         String   @id @default(uuid())
   user_id    String
-  content_id String?
-  post_id    String?
+  content_id String   @default("")
+  post_id    String   @default("")
   islike     Boolean?
 
   user    users   @relation(fields: [user_id], references: [id])
@@ -139,10 +139,10 @@ model content_views {
 model comments {
   id         String   @id @default(uuid())
   user_id    String
-  content_id String?
-  post_id    String?
+  content_id String   @default("")
+  post_id    String   @default("")
   message    String
-  parent_id  String?
+  parent_id  String   @default("")
   posted_at  DateTime @default(now())
 
   user    users   @relation(fields: [user_id], references: [id])
@@ -153,7 +153,7 @@ model comments {
 model study_pack {
   id            String    @id @default(uuid())
   tutor_id      String
-  course_id     String?
+  course_id     String    @default("")
   title         String
   description   String
   subject       String
@@ -289,7 +289,7 @@ model complaints {
 
 model quiz {
   id            String    @id @default(uuid())
-  course_id     String?
+  course_id     String    @default("")
   study_pack_id String?
   title         String
   start_time    DateTime?
