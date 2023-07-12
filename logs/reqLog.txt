@@ -765,3 +765,7 @@
 20230711	08:27:06	69d9f5ee-b570-4718-bb5a-89e1b9f2e443	GET	http://localhost:3000	/refresh
 20230711	08:28:12	0b4df4c2-6e25-4f4d-81fc-ab1f4f474965	GET	http://localhost:3000	/refresh
 20230711	08:29:26	ec24d462-622b-4898-9c1a-bd1fe4a64850	GET	http://localhost:3000	/refresh
+20230712	09:46:13	b9b6d750-781d-49ff-9885-c84b8b44f01e	OPTIONS	http://localhost:3000	/register
+20230712	09:48:29	b81700a8-959d-4228-98aa-c0e8fe4534dc	OPTIONS	http://localhost:3000	/register
+20230712	09:52:47	4917d2a2-7b54-4479-abce-61daf97bd05f	POST	undefined	/register
+20230712	10:02:43	2cc0d64c-2e24-480f-a070-afc77479655c	POST	undefined	/register

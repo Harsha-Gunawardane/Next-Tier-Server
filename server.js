@@ -48,6 +48,7 @@ app.use(verifyJWT);
 
 app.use('/employees', require('./routes/api/employees'));
 app.use('/user', require('./routes/api/user'));
+app.use("/staff", require("./routes/api/staff"));
 
 app.all('*', (req, res) => {
     res.status(404);

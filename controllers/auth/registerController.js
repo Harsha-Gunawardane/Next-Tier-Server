@@ -49,7 +49,7 @@ const handleNewUser = async (req, res) => {
         first_name: fName,
         last_name: lName,
         phone_number: phoneNo,
-        roles: { User: 2001, Student: 1942 },
+        roles: { User: 2001, Tutor: 1932 },
         password: hashedPassword,
         join_date: joinedTime,
       },
