@@ -10,20 +10,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// model users {
-//   id            Int      @id @default(autoincrement())
-//   username      String   @unique
-//   roles         String
-//   password      String
-//   refresh_token String[] @default([])
-// }
-
-model employees {
-  id         Int    @id @default(autoincrement())
-  first_name String
-  last_name  String
-}
-
 model users {
   id                Int       @id @default(autoincrement())
   username          String    @unique
@@ -37,9 +23,11 @@ model users {
   DOB               DateTime?
   status            Boolean   @default(true)
   last_login        DateTime?
-  refresh_token     String[]  @default([])
+  refresh_token     String?
   prefered_language String    @default("English")
   verified          Boolean   @default(false)
   ptofile_picture   String    @default("https://th.bing.com/th/id/R.bae2d37c4317140a408aef6671346186?rik=2DNeSZ%2fD0xtseQ&pid=ImgRaw&r=0")
   roles             Json
+  otp               String?
+  otp_expire_at     DateTime?
 }
