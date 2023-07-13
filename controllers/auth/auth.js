@@ -19,12 +19,11 @@ const loginFormSchema = require("../../validators/loginFormValidator");
 const handleLogin = async (req, res) => {
   // validate input form data
   const { error, data } = loginFormSchema.validate(req.body);
-
   if (error) {
     return res.status(400).json({ error: error.details[0].message });
   }
 
-  const { user, pwd } = req.body;
+  const { user, pwd } = req.body
 
   try {
     // find user registered or not
@@ -78,6 +77,7 @@ const handleLogin = async (req, res) => {
       res.sendStatus(401);
     }
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: error.message });
   }
 };

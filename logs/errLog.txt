@@ -26,3 +26,4 @@
 20230713	15:01:05	ab72159a-382e-45c0-a5fa-8cefa871449a	SyntaxError: Unexpected token " in JSON at position 0
 20230713	17:25:09	bf736f42-b331-49e2-871d-f1b938c63b03	SyntaxError: Unexpected token " in JSON at position 0
 20230713	17:29:23	b6a55b9b-d039-4998-8d01-4710a56ad948	SyntaxError: Unexpected token " in JSON at position 0
+20230710	19:28:54	f96e8d45-db26-4752-8ca3-0541d43acd6b	Error: Not allowed by CORS
