@@ -10,7 +10,9 @@
   "license": "ISC",
   "dependencies": {
     "@prisma/client": "^4.16.1",
+    "@vonage/server-sdk": "^3.6.0",
     "bcrypt": "^5.1.0",
+    "body-parser": "^1.20.2",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "date-fns": "^2.30.0",
@@ -21,6 +23,8 @@
     "joi": "^17.9.2",
     "jsonwebtoken": "^9.0.0",
     "mocha": "^10.2.0",
+    "moment": "^2.29.4",
+    "moment-timezone": "^0.5.43",
     "pg": "^8.11.0",
     "uuid": "^9.0.0"
   },

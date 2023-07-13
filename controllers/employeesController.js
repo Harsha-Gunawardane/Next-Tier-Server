@@ -6,6 +6,8 @@ const prisma = new PrismaClient();
 const getAllEmployees = asyncHandler(async (req, res) => {
   try {
     const employees = await prisma.employees.findMany();
+    console.log(employees);
+    
     res.json(employees);
   } catch (error) {
     throw error;
