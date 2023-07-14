@@ -37,6 +37,7 @@ const verifyOTP = async (req, res) => {
     }
 
     const matchedOtp = otp === foundUser.otp;
+    // const matchedOtp = await bcrypt.compare(otp, foundUser.otp)
 
     if (!matchedOtp) {
       return res.sendStatus(420); // Invalid OTP
@@ -55,9 +56,6 @@ const verifyOTP = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
-module.exports = verifyOTP;
-
 
 const sendOTP = async (req, res) => {
   const { user } = req.body;
@@ -110,7 +108,7 @@ const sendOTP = async (req, res) => {
         })
         .catch((err) => {
           console.log("There was an error sending the messages.");
-          console.error(err);
+          console.log(err);
         });
     }
 

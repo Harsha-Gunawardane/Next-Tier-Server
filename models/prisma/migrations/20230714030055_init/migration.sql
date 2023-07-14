@@ -40,6 +40,15 @@ CREATE TABLE "users" (
 );
 
 -- CreateTable
+CREATE TABLE "reset_password" (
+    "username" TEXT NOT NULL,
+    "otp_verified" BOOLEAN NOT NULL,
+    "created_at" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "reset_password_pkey" PRIMARY KEY ("username")
+);
+
+-- CreateTable
 CREATE TABLE "students" (
     "student_id" TEXT NOT NULL,
     "grade" TEXT NOT NULL,
@@ -322,6 +331,9 @@ CREATE TABLE "poll" (
 
 -- CreateIndex
 CREATE UNIQUE INDEX "users_username_key" ON "users"("username");
+
+-- AddForeignKey
+ALTER TABLE "reset_password" ADD CONSTRAINT "reset_password_username_fkey" FOREIGN KEY ("username") REFERENCES "users"("username") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "students" ADD CONSTRAINT "students_student_id_fkey" FOREIGN KEY ("student_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

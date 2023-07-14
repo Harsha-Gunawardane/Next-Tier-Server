@@ -48,6 +48,7 @@ app.use('/refresh', require('./routes/refresh'));
 app.use('/logout', require('./routes/logout'));
 app.use('/send-otp', require('./routes/send-otp'));
 app.use('/verify-otp', require('./routes/verify-otp'));
+app.use('/forgot-password', require('./routes/reset-password'));
 
 // check authentication of user
 app.use(verifyJWT);

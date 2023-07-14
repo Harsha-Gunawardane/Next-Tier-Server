@@ -40,6 +40,15 @@ model users {
   complaints                 complaints[]
   student_attempt_quiz       student_attempt_quiz[]
   posts                      posts[]
+  reset_password             reset_password[]
+}
+
+model reset_password {
+  username     String   @id
+  otp_verified Boolean
+  created_at   DateTime
+
+  user users @relation(fields: [username], references: [username])
 }
 
 model students {

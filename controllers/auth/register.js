@@ -1,5 +1,4 @@
 const bcrypt = require("bcrypt");
-const { format } = require("date-fns");
 
 // import ORM to handle Database
 const { PrismaClient } = require("@prisma/client");
@@ -49,7 +48,7 @@ const handleNewUser = async (req, res) => {
         first_name: fName,
         last_name: lName,
         phone_number: phoneNo,
-        roles: { User: 2001, Tutor: 1932 },
+        roles: { User: 2001, Student : 1942 },
         password: hashedPassword,
         join_date: joinedTime,
       },
