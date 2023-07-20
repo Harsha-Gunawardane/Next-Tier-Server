@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,15 +8,374 @@ datasource db {
 }
 
 model users {
-  id            Int      @id @default(autoincrement())
-  username      String   @unique
-  roles         String
-  password      String
-  refresh_token String[] @default([])
+  id                         String                       @id @default(uuid())
+  registration_id            Int?
+  username                   String                       @unique
+  first_name                 String
+  last_name                  String
+  phone_number               String
+  password                   String
+  address                    String?
+  NIC                        String?
+  join_date                  DateTime
+  DOB                        DateTime?
+  status                     Boolean                      @default(true)
+  last_login                 DateTime?
+  refresh_token              String?
+  prefered_language          String                       @default("English")
+  verified                   Boolean                      @default(false)
+  profile_picture            String                       @default("https://th.bing.com/th/id/R.bae2d37c4317140a408aef6671346186?rik=2DNeSZ%2fD0xtseQ&pid=ImgRaw&r=0")
+  roles                      Json
+  otp                        String?
+  otp_expire_at              DateTime?
+  students                   students[]
+  tutor                      tutor[]
+  supporting_staff           supporting_staff[]
+  content_reactions          content_reactions[]
+  content_views              content_views[]
+  comments                   comments[]
+  student_purchase_studypack student_purchase_studypack[]
+  student_enrolled_course    student_enrolled_course[]
+  student_attendance         student_attendance[]
+  complaints                 complaints[]
+  student_attempt_quiz       student_attempt_quiz[]
+  posts                      posts[]
+  reset_password             reset_password[]
 }
 
-model employees {
-  id         Int    @id @default(autoincrement())
-  first_name String
-  last_name  String
+model reset_password {
+  username     String   @id
+  otp_verified Boolean
+  created_at   DateTime
+
+  user users @relation(fields: [username], references: [username])
+}
+
+model students {
+  student_id        String   @id
+  grade             String
+  medium            String   @default("Sinhala")
+  stream            String
+  emergency_contact Json // {name: "name", phone_number: "phone_number"}
+  school            String
+  subjects          String[]
+  weak_areas        Json? // {subject: "subject", area: ["area1", "area2"]}
+
+  user users @relation(fields: [student_id], references: [id])
+}
+
+model tutor {
+  tutor_id       String   @id
+  medium         String[] @default(["Sinhala"])
+  school         String?
+  subjects       String[]
+  qualifications String[] @default([])
+
+  user         users          @relation(fields: [tutor_id], references: [id])
+  staffOnTutor staffOnTutor[]
+  study_pack   study_pack[]
+  courses      courses[]
+}
+
+model supporting_staff {
+  staff_id String @id
+
+  user         users          @relation(fields: [staff_id], references: [id])
+  staffOnTutor staffOnTutor[]
+}
+
+model staffOnTutor {
+  staff_id         String
+  tutor_id         String
+  joined_date      DateTime @default(now())
+  no_marked_papers Json     @default("{}")
+
+  staff supporting_staff @relation(fields: [staff_id], references: [staff_id])
+  tutor tutor            @relation(fields: [tutor_id], references: [tutor_id])
+
+  @@id([staff_id, tutor_id])
+}
+
+enum content_type {
+  TUTE
+  VIDEO
+}
+
+enum content_status {
+  PUBLIC
+  PAID
+  HOLD
+}
+
+model content {
+  id                String              @id @default(uuid())
+  title             String
+  description       String
+  type              content_type
+  subject           String
+  subject_areas     String[]
+  uploaded_at       DateTime            @default(now())
+  status            content_status      @default(PUBLIC)
+  file_path         String
+  thumbnail         String?
+  reactions         Json                @default("{}") // {like: 0, dislike: 0, views: 0 ,comments: 0}
+  content_reactions content_reactions[]
+  content_views     content_views[]
+  comments          comments[]
+}
+
+model content_reactions {
+  id         String   @id @default(uuid())
+  user_id    String
+  content_id String   @default("")
+  post_id    String   @default("")
+  islike     Boolean?
+
+  user    users   @relation(fields: [user_id], references: [id])
+  content content @relation(fields: [content_id], references: [id])
+  post    posts   @relation(fields: [post_id], references: [id])
+}
+
+model content_views {
+  user_id    String
+  content_id String
+  watch_time String? //28:00
+
+  user    users   @relation(fields: [user_id], references: [id])
+  content content @relation(fields: [content_id], references: [id])
+
+  @@id([user_id, content_id])
+}
+
+model comments {
+  id         String   @id @default(uuid())
+  user_id    String
+  content_id String   @default("")
+  post_id    String   @default("")
+  message    String
+  parent_id  String   @default("")
+  posted_at  DateTime @default(now())
+
+  user    users   @relation(fields: [user_id], references: [id])
+  content content @relation(fields: [content_id], references: [id])
+  post    posts   @relation(fields: [post_id], references: [id])
+}
+
+model study_pack {
+  id            String    @id @default(uuid())
+  tutor_id      String
+  course_id     String    @default("")
+  title         String
+  description   String
+  subject       String
+  subject_areas String[]
+  thumbnail     String?
+  price         Int
+  access_period Json      @default("{}") // {days: 0, months: 0, years: 0}
+  uploaded_at   DateTime  @default(now())
+  content_ids   Json[]    @default([]) // [{video_id: [], tute_id: []},{video_id: [], tute_id: "tute_id"}] 
+  expire_date   DateTime?
+
+  tutor                      tutor                        @relation(fields: [tutor_id], references: [tutor_id])
+  course                     courses                      @relation(fields: [course_id], references: [id])
+  student_purchase_studypack student_purchase_studypack[]
+}
+
+enum payment_type {
+  ONLINE
+  PHYSICAL
+}
+
+model student_purchase_studypack {
+  student_id       String
+  pack_id          String
+  reciept_location String
+  ammount          Int
+  type             payment_type
+  purchased_at     DateTime     @default(now())
+  expire_date      DateTime
+
+  student users      @relation(fields: [student_id], references: [id])
+  pack    study_pack @relation(fields: [pack_id], references: [id])
+
+  @@id([student_id, pack_id])
+}
+
+model courses {
+  id            String   @id @default(uuid())
+  tutor_id      String
+  title         String
+  description   String
+  subject       String
+  medium        String
+  grade         String
+  thumbnail     String?
+  monthly_fee   Int
+  hall_id       String
+  start_date    DateTime @default(now())
+  studypack_ids Json[]   @default([]) // [{video_id: [], tute_id: []},{video_id: [], tute_id: "tute_id"}] 
+  schedule      Json[]   @default([]) // [{day: "monday", start_time: "10:00", end_time: "12:00"},{day: "monday", start_time: "10:00", end_time: "12:00"}]
+
+  tutor                   tutor                     @relation(fields: [tutor_id], references: [tutor_id])
+  hall                    halls                     @relation(fields: [hall_id], references: [id])
+  study_pack              study_pack[]
+  student_enrolled_course student_enrolled_course[]
+  student_attendance      student_attendance[]
+  hall_schedule           hall_schedule[]
+  quiz                    quiz[]
+  forum                   forum[]
+  poll                    poll[]
+}
+
+model student_enrolled_course {
+  student_id  String
+  course_id   String
+  enrolled_at DateTime @default(now())
+
+  student users   @relation(fields: [student_id], references: [id])
+  course  courses @relation(fields: [course_id], references: [id])
+
+  @@id([student_id, course_id])
+}
+
+model student_attendance {
+  student_id String
+  course_id  String
+  date       DateTime
+  is_present Boolean  @default(false)
+
+  student users   @relation(fields: [student_id], references: [id])
+  course  courses @relation(fields: [course_id], references: [id])
+
+  @@id([student_id, course_id, date])
+}
+
+model halls {
+  id       String @id @default(uuid())
+  name     String
+  capacity Int
+
+  schedule      Json[]          @default([]) // [{day: "monday", start_time: "10:00", end_time: "12:00"},{day: "monday", start_time: "10:00", end_time: "12:00"}]
+  courses       courses[]
+  hall_schedule hall_schedule[]
+}
+
+enum schedule_type {
+  RECURRING
+  ONE_TIME
+}
+
+model hall_schedule {
+  hall_id    String
+  day        String
+  date       DateTime?
+  start_time String
+  end_time   String
+  type       schedule_type
+  course_id  String
+
+  hall   halls   @relation(fields: [hall_id], references: [id])
+  course courses @relation(fields: [course_id], references: [id])
+
+  @@id([hall_id, day, start_time, end_time])
+}
+
+enum complaint_type {
+  COURSE_RELATED
+  OTHER
+}
+
+model complaints {
+  id        String         @id @default(uuid())
+  user_id   String
+  type      complaint_type
+  course_id String?
+  post_id   String?
+  message   String
+  posted_at DateTime       @default(now())
+  resolved  Boolean        @default(false)
+
+  user users @relation(fields: [user_id], references: [id])
+}
+
+model quiz {
+  id            String    @id @default(uuid())
+  course_id     String    @default("")
+  study_pack_id String?
+  title         String
+  start_time    DateTime?
+  end_time      DateTime?
+  duration      String?
+  subject       String
+  subject_areas String[]  @default([])
+  question_ids  String[]
+  published     Boolean   @default(false)
+
+  course               courses                @relation(fields: [course_id], references: [id])
+  student_attempt_quiz student_attempt_quiz[]
+}
+
+model questions {
+  id            String   @id @default(uuid())
+  question      String
+  options       Json[]   @default([]) // [{option: "option 1", is_correct: true},{option: "option 2", is_correct: false}]
+  explanation   String
+  subject       String
+  subject_areas String[] @default([])
+}
+
+model student_attempt_quiz {
+  student_id String
+  quiz_id    String
+  score      Int
+  started_at DateTime @default(now())
+  ended_at   DateTime
+  answers    Json[]   @default([]) // [{question_id: "question_id", answer: "answer"},{question_id: "question_id", answer: "answer"}]
+
+  student users @relation(fields: [student_id], references: [id])
+  quiz    quiz  @relation(fields: [quiz_id], references: [id])
+
+  @@id([student_id, quiz_id])
+}
+
+model forum {
+  id    String @id
+  title String
+
+  course courses @relation(fields: [id], references: [id])
+  posts  posts[]
+}
+
+model posts {
+  id             String              @id @default(uuid())
+  forum_id       String
+  user_id        String
+  title          String
+  message        String
+  posted_at      DateTime            @default(now())
+  reactions      Json                @default("{}") // {like: 0, dislike: 0, views: 0 ,comments: 0}
+  post_reactions content_reactions[]
+
+  forum       forum         @relation(fields: [forum_id], references: [id])
+  user        users         @relation(fields: [user_id], references: [id])
+  comments    comments[]
+  attachments attachments[]
+}
+
+model attachments {
+  id        String @id @default(uuid())
+  post_id   String
+  file_path String
+
+  post posts @relation(fields: [post_id], references: [id])
+}
+
+model poll {
+  id        String   @id @default(uuid())
+  course_id String
+  question  String
+  options   String[] @default([]) //
+  votes     Json     @default("{}") // {option1: 0, option2: 0, option3: 0, option4: 0}
+
+  course courses @relation(fields: [course_id], references: [id])
 }

@@ -6,7 +6,7 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
 /**
- * 
+ *
  * @param {Object} req - the request object
  * @param {Object} res - the response object
  * @returns {Promise<void>} - the promise resolved when complete refreshed the access token
@@ -21,9 +21,7 @@ const handleRefreshToken = async (req, res) => {
   try {
     const foundUser = await prisma.users.findFirst({
       where: {
-        refresh_token: {
-          hasSome: refreshToken,
-        },
+        refresh_token: refreshToken
       },
     });
     if (!foundUser) return res.sendStatus(403); // forbidden
@@ -36,7 +34,7 @@ const handleRefreshToken = async (req, res) => {
         if (err || foundUser.username !== decoded.username)
           return res.sendStatus(403); // forbidden
 
-        const roles = Object.values(JSON.parse(foundUser.roles));
+        const roles = Object.values(foundUser.roles);
 
         const accessToken = jwt.sign(
           {
@@ -46,7 +44,7 @@ const handleRefreshToken = async (req, res) => {
             },
           },
           process.env.ACCESS_TOKEN_SECRET_KEY,
-          { expiresIn: "30s" }
+          { expiresIn: "10s" }
         );
         res.json({ accessToken });
       }

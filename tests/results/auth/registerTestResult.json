@@ -1,0 +1,7 @@
+{
+  id: 17,
+  username: 'testuser',
+  roles: '{"User":2001}',
+  password: '$2b$10$6LFIXe3dPK.mrRxx9E1fkOuOiUZRaXtP6TYb7t9kHeRPYONcqaEbe',
+  refresh_token: []
+}

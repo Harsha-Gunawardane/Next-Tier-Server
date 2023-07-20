@@ -7,27 +7,23 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
 // import login form validator
-const loginFormSchema = require('../../validators/loginFormValidator');
+const loginFormSchema = require("../../validators/loginFormValidator");
 
 /**
- * 
+ *
  * @param {Object} req - the request object
  * @param {Object} res - the response object
  * @returns {Promise<void>} Promise that resolves when user is logged in
  */
 
 const handleLogin = async (req, res) => {
-
   // validate input form data
   const { error, data } = loginFormSchema.validate(req.body);
-
-  if(error) {
-    return res
-      .status(400)
-      .json({ error: error.details[0].message });
+  if (error) {
+    return res.status(400).json({ error: error.details[0].message });
   }
 
-  const { user, pwd } = req.body;
+  const { user, pwd } = req.body
 
   try {
     // find user registered or not
@@ -39,10 +35,14 @@ const handleLogin = async (req, res) => {
 
     if (!foundUser) return res.sendStatus(401); // unauhorized user
 
+    // check account is verified ot not
+    if(!foundUser.verified) return res.status(410).json({ message: 'User not verified' }); // 410 is custom error code for not verified user
+
     // match password
     const matchPassword = await bcrypt.compare(pwd, foundUser.password);
+
     if (matchPassword) {
-      const roles = Object.values(JSON.parse(foundUser.roles));
+      const roles = Object.values(foundUser.roles);
       // create JWTs
       const accessToken = jwt.sign(
         {
@@ -52,24 +52,24 @@ const handleLogin = async (req, res) => {
           },
         },
         process.env.ACCESS_TOKEN_SECRET_KEY,
-        { expiresIn: "30s" }
+        { expiresIn: "10s" }
       );
       const refreshToken = jwt.sign(
         { username: foundUser.username },
         process.env.REFRESH_TOKEN_SECRET_KEY,
         { expiresIn: "1d" }
       );
-  
+
       // const updatedUser = await updateRefreshToken(user, refreshToken);
       const updatedUser = await prisma.users.update({
         where: { username: user },
-        data: { refresh_token: {push: refreshToken} },
+        data: { refresh_token: refreshToken },
       });
-  
+
       res.cookie("jwt", refreshToken, {
         httpOnly: true,
         sameSite: "None",
-        // secure: true,
+        secure: true,
         maxAge: 24 * 60 * 60 * 1000,
       });
       res.json({ accessToken });
@@ -77,6 +77,7 @@ const handleLogin = async (req, res) => {
       res.sendStatus(401);
     }
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: error.message });
   }
 };
