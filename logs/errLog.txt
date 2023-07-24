@@ -27,3 +27,17 @@
 20230713	17:25:09	bf736f42-b331-49e2-871d-f1b938c63b03	SyntaxError: Unexpected token " in JSON at position 0
 20230713	17:29:23	b6a55b9b-d039-4998-8d01-4710a56ad948	SyntaxError: Unexpected token " in JSON at position 0
 20230710	19:28:54	f96e8d45-db26-4752-8ca3-0541d43acd6b	Error: Not allowed by CORS
+20230716	15:36:34	6a8949b0-1196-43b9-900b-af9cc8d31b55	Error: Not allowed by CORS
+20230716	15:36:36	7980ef34-2c93-462e-8d70-1861ea1d13b9	Error: Not allowed by CORS
+20230716	15:37:17	26ad83cf-08f2-4ef1-a1e9-a6e4c9b564db	Error: Not allowed by CORS
+20230716	19:56:39	55369f36-3d41-419b-98d2-dcf419623a4e	Error: Cannot set headers after they are sent to the client
+20230716	21:22:42	3430211b-d2ff-4fd1-a9fa-356151613f58	Error: Cannot set headers after they are sent to the client
+20230716	21:23:22	361dc320-aa13-449a-8bba-1d741ce7e2ab	Error: Cannot set headers after they are sent to the client
+20230716	21:24:57	dc407162-4c7b-4757-8e52-a6be27e1826f	Error: Cannot set headers after they are sent to the client
+20230717	06:09:16	f08144d1-a0f4-4ce6-af5d-f22d639709dd	Error: Cannot set headers after they are sent to the client
+20230717	06:11:05	30cb1924-3571-472b-ae48-efdb79722c53	Error: Cannot set headers after they are sent to the client
+20230717	06:12:46	2093cb72-7cfb-49b5-8035-fe82d5e48d51	Error: Cannot set headers after they are sent to the client
+20230717	23:43:31	b4958bf1-10c3-46b4-899e-e37b0381f2a4	Error: Unexpected end of form
+20230718	06:17:26	fbe81f64-478f-4819-8dd8-845e15ac0a0f	Error: Unexpected end of form
+20230718	06:23:18	10fa4051-e2ef-4ac3-872e-41d798c76c88	Error: Unexpected end of form
+20230718	06:24:23	303bf696-a40f-43c3-9db5-16c09537040f	Error: Unexpected end of form
