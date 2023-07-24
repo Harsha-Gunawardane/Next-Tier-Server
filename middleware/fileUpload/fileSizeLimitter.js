@@ -3,7 +3,6 @@ const FILE_SIZE_LIMIT = 1024 * 1024 * MB;
 
 const fileSizeLimitter = (req, res, next) => {
     const files = req.files
-
     const filesOverLimit = []
 
     Object.keys(files).forEach(key => {
