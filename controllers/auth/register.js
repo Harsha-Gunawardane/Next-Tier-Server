@@ -8,47 +8,46 @@ const prisma = new PrismaClient();
 const registerFormSchema = require("../../validators/registerFormValidator");
 
 /**
- *
- * @param {Object} req - the request object
- * @param {Object} res - the response object
- * @returns {Promise<void>} Promise that resolves when user is registered
+ * Handles the registration of a new user.
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} - Promise that resolves when the user is registered.
  */
-
 const handleNewUser = async (req, res) => {
-  // validate input form data
-  const { error, data } = registerFormSchema.validate(req.body);
-
-  if (error) {
-    console.log (error);
-    return res.status(400).json({ error: error.details[0].message });
-  }
-
-  // const { user, pwd, fName, lName, phoneNo } = req.body;
-  const { user, pwd, fName, lName, phoneNo } = req.body;
-
   try {
-    // check duplicates username
-    const duplicate = await prisma.users.findUnique({
+    // Validate input form data
+    const { error, value } = registerFormSchema.validate(req.body);
+
+    if (error) {
+      console.log(error);
+      return res.status(400).json({ error: error.details[0].message });
+    }
+
+    const { user, pwd, fName, lName, phoneNo } = value;
+
+    // Check for duplicate username
+    const existingUser = await prisma.users.findUnique({
       where: {
         username: user,
       },
     });
-    if (duplicate) return res.sendStatus(409);
 
-    // register new user
-    const hashedPassword = await bcrypt.hash(pwd, 10); // encrypt password
+    if (existingUser) {
+      return res.sendStatus(409);
+    }
 
-    // get joined time of new user
-    const joinedTime = new Date();;
+    // Register new user
+    const hashedPassword = await bcrypt.hash(pwd, 10); // Encrypt password
+    const joinedTime = new Date();
 
-    // store new user
+    // Store new user
     const addedUser = await prisma.users.create({
       data: {
         username: user,
         first_name: fName,
         last_name: lName,
         phone_number: phoneNo,
-        roles: { User: 2001, Student : 1942 },
+        roles: { User: 2001, Student: 1942 },
         password: hashedPassword,
         join_date: joinedTime,
       },
@@ -56,10 +55,25 @@ const handleNewUser = async (req, res) => {
 
     console.log(addedUser);
 
+    // Add student to DB
+    const addedStudent = await prisma.students.create({
+      data: {
+        user: {
+          connect: { id: addedUser.id },
+        },
+        grade: "", 
+        stream: "",
+        emergency_contact: {},
+        school: "",
+      },
+    });
+
+    console.log(addedStudent);
+
     res.status(201).json({ success: `New user ${user} registered` });
   } catch (error) {
-    // res.status(500).json({ error: error.message });
-    throw error;
+    console.error("Error handling new user:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 };
 
