@@ -53,12 +53,12 @@ model reset_password {
 
 model students {
   student_id        String   @id
-  grade             String
+  grade             String?
   medium            String   @default("Sinhala")
-  stream            String
-  emergency_contact Json // {name: "name", phone_number: "phone_number"}
-  school            String
-  subjects          String[]
+  stream            String?
+  emergency_contact Json? // {name: "name", phone_number: "phone_number"}
+  school            String?
+  subjects          String[] @default([])
   weak_areas        Json? // {subject: "subject", area: ["area1", "area2"]}
 
   user users @relation(fields: [student_id], references: [id])
