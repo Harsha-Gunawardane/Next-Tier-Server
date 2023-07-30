@@ -3,16 +3,34 @@ const asyncHandler = require("express-async-handler");
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
-const getAllEmployees = asyncHandler(async (req, res) => {
+async function getAllStaffs() {
   try {
-    const employees = await prisma.employees.findMany();
-    res.json(employees);
-  } catch (error) {
-    throw error;
-  }
-});
+    // Use Prisma Client to retrieve all supporting staff
+    const allSupportingStaff = await prisma.supporting_staff.findMany({
+      include: {
+        user: {
+          select: {
+            first_name: true, // Include the first_name field
+            last_name: true, // Include the last_name field
+            email: true, // Include the email field
+            phone_number: true, // Include the phone_number field
+          },
+        },
+      },
+    });
 
-const createNewEmployee = asyncHandler(async (req, res) => {
+    return allSupportingStaff.map((staff) => ({
+      id: staff.staff_id,
+      fullName: `${staff.user.first_name} ${staff.user.last_name}`,
+      email: staff.user.email,
+      phoneNumber: staff.user.phone_number,
+    }));
+  } catch (error) {
+    throw new Error("Error fetching supporting staff: " + error.message);
+  }
+}
+
+const createNewStaff = asyncHandler(async (req, res) => {
   const { first_name, last_name } = req.body;
 
   if (!first_name || !last_name) {
@@ -21,17 +39,17 @@ const createNewEmployee = asyncHandler(async (req, res) => {
       .json({ message: "First and last names are required." });
   }
 
-  const newEmployee = await prisma.employees.create({
+  const newStaff = await prisma.staffs.create({
     data: {
       first_name: first_name,
       last_name: last_name,
     },
   });
 
-  res.status(201).json(newEmployee);
+  res.status(201).json(newStaff);
 });
 
-const updateEmployee = asyncHandler(async (req, res) => {
+const updateStaff = asyncHandler(async (req, res) => {
   const {
     find_first_name,
     find_last_name,
@@ -48,20 +66,20 @@ const updateEmployee = asyncHandler(async (req, res) => {
     return res.status(400).json({ message: "Some arguments are missing" });
   }
   try {
-    // find employee registered or not
-    const foundEmployee = await prisma.employees.findFirst({
+    // find Staff registered or not
+    const foundStaff = await prisma.staffs.findFirst({
       where: {
         first_name: find_first_name,
         last_name: find_last_name,
       },
     });
 
-    if (!foundEmployee) {
+    if (!foundStaff) {
       return res.status(400).json({
-        message: `Employee ${find_first_name} ${find_last_name} not found`,
+        message: `Staff ${find_first_name} ${find_last_name} not found`,
       });
     }
-    const updatedEmployee = await prisma.users.update({
+    const updatedStaff = await prisma.users.update({
       where: {
         first_name: find_first_name,
         last_name: find_last_name,
@@ -72,65 +90,66 @@ const updateEmployee = asyncHandler(async (req, res) => {
       },
     });
 
-    res.json(updatedEmployee);
+    res.json(updatedStaff);
   } catch (error) {
     throw error;
   }
 });
 
-const deleteEmployee = asyncHandler(async (req, res) => {
+const deleteStaff = asyncHandler(async (req, res) => {
   const id = parseInt(req.params.id);
 
   try {
     // find user registered or not
-    const foundEmployee = await prisma.users.findFirst({
+    const foundStaff = await prisma.users.findFirst({
       where: {
         id: id,
       },
     });
-    if (!foundEmployee) {
+    if (!foundStaff) {
       return res
         .status(400)
-        .json({ message: `Employee ${req.params.first_name} not found` });
+        .json({ message: `Staff ${req.params.first_name} not found` });
     }
 
-    const deleteEmployee = await prisma.users.delete({
+    const deleteStaff = await prisma.users.delete({
       where: { id: id },
     });
 
     res.json({
-      message: `Employee ${req.params.foundEmployee.first_name} deleted`,
+      message: `Staff ${req.params.foundStaff.first_name} deleted`,
     });
+    
   } catch (error) {
     throw error;
   }
 });
 
-const getEmployee = asyncHandler(async (req, res) => {
+const getStaff = asyncHandler(async (req, res) => {
   const id = parseInt(req.params.id);
 
   try {
     // find user registered or not
-    const foundEmployee = await prisma.users.findFirst({
+    const foundStaff = await prisma.users.findFirst({
       where: {
         id: id,
       },
     });
-    if (!foundEmployee) {
+    if (!foundStaff) {
       return res
         .status(400)
-        .json({ message: `Employee ${req.params.first_name} not found` });
+        .json({ message: `Staff ${req.params.first_name} not found` });
     }
-    res.json(foundEmployee);
+    res.json(foundStaff);
   } catch (error) {
     throw error;
   }
 });
 
 module.exports = {
-  getAllEmployees,
-  createNewEmployee,
-  updateEmployee,
-  deleteEmployee,
-  getEmployee,
+  getAllStaffs,
+  createNewStaff,
+  updateStaff,
+  deleteStaff,
+  getStaff,
 };
