@@ -268,10 +268,11 @@ CREATE TABLE "quiz" (
 CREATE TABLE "questions" (
     "id" TEXT NOT NULL,
     "question" TEXT NOT NULL,
-    "options" JSONB[] DEFAULT ARRAY[]::JSONB[],
+    "options" TEXT[] DEFAULT ARRAY[]::TEXT[],
     "explanation" TEXT NOT NULL,
     "subject" TEXT NOT NULL,
     "subject_areas" TEXT[] DEFAULT ARRAY[]::TEXT[],
+    "correct_answer" INTEGER NOT NULL,
 
     CONSTRAINT "questions_pkey" PRIMARY KEY ("id")
 );
@@ -283,9 +284,27 @@ CREATE TABLE "student_attempt_quiz" (
     "score" INTEGER NOT NULL,
     "started_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "ended_at" TIMESTAMP(3) NOT NULL,
-    "answers" JSONB[] DEFAULT ARRAY[]::JSONB[],
+    "answers" INTEGER[] DEFAULT ARRAY[]::INTEGER[],
 
     CONSTRAINT "student_attempt_quiz_pkey" PRIMARY KEY ("student_id","quiz_id")
+);
+
+-- CreateTable
+CREATE TABLE "student_generate_quiz" (
+    "id" TEXT NOT NULL,
+    "username" TEXT NOT NULL,
+    "mcq_ids" TEXT[],
+    "user_answers" INTEGER[] DEFAULT ARRAY[]::INTEGER[],
+    "correct_answers" INTEGER[],
+    "subject" TEXT NOT NULL,
+    "quiz_name" TEXT NOT NULL,
+    "start_time" TIMESTAMP(3),
+    "end_time" TIMESTAMP(3),
+    "date" TIMESTAMP(3) NOT NULL,
+    "done" BOOLEAN NOT NULL DEFAULT false,
+    "mark" INTEGER NOT NULL DEFAULT 0,
+
+    CONSTRAINT "student_generate_quiz_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable

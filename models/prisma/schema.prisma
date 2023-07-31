@@ -316,12 +316,13 @@ model quiz {
 }
 
 model questions {
-  id            String   @id @default(uuid())
-  question      String
-  options       Json[]   @default([]) // [{option: "option 1", is_correct: true},{option: "option 2", is_correct: false}]
-  explanation   String
-  subject       String
-  subject_areas String[] @default([])
+  id             String   @id
+  question       String
+  options        String[] @default([])
+  explanation    String
+  subject        String
+  subject_areas  String[] @default([])
+  correct_answer Int
 }
 
 model student_attempt_quiz {
@@ -330,12 +331,27 @@ model student_attempt_quiz {
   score      Int
   started_at DateTime @default(now())
   ended_at   DateTime
-  answers    Json[]   @default([]) // [{question_id: "question_id", answer: "answer"},{question_id: "question_id", answer: "answer"}]
+  answers    Int[]    @default([]) // [{question_id: "question_id", answer: "answer"},{question_id: "question_id", answer: "answer"}]
 
   student users @relation(fields: [student_id], references: [id])
   quiz    quiz  @relation(fields: [quiz_id], references: [id])
 
   @@id([student_id, quiz_id])
+}
+
+model student_generate_quiz {
+  id              String    @id
+  username        String
+  mcq_ids         String[]
+  user_answers    Int[]     @default([])
+  correct_answers Int[]
+  subject         String
+  quiz_name       String
+  start_time      DateTime?
+  end_time        DateTime?
+  date            DateTime
+  done            Boolean   @default(false)
+  mark            Int       @default(0)
 }
 
 model forum {
