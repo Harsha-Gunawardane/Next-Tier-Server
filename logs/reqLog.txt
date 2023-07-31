@@ -2817,7 +2817,6 @@
 20230724	08:55:11	c1493683-1bd4-42da-966e-e06dcc725e25	POST	http://localhost:3000	/auth
 20230724	08:55:22	e3be46f2-b77f-4328-bb73-a5b0339fb51c	GET	http://localhost:3000	/refresh
 20230724	09:13:04	dd5071ac-a3ac-4e41-bfe6-7b236534a2c4	GET	http://localhost:3000	/refresh
-<<<<<<< HEAD
 20230728	21:37:41	3543b6bb-e173-4618-97cd-445c57c5d485	OPTIONS	http://localhost:3000	/register
 20230728	21:37:41	aba129dc-eb9f-4699-9e30-44e439e60645	POST	http://localhost:3000	/register
 20230728	21:38:56	f6df7b27-1ea6-4013-b195-dc427ed26455	OPTIONS	http://localhost:3000	/auth
@@ -2866,7 +2865,6 @@
 20230730	21:24:08	636c6d31-e597-4cf1-87e6-6c4ab66857d2	OPTIONS	http://localhost:3000	/auth
 20230730	21:24:08	ca7b3525-dac9-4205-b0a6-76ecc1e727e5	POST	http://localhost:3000	/auth
 20230730	21:24:09	bad60501-0348-46f9-b7d9-2bbd4bd43027	GET	http://localhost:3000	/staff/profile
-=======
 20230724	14:03:35	caa1432b-a344-4589-abd0-c1ce9c0aff6d	GET	http://localhost:3000	/refresh
 20230724	16:37:10	2e8bde8a-3748-4bf9-9857-3acab9e6cccd	OPTIONS	http://localhost:3000	/auth
 20230724	16:37:10	55ec83dc-1ed7-4ac0-b57f-f6478fb3d549	POST	http://localhost:3000	/auth
@@ -6927,4 +6925,41 @@
 20230730	20:08:58	7f2d4f2e-5b07-4265-a266-2fe8514d9b23	OPTIONS	http://localhost:3000	/stu/quiz-revision/Physics/
 20230730	20:08:58	c33b76b6-4a97-48f6-8a07-99a06be4be6e	GET	http://localhost:3000	/stu/quiz-revision/Physics/
 20230730	20:08:58	bf9844f5-fba7-406c-9a34-8ff8e6b2154e	GET	http://localhost:3000	/stu/quiz-revision/Physics/
->>>>>>> c5020dbc6ebcceffae1753e9fe5eabbfec2f36f2
+20230731	10:10:58	7672832f-52e8-47db-bbcc-de7cdbb0cc58	OPTIONS	http://localhost:3000	/auth
+20230731	10:10:58	d5444412-3e25-4390-9d23-ee45c1469291	POST	http://localhost:3000	/auth
+20230731	10:13:24	c50f4a46-d9d8-4f74-a5f2-fc44dd8ffd8c	POST	undefined	/auth
+20230731	10:13:45	9deb57d0-8800-4a44-8b64-431f56f49676	GET	undefined	/staff/profile
+20230731	10:14:27	def9874e-64c4-4051-84a6-07ea9be63ae0	POST	undefined	/auth
+20230731	10:16:10	f5782a4a-c2a5-48c3-9667-56ff35dffd17	GET	undefined	/staff/profile
+20230731	10:16:29	98dd3e37-2c31-4343-a51f-b37d9fe3334c	OPTIONS	http://localhost:3000	/auth
+20230731	10:16:29	b1da509a-2367-4f72-9b1c-312b264af61e	POST	http://localhost:3000	/auth
+20230731	10:17:44	dab80d31-7691-44f9-8875-1801785b2baa	OPTIONS	http://localhost:3000	/auth
+20230731	10:17:44	35fed09e-3159-4fe6-be77-c35f4f0abca5	POST	http://localhost:3000	/auth
+20230731	10:19:45	6ea5d0a1-42b1-4cbf-88a8-08c91a4c0272	OPTIONS	http://localhost:3000	/auth
+20230731	10:19:45	9dd54185-e53a-4750-8a35-afd2ed845b1f	POST	http://localhost:3000	/auth
+20230731	10:21:15	eb2f4600-3333-40a6-b210-3044b99e2e5a	OPTIONS	http://localhost:3000	/auth
+20230731	10:21:15	f7d9764f-a3f8-4a54-98ac-0f072ff17e92	POST	http://localhost:3000	/auth
+20230731	10:21:19	4f26b424-c63d-451e-9498-1e533cdb52b4	OPTIONS	http://localhost:3000	/staff/profile
+20230731	10:21:19	ada906f1-738b-444f-a5a2-ae17814d14b9	GET	http://localhost:3000	/staff/profile
+20230731	10:44:25	2a0dfcaa-0f96-48f5-b02a-a0a1cf7d3f4b	OPTIONS	http://localhost:3000	/auth
+20230731	10:44:25	5e5e717e-a0e3-4a96-8317-8e249cdea10d	POST	http://localhost:3000	/auth
+20230731	10:44:29	2ae62ed2-146a-4d71-a112-e93277c295f9	OPTIONS	http://localhost:3000	/staff/profile
+20230731	10:44:29	fcf98d83-9acb-459a-831b-06dc8e58edcd	GET	http://localhost:3000	/staff/profile
+20230731	10:45:03	85fe22aa-7729-4a7a-9194-445a4bed6d16	OPTIONS	http://localhost:3000	/auth
+20230731	10:45:03	a84b49e6-af66-49f2-8875-9cd715f9e568	POST	http://localhost:3000	/auth
+20230731	10:45:12	f0bbc9ef-4724-47df-82dd-3638c86016ba	OPTIONS	http://localhost:3000	/auth
+20230731	10:45:12	8cfed7ef-4b25-416a-af11-18488608c417	POST	http://localhost:3000	/auth
+20230731	10:45:13	0f606df7-0347-40dc-bc3d-f98520a0ce2e	OPTIONS	http://localhost:3000	/staff/profile
+20230731	10:45:13	1bc4005c-a6e3-4b85-bd30-204d5184d4d4	GET	http://localhost:3000	/staff/profile
+20230731	13:06:14	49104114-19b3-49bf-9b05-be96b26bccd7	OPTIONS	http://localhost:3000	/auth
+20230731	13:06:14	138ee4cb-734a-4e35-b5e2-c362fbafc90d	POST	http://localhost:3000	/auth
+20230731	13:12:51	5db380ce-8201-4d2e-88ee-311a37bbc833	OPTIONS	http://localhost:3000	/auth
+20230731	13:12:51	8510594a-400c-43b8-9f66-4d8b9ab7abce	POST	http://localhost:3000	/auth
+20230731	13:12:56	da271042-fc4d-4b0a-b6cf-57de55cadebd	OPTIONS	http://localhost:3000	/staff/profile
+20230731	13:12:56	d50bdffb-e307-422d-bd4e-c39105007b07	GET	http://localhost:3000	/staff/profile
+20230731	13:29:38	04a5ee12-78d0-47ca-ab62-b89a8cefb84c	OPTIONS	http://localhost:3000	/auth
+20230731	13:29:39	f39f8f3c-0e2e-4e09-ac09-673a180173ab	POST	http://localhost:3000	/auth
+20230731	13:29:39	898f9531-4088-4ced-a0b8-054da14f5733	OPTIONS	http://localhost:3000	/staff/profile
+20230731	13:29:39	7d3ee916-4c16-4288-9bfb-23ab96836d53	GET	http://localhost:3000	/staff/profile
+20230731	13:31:03	b00399f0-de38-4d4f-9e6c-8e989b451e35	OPTIONS	http://localhost:3000	/staff/profile
+20230731	13:31:03	5591ef48-8356-4794-915e-e5ec3e120bb5	GET	http://localhost:3000	/staff/profile
