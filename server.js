@@ -17,8 +17,10 @@ const verifyJWT = require("./middleware/verifyJWT");
 // import custom files
 const corsOptions = require("./config/corsOptions");
 
+
+
 // custom middleware logger
-app.use(logger);
+// app.use(logger);
 
 // check credentials before cors
 app.use(credentials);
