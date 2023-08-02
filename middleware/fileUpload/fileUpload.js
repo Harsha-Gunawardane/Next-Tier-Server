@@ -1,12 +1,11 @@
 const multer = require("multer");
-const uuid = require("uuid").v4;
+const { Storage } = require("@google-cloud/storage");
 
-const storage = multer.diskStorage({
-  destination: (req, res, callback) => {
-    callback(null, "./public/images");
-  },
-  filename: (req, file, callback) => {
-    callback(null, `${Date.now()}-${uuid()}-${file.originalname}`);
+const storage = new Storage({
+  projectId: process.env.GCLOUD_PROJECT,
+  credentials: {
+    client_email: process.env.GCLOUD_CLIENT_EMAIL,
+    private_key: process.env.GCLOUD_PRIVATE_KEY,
   },
 });
 
@@ -15,15 +14,16 @@ const VerifyExt = (req, file, callback) => {
     callback(null, true);
   } else {
     req.fileError = "Invalid file type";
-
     callback(null, false);
   }
 };
 
 const upload = multer({
-  storage,
+  storage: multer.memoryStorage(),
   fileFilter: VerifyExt,
-  limits: { fileSize: 20000000 },
+  limits: { fileSize : 5 * 1024 * 1024},
 });
+console.log('Uploading')
+const bucket = storage.bucket(process.env.GCS_BUCKET)
 
-module.exports = upload;
+module.exports = {upload, bucket};

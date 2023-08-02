@@ -12,6 +12,7 @@ const { logger } = require("./middleware/logEvents");
 const errorHandler = require("./middleware/errorHandler");
 const credentials = require("./middleware/credentials");
 const verifyJWT = require("./middleware/verifyJWT");
+const fileErrorHandler = require("./middleware/fileUpload/errorHandler");
 
 // import custom files
 const corsOptions = require("./config/corsOptions");
@@ -65,6 +66,7 @@ app.all("*", (req, res) => {
   res.status(404).json({ error: "404 Not Found" });
 });
 
+app.use(fileErrorHandler)
 app.use(errorHandler);
 
 app.listen(PORT, () => {

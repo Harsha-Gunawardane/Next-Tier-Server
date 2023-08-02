@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 // import middlewares
-const upload = require("../../middleware/fileUpload/fileUpload");
+const {upload} = require("../../middleware/fileUpload/fileUpload");
 
 // import controllers
 const userProfileController = require("../../controllers/user/profilePicture");
