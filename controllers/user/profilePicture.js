@@ -3,7 +3,7 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const uuid = require("uuid").v4;
 
-const { bucket } = require("../../middleware/fileUpload/fileUpload");
+const { fileBucket } = require("../../middleware/fileUpload/fileUpload");
 
 const uploadProfilePicture = async (req, res) => {
   // check file got error in middleware
@@ -16,8 +16,11 @@ const uploadProfilePicture = async (req, res) => {
   date = date.toISOString();
 
   const newImageFileName = `${uuid()}-${date}-${profilePic.originalname}`;
-  const blob = bucket.file(newImageFileName);
-  const blobStream = blob.createWriteStream();
+  const blob = fileBucket.file(newImageFileName);
+  const blobStream = await blob.createWriteStream({
+    resumable: false,
+    gzip: true
+  });
 
   blobStream.on("error", (error) => {
     console.error(error);
@@ -34,7 +37,7 @@ const uploadProfilePicture = async (req, res) => {
         },
       });
 
-      const imageUrl = `https://storage.googleapis.com/${process.env.GCS_BUCKET}/${blob.name}`;
+      const imageUrl = `https://storage.googleapis.com/${process.env.GCS_FILEBUCKET}/${blob.name}`;
 
       // insert new file to DB
       const newProfileData = {
