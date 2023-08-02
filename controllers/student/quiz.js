@@ -48,8 +48,15 @@ const generateQuiz = async (req, res) => {
   let { subject, value } = req.body;
 
   // validate inputs
-  if (!subject || !value || value > 50)
-    return res.status(400).json({ error: "Invalid arguments" });
+  if (!subject) {
+    return res.status(400).json({ error: "Already done quiz!" });
+  } else if(!value) {
+    return res.status(400).json({ error: "No of questions is required" });
+  } else if (value > 50) {
+    return res.status(400).json({ error: "No of questions must not be more than 50" });
+  } else if (value < 0) {
+    return res.status(400).json({ error: "No of questions must not be less than zero" });
+  }
 
   // restructure subject input
   if (!isFirstLetterInCapital(subject)) {

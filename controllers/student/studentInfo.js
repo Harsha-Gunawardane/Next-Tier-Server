@@ -34,7 +34,8 @@ const getStudentInfo = async (req, res) => {
       phoneNo: foundUser.phone_number,
       stream: student.stream,
       college: student.school,
-      medium: student.medium
+      medium: student.medium,
+      profile: foundUser.profile_picture
     }
 
     res.json(studentInfo);

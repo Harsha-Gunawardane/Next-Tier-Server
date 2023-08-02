@@ -41,6 +41,7 @@ model users {
   student_attempt_quiz       student_attempt_quiz[]
   posts                      posts[]
   reset_password             reset_password[]
+  files                      files[]
 }
 
 model reset_password {
@@ -94,6 +95,19 @@ model staffOnTutor {
   tutor tutor            @relation(fields: [tutor_id], references: [tutor_id])
 
   @@id([staff_id, tutor_id])
+}
+
+model files {
+  id            String    @id @default(uuid())
+  name          String
+  path          String
+  uploaded_at   DateTime
+  updated_at    DateTime?
+  mime_type     String
+  uploaded_by   String
+  original_name String
+
+  user users @relation(fields: [uploaded_by], references: [id])
 }
 
 enum content_type {
