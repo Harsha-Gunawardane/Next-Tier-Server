@@ -37,7 +37,7 @@ const uploadProfilePicture = async (req, res) => {
         },
       });
 
-      const imageUrl = `https://storage.googleapis.com/${process.env.GCS_FILEBUCKET}/${blob.name}`;
+      const imageUrl = `https://storage.googleapis.com/${process.env.GCS_BUCKET}/${blob.name}`;
 
       // insert new file to DB
       const newProfileData = {
