@@ -18,6 +18,8 @@ const getStaffDetails = async (req, res) => {
         first_name: true,
         last_name: true,
         phone_number: true,
+        join_date:true,
+        profile_picture:true,
         // Add other relevant fields you want to retrieve
       },
     });

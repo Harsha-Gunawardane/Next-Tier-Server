@@ -3,6 +3,7 @@ const router = express.Router();
 const staffController = require("../../controllers/staffController");
 
 const profileController =  require('../../controllers/Staff/StaffDetails');
+const userPasswordController = require("../../controllers/user/resetPassword");
 // verify roles
 const ROLES_LIST = require("../../config/roleList");
 const verifyRoles = require("../../middleware/verifyRoles");
@@ -23,7 +24,10 @@ router
 // router.route("/:id").get(staffController.getStaff);
 router 
     .route("/profile")
-    .get(verifyRoles(ROLES_LIST.Staff),
-    profileController.getStaffDetails)
+    .get(verifyRoles(ROLES_LIST.Staff),profileController.getStaffDetails)
+    .patch(verifyRoles(ROLES_LIST.Staff), userPasswordController.resetPassword)
+
+   
+    
 
 module.exports = router;
