@@ -3,7 +3,7 @@ const multer = require("multer");
 const { Storage } = require("@google-cloud/storage");
 
 const googleCloud = new Storage({
-  keyFilename: path.join(__dirname, "../../eastern-button-394702-d283b3c44d30.json"),
+  keyFilename: path.join(__dirname, "../../gcsKeyFile.json"),
   projectId: "eastern-button-394702"
 });
 
@@ -24,4 +24,4 @@ const upload = multer({
   limits: { fileSize : 5 * 1024 * 1024},
 });
 
-module.exports = {upload, fileBucket};
+module.exports = {upload, fileBucket, googleCloud};

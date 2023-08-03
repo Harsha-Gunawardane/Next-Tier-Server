@@ -3,41 +3,38 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const uuid = require("uuid").v4;
 
-const { fileBucket } = require("../../middleware/fileUpload/fileUpload");
+const {
+  fileBucket,
+  googleCloud,
+} = require("../../middleware/fileUpload/fileUpload");
 
 const uploadProfilePicture = async (req, res) => {
-  // check file got error in middleware
+  // check file got an error in middleware
   if (req.fileError) return res.status(400).json({ message: req.fileError });
 
   const user = req.user;
   const profilePic = req.file;
 
+  if(!profilePic) return res.status(400).json({ message: "Something went wrong" })
+
   let date = new Date();
   date = date.toISOString();
 
   const newImageFileName = `${uuid()}-${date}-${profilePic.originalname}`;
-  const blob = fileBucket.file(newImageFileName);
-  const blobStream = await blob.createWriteStream({
-    resumable: false,
-    gzip: true
-  });
 
-  blobStream.on("error", (error) => {
-    console.error(error);
-    return res.status(500).json({ message: error.message });
-  });
+  try {
+    const blob = fileBucket.file(newImageFileName);
+    const blobStream = blob.createWriteStream();
 
-  blobStream.on("finish", async () => {
-    console.log("Uploading profile picture");
-
-    try {
+    blobStream.on("finish", async () => {
+      // update DB
       const foundUser = await prisma.users.findUnique({
         where: {
           username: user,
         },
       });
 
-      const imageUrl = `https://storage.googleapis.com/${process.env.GCS_BUCKET}/${blob.name}`;
+      const imageUrl = `https://storage.googleapis.com/next_tier_file_bucket/${newImageFileName}`;
 
       // insert new file to DB
       const newProfileData = {
@@ -49,10 +46,17 @@ const uploadProfilePicture = async (req, res) => {
         original_name: profilePic.originalname,
       };
 
-      // console.log(newProfileData)
       const newImageFile = await prisma.files.create({
         data: newProfileData,
       });
+
+      const authenticatedUrl = await googleCloud
+        .bucket("next_tier_file_bucket")
+        .file(newImageFileName)
+        .getSignedUrl({
+          action: "read",
+          expires: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
+        });
 
       // update user profile
       updatedUser = await prisma.users.update({
@@ -60,16 +64,17 @@ const uploadProfilePicture = async (req, res) => {
           username: user,
         },
         data: {
-          profile_picture: newImageFile.path,
+          profile_picture: authenticatedUrl[0],
         },
       });
 
-      res.status(201).json({ image: imageUrl });
-    } catch (error) {
-      res.status(500).json({ message: error.message });
-    }
-  });
+      res.status(201).json({ profile: authenticatedUrl[0] });
+    });
 
+    blobStream.end(profilePic.buffer);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 };
 
 module.exports = { uploadProfilePicture };
