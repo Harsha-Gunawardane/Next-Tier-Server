@@ -1,12 +1,10 @@
+const path = require('path');
 const multer = require("multer");
 const { Storage } = require("@google-cloud/storage");
 
-const storage = new Storage({
-  projectId: process.env.GCLOUD_PROJECT,
-  credentials: {
-    client_email: process.env.GCLOUD_CLIENT_EMAIL,
-    private_key: process.env.GCLOUD_PRIVATE_KEY,
-  },
+const googleCloud = new Storage({
+  keyFilename: path.join(__dirname, "../../gcsKeyFile.json"),
+  projectId: "eastern-button-394702"
 });
 
 const VerifyExt = (req, file, callback) => {
@@ -23,7 +21,7 @@ const upload = multer({
   fileFilter: VerifyExt,
   limits: { fileSize : 5 * 1024 * 1024},
 });
-console.log('Uploading')
-const bucket = storage.bucket(process.env.GCS_BUCKET)
 
-module.exports = {upload, bucket};
+const fileBucket = googleCloud.bucket("next_tier_file_bucket")
+
+module.exports = {upload, fileBucket, googleCloud};
