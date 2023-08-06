@@ -12,6 +12,7 @@ const { logger } = require("./middleware/logEvents");
 const errorHandler = require("./middleware/errorHandler");
 const credentials = require("./middleware/credentials");
 const verifyJWT = require("./middleware/verifyJWT");
+const fileErrorHandler = require("./middleware/fileUpload/errorHandler");
 
 // import custom files
 const corsOptions = require("./config/corsOptions");
@@ -57,21 +58,20 @@ app.use("/employees", require("./routes/api/employees"));
 app.use("/user", require("./routes/api/user"));
 app.use("/notes", require("./routes/api/notes"));
 app.use("/staff", require("./routes/api/staff"));
-app.use("/tutor", require("./routes/api/tutor"));
+app.use("/stu", require("./routes/api/student"));
+app.use("/parent", require("./routes/api/parent"));
+// app.use("/tutor", require("./routes/api/tutor"));
 
 app.all("*", (req, res) => {
-  res.status(404);
-  if (req.accepts("html")) {
-    res.sendFile(path.join(__dirname, "views", "404.html"));
-  } else if (req.accepts("json")) {
-    res.json({ error: "404 Not Found" });
-  } else {
-    res.type("txt").send("404 Not Found");
-  }
+  res.status(404).json({ error: "404 Not Found" });
 });
 
+app.use(fileErrorHandler)
 app.use(errorHandler);
 
 app.listen(PORT, () => {
+  console.log("listening on port " + PORT);
+});
+
   console.log("listening on port " + PORT);
 });

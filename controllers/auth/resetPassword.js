@@ -169,7 +169,7 @@ const verifyOTP = async (req, res) => {
     // Verify user
     await prisma.users.update({
       where: { username: foundUser.username },
-      data: { otp: null, otp_expire_at: null, verified: true },
+      data: { otp: null, otp_expire_at: null },
     });
 
     await prisma.reset_password.update({
