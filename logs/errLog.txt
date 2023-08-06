@@ -27,3 +27,109 @@
 20230713	17:25:09	bf736f42-b331-49e2-871d-f1b938c63b03	SyntaxError: Unexpected token " in JSON at position 0
 20230713	17:29:23	b6a55b9b-d039-4998-8d01-4710a56ad948	SyntaxError: Unexpected token " in JSON at position 0
 20230710	19:28:54	f96e8d45-db26-4752-8ca3-0541d43acd6b	Error: Not allowed by CORS
+20230725	10:30:52	996edd13-664f-457b-9b8c-b243581040cb	SyntaxError: Unexpected token } in JSON at position 187
+20230725	10:32:56	b3159784-cafb-46f8-a5c2-c2554ade9394	SyntaxError: Unexpected token } in JSON at position 181
+20230725	10:38:56	417ab45a-3aff-4bc6-8758-4d41ccd7151a	SyntaxError: Unexpected token } in JSON at position 181
+20230725	10:39:02	d88ad32d-c34e-4820-81da-6ba44fa694ae	SyntaxError: Unexpected token } in JSON at position 181
+20230725	12:22:42	42077452-ddf2-4fbf-bf3d-43f4278b205f	SyntaxError: Unexpected string in JSON at position 36
+20230730	12:44:01	076a2f66-171f-4f38-b605-833e22051b23	Error: 
+Invalid `prisma.courses.findFirst()` invocation in
+C:\src\Next-Tier-Server\controllers\tutor\course.js:38:48
+
+  35 
+  36 try {
+  37   // find user registered or not
+→ 38   const foundEmployee = await prisma.courses.findFirst({
+         where: {
+           id: 2
+               ~
+         }
+       })
+
+Argument id: Got invalid value 2 on prisma.findFirstcourses. Provided Int, expected StringFilter or String:
+type StringFilter {
+  equals?: String
+  in?: List<String> | String
+  notIn?: List<String> | String
+  lt?: String
+  lte?: String
+  gt?: String
+  gte?: String
+  contains?: String
+  startsWith?: String
+  endsWith?: String
+  mode?: QueryMode
+  not?: String | NestedStringFilter
+}
+type StringFilter {
+  equals?: String
+  in?: List<String> | String
+  notIn?: List<String> | String
+  lt?: String
+  lte?: String
+  gt?: String
+  gte?: String
+  contains?: String
+  startsWith?: String
+  endsWith?: String
+  mode?: QueryMode
+  not?: String | NestedStringFilter
+}
+
+
+20230730	12:44:24	f80c7492-446d-4771-a6fe-71d917fd6a56	Error: 
+Invalid `prisma.courses.findFirst()` invocation in
+C:\src\Next-Tier-Server\controllers\tutor\course.js:38:48
+
+  35 
+  36 try {
+  37   // find user registered or not
+→ 38   const foundEmployee = await prisma.courses.findFirst({
+         where: {
+           id: 1
+               ~
+         }
+       })
+
+Argument id: Got invalid value 1 on prisma.findFirstcourses. Provided Int, expected StringFilter or String:
+type StringFilter {
+  equals?: String
+  in?: List<String> | String
+  notIn?: List<String> | String
+  lt?: String
+  lte?: String
+  gt?: String
+  gte?: String
+  contains?: String
+  startsWith?: String
+  endsWith?: String
+  mode?: QueryMode
+  not?: String | NestedStringFilter
+}
+type StringFilter {
+  equals?: String
+  in?: List<String> | String
+  notIn?: List<String> | String
+  lt?: String
+  lte?: String
+  gt?: String
+  gte?: String
+  contains?: String
+  startsWith?: String
+  endsWith?: String
+  mode?: QueryMode
+  not?: String | NestedStringFilter
+}
+
+
+20230730	15:40:24	509d5a4b-120b-4259-8dea-584cde57ef80	SyntaxError: Unexpected token P in JSON at position 346
+20230730	18:08:43	09f5cdb7-f81e-4a85-a53f-40a8ff0cef6e	SyntaxError: Unexpected token E in JSON at position 467
+20230730	21:06:40	5ecf70b9-300d-4447-af86-876a3b3f159a	SyntaxError: Unexpected token } in JSON at position 67
+20230730	21:11:01	d8220af6-87a7-4335-af38-8eaa77ecda24	SyntaxError: Unexpected token } in JSON at position 63
+20230730	21:57:25	486f8bdb-2cf1-42fb-a0cc-16ee9c035074	SyntaxError: Unexpected token } in JSON at position 158
+20230730	21:58:38	030b24a2-87bb-4994-80a2-53bbea77e05a	SyntaxError: Unexpected token } in JSON at position 226
+20230730	22:19:50	725c5618-fa2a-47b9-b377-445aeea33610	SyntaxError: Unexpected token d in JSON at position 481
+20230730	22:20:14	46a61e35-245d-4a72-bccf-2f7de95530c3	SyntaxError: Unexpected token d in JSON at position 479
+20230730	22:20:33	8ed086ed-626f-4552-a907-3442e66bcb55	SyntaxError: Unexpected token } in JSON at position 465
+20230802	08:31:10	9c54eaa6-f7f3-467b-a593-8d08398e52c0	SyntaxError: Unexpected token A in JSON at position 401
+20230802	21:36:02	48b0a7a9-4662-486a-add5-0f9076039f2b	SyntaxError: Unexpected string in JSON at position 67

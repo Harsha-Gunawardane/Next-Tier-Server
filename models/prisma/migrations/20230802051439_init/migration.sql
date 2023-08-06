@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "content" ALTER COLUMN "type" DROP NOT NULL,
+ALTER COLUMN "status" DROP NOT NULL;
