@@ -41,6 +41,7 @@ model users {
   student_attempt_quiz       student_attempt_quiz[]
   posts                      posts[]
   reset_password             reset_password[]
+  instStaff                  instStaff[]
 }
 
 model reset_password {
@@ -94,6 +95,15 @@ model staffOnTutor {
   tutor tutor            @relation(fields: [tutor_id], references: [tutor_id])
 
   @@id([staff_id, tutor_id])
+}
+
+//added institue staff
+model instStaff {
+  inst_staff_id    String   @id
+  qualifications   String[] @default([])
+  previous_job_exp String[] @default([])
+
+  user users @relation(fields: [inst_staff_id], references: [id])
 }
 
 enum content_type {
