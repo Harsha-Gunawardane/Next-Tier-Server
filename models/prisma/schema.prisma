@@ -323,6 +323,7 @@ model quiz {
   subject       String
   subject_areas String[]  @default([])
   question_ids  String[]
+  number_of_questions Int
   published     Boolean   @default(false)
 
   course               courses                @relation(fields: [course_id], references: [id])
