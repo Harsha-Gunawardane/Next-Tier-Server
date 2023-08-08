@@ -91,6 +91,15 @@ CREATE TABLE "staffOnTutor" (
 );
 
 -- CreateTable
+CREATE TABLE "instStaff" (
+    "inst_staff_id" TEXT NOT NULL,
+    "qualifications" TEXT[] DEFAULT ARRAY[]::TEXT[],
+    "previous_job_exp" TEXT[] DEFAULT ARRAY[]::TEXT[],
+
+    CONSTRAINT "instStaff_pkey" PRIMARY KEY ("inst_staff_id")
+);
+
+-- CreateTable
 CREATE TABLE "content" (
     "id" TEXT NOT NULL,
     "title" TEXT NOT NULL,
@@ -368,6 +377,9 @@ ALTER TABLE "staffOnTutor" ADD CONSTRAINT "staffOnTutor_staff_id_fkey" FOREIGN K
 
 -- AddForeignKey
 ALTER TABLE "staffOnTutor" ADD CONSTRAINT "staffOnTutor_tutor_id_fkey" FOREIGN KEY ("tutor_id") REFERENCES "tutor"("tutor_id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "instStaff" ADD CONSTRAINT "instStaff_inst_staff_id_fkey" FOREIGN KEY ("inst_staff_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "content_reactions" ADD CONSTRAINT "content_reactions_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
