@@ -3,6 +3,8 @@ const asyncHandler = require("express-async-handler");
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
+const tutorStaffFormSchema = require("../../validators/tutor/tutorStaffFormValidator");
+
 async function getAllStaffs() {
   try {
     // Use Prisma Client to retrieve all supporting staff
@@ -30,24 +32,79 @@ async function getAllStaffs() {
   }
 }
 
-const createNewStaff = asyncHandler(async (req, res) => {
-  const { first_name, last_name } = req.body;
+const createNewStaff = async (req, res) => {
+  try {
+    // Validate input form data
+    const { error, value } = tutorStaffFormSchema.validate(req.body);
 
-  if (!first_name || !last_name) {
-    return res
-      .status(400)
-      .json({ message: "First and last names are required." });
+    if (error) {
+      console.log(error);
+      return res.status(400).json({ error: error.details[0].message });
+    }
+
+    const {
+      first_name,
+      last_name,
+      NIC,
+      DOB,
+      address,
+      phone_number,
+      email,
+      staff_title,
+      joined_date,
+    } = value;
+
+    // Check for duplicate username
+    const existingUser = await prisma.users.findUnique({
+      where: {
+        email: user,
+      },
+    });
+
+    if (existingUser) {
+      return res.sendStatus(409);
+    }
+
+    // Register new user
+    const hashedPassword = await bcrypt.hash(pwd, 10); // Encrypt password
+    const joinedTime = new Date();
+
+    // Store new user
+    const addedUser = await prisma.users.create({
+      data: {
+        username: user,
+        first_name: fName,
+        last_name: lName,
+        phone_number: phoneNo,
+        roles: { User: 2001, Student: 1942 },
+        password: hashedPassword,
+        join_date: joinedTime,
+      },
+    });
+
+    console.log(addedUser);
+
+    // Add student to DB
+    const addedStudent = await prisma.students.create({
+      data: {
+        user: {
+          connect: { id: addedUser.id },
+        },
+        grade: "",
+        stream: "",
+        emergency_contact: {},
+        school: "",
+      },
+    });
+
+    console.log(addedStudent);
+
+    res.status(201).json({ success: `New user ${user} registered` });
+  } catch (error) {
+    console.error("Error handling new user:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
-
-  const newStaff = await prisma.staffs.create({
-    data: {
-      first_name: first_name,
-      last_name: last_name,
-    },
-  });
-
-  res.status(201).json(newStaff);
-});
+};
 
 const updateStaff = asyncHandler(async (req, res) => {
   const {
@@ -119,7 +176,6 @@ const deleteStaff = asyncHandler(async (req, res) => {
     res.json({
       message: `Staff ${req.params.foundStaff.first_name} deleted`,
     });
-    
   } catch (error) {
     throw error;
   }

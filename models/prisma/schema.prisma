@@ -152,14 +152,14 @@ model content {
   id                String              @id @default(uuid())
   title             String
   description       String
-  type              content_type
+  type              content_type?
   subject           String
-  subject_areas     String[]
-  uploaded_at       DateTime            @default(now())
-  status            content_status      @default(PUBLIC)
-  file_path         String
+  subject_areas     String[] 
+  uploaded_at       DateTime?            @default(now())
+  status            content_status?     @default(PUBLIC)
+  file_path         String?
   thumbnail         String?
-  reactions         Json                @default("{}") // {like: 0, dislike: 0, views: 0 ,comments: 0}
+  reactions         Json?                @default("{}") // {like: 0, dislike: 0, views: 0 ,comments: 0}
   content_reactions content_reactions[]
   content_views     content_views[]
   comments          comments[]
@@ -210,7 +210,7 @@ model study_pack {
   description   String
   subject       String
   subject_areas String[]
-  thumbnail     String?
+  thumbnail     String
   price         Int
   access_period Json      @default("{}") // {days: 0, months: 0, years: 0}
   uploaded_at   DateTime  @default(now())
@@ -250,15 +250,15 @@ model courses {
   subject       String
   medium        String
   grade         String
-  thumbnail     String?
+  thumbnail     String
   monthly_fee   Int
-  hall_id       String
+  hall_id       String?
   start_date    DateTime @default(now())
   studypack_ids Json[]   @default([]) // [{video_id: [], tute_id: []},{video_id: [], tute_id: "tute_id"}] 
   schedule      Json[]   @default([]) // [{day: "monday", start_time: "10:00", end_time: "12:00"},{day: "monday", start_time: "10:00", end_time: "12:00"}]
 
   tutor                   tutor                     @relation(fields: [tutor_id], references: [tutor_id])
-  hall                    halls                     @relation(fields: [hall_id], references: [id])
+  hall                    halls?                     @relation(fields: [hall_id], references: [id])
   study_pack              study_pack[]
   student_enrolled_course student_enrolled_course[]
   student_attendance      student_attendance[]
@@ -350,6 +350,7 @@ model quiz {
   subject       String
   subject_areas String[]  @default([])
   question_ids  String[]
+  number_of_questions Int
   published     Boolean   @default(false)
 
   course               courses                @relation(fields: [course_id], references: [id])
