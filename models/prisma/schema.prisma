@@ -41,6 +41,9 @@ model users {
   student_attempt_quiz       student_attempt_quiz[]
   posts                      posts[]
   reset_password             reset_password[]
+  files                      files[]
+  folders                    folders[]
+  tutes                      tutes[]
 }
 
 model reset_password {
@@ -96,6 +99,44 @@ model staffOnTutor {
   @@id([staff_id, tutor_id])
 }
 
+model files {
+  id            String   @id @default(uuid())
+  name          String
+  path          String
+  uploaded_at   DateTime
+  mime_type     String
+  uploaded_by   String
+  original_name String
+  url           String?
+
+  user users @relation(fields: [uploaded_by], references: [id])
+}
+
+model folders {
+  id       String   @id
+  user_id  String
+  name     String
+  tute_ids String[] @default([])
+
+  user users @relation(fields: [user_id], references: [id])
+}
+
+model tutes {
+  id         String   @id
+  folder_id  String   @default("")
+  user_id    String
+  content    String?
+  file_id    String   @default("")
+  created_at DateTime
+  name       String
+  gcs_name   String?
+  url        String?
+  local_url  String?
+  isUpload   Boolean  @default(false)
+
+  user users @relation(fields: [user_id], references: [id])
+}
+
 enum content_type {
   TUTE
   VIDEO
@@ -111,14 +152,14 @@ model content {
   id                String              @id @default(uuid())
   title             String
   description       String
-  type              content_type
+  type              content_type?
   subject           String
-  subject_areas     String[]
-  uploaded_at       DateTime            @default(now())
-  status            content_status      @default(PUBLIC)
-  file_path         String
+  subject_areas     String[] 
+  uploaded_at       DateTime?            @default(now())
+  status            content_status?     @default(PUBLIC)
+  file_path         String?
   thumbnail         String?
-  reactions         Json                @default("{}") // {like: 0, dislike: 0, views: 0 ,comments: 0}
+  reactions         Json?                @default("{}") // {like: 0, dislike: 0, views: 0 ,comments: 0}
   content_reactions content_reactions[]
   content_views     content_views[]
   comments          comments[]
@@ -169,7 +210,7 @@ model study_pack {
   description   String
   subject       String
   subject_areas String[]
-  thumbnail     String?
+  thumbnail     String
   price         Int
   access_period Json      @default("{}") // {days: 0, months: 0, years: 0}
   uploaded_at   DateTime  @default(now())
@@ -209,15 +250,15 @@ model courses {
   subject       String
   medium        String
   grade         String
-  thumbnail     String?
+  thumbnail     String
   monthly_fee   Int
-  hall_id       String
+  hall_id       String?
   start_date    DateTime @default(now())
   studypack_ids Json[]   @default([]) // [{video_id: [], tute_id: []},{video_id: [], tute_id: "tute_id"}] 
   schedule      Json[]   @default([]) // [{day: "monday", start_time: "10:00", end_time: "12:00"},{day: "monday", start_time: "10:00", end_time: "12:00"}]
 
   tutor                   tutor                     @relation(fields: [tutor_id], references: [tutor_id])
-  hall                    halls                     @relation(fields: [hall_id], references: [id])
+  hall                    halls?                     @relation(fields: [hall_id], references: [id])
   study_pack              study_pack[]
   student_enrolled_course student_enrolled_course[]
   student_attendance      student_attendance[]
@@ -309,6 +350,7 @@ model quiz {
   subject       String
   subject_areas String[]  @default([])
   question_ids  String[]
+  number_of_questions Int
   published     Boolean   @default(false)
 
   course               courses                @relation(fields: [course_id], references: [id])
@@ -316,12 +358,13 @@ model quiz {
 }
 
 model questions {
-  id            String   @id @default(uuid())
-  question      String
-  options       Json[]   @default([]) // [{option: "option 1", is_correct: true},{option: "option 2", is_correct: false}]
-  explanation   String
-  subject       String
-  subject_areas String[] @default([])
+  id             String   @id
+  question       String
+  options        String[] @default([])
+  explanation    String
+  subject        String
+  subject_areas  String[] @default([])
+  correct_answer Int
 }
 
 model student_attempt_quiz {
@@ -330,12 +373,27 @@ model student_attempt_quiz {
   score      Int
   started_at DateTime @default(now())
   ended_at   DateTime
-  answers    Json[]   @default([]) // [{question_id: "question_id", answer: "answer"},{question_id: "question_id", answer: "answer"}]
+  answers    Int[]    @default([]) // [{question_id: "question_id", answer: "answer"},{question_id: "question_id", answer: "answer"}]
 
   student users @relation(fields: [student_id], references: [id])
   quiz    quiz  @relation(fields: [quiz_id], references: [id])
 
   @@id([student_id, quiz_id])
+}
+
+model student_generate_quiz {
+  id              String    @id
+  username        String
+  mcq_ids         String[]
+  user_answers    Int[]     @default([])
+  correct_answers Int[]
+  subject         String
+  quiz_name       String
+  start_time      DateTime?
+  end_time        DateTime?
+  date            DateTime
+  done            Boolean   @default(false)
+  mark            Int       @default(0)
 }
 
 model forum {
