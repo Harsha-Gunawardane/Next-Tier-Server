@@ -1,29 +1,4 @@
-// const uuid = require("uuid").v4;
-
-const bcrypt = require("bcrypt");
-
-const generateRandomPassword = () => {
-  const length = Math.floor(Math.random() * (15 - 8 + 1)) + 8; // Random length between 8 and 15
-  const uppercaseLetters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  const lowercaseLetters = 'abcdefghijklmnopqrstuvwxyz';
-  const digits = '0123456789';
-  const allowedCharacters = uppercaseLetters + lowercaseLetters + digits;
-  // Ensure at least one lowercase letter, one uppercase letter, and one digit
-  let password = '';
-  password += lowercaseLetters.charAt(Math.floor(Math.random() * lowercaseLetters.length));
-  password += uppercaseLetters.charAt(Math.floor(Math.random() * uppercaseLetters.length));
-  password += digits.charAt(Math.floor(Math.random() * digits.length));
-
-  const remainingCharacters = allowedCharacters.length;
-
-  for (let i = 0; i < length - 3; i++) {
-    const randomIndex = Math.floor(Math.random() * remainingCharacters);
-    password += allowedCharacters.charAt(randomIndex);
-  }
-
-  return password;
-};
-
+const uuid = require("uuid").v4;
 
 // import Prisma Client
 const { PrismaClient } = require('@prisma/client');
@@ -51,11 +26,7 @@ const registerStaff = async (req, res) => {
       return res.status(409).json({ error: 'Username already exists' });
     }
 
-    // const pwd = uuid();
-    // Generate a random password
-    const generatedPassword = generateRandomPassword();
-    console.log('Generated Password:', generatedPassword);
-    const hashedPassword = await bcrypt.hash(generatedPassword, 10);
+    const pwd = uuid();
     const joinedTime = new Date();
 
     // Create a new user with role as Staff
@@ -65,7 +36,7 @@ const registerStaff = async (req, res) => {
         first_name: firstName,
         last_name: lastName,
         phone_number:phoneNumber ,
-        password: hashedPassword,
+        password: pwd,
         roles: { User: 2001,  Staff : 1984 },
         join_date: joinedTime,
       },

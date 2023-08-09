@@ -5,6 +5,8 @@ const staffController = require("../../controllers/staffController");
 const profileController =  require('../../controllers/Staff/StaffDetails');
 const userPasswordController = require("../../controllers/user/resetPassword");
 const registerController = require("../../controllers/Staff/registerStaff")
+const getAllStaffController=require("../../controllers/Staff/getAllStaffDetails")
+const allStaffProfileController = require ("../../controllers/Staff/staffProfile")
 
 // verify roles
 const ROLES_LIST = require("../../config/roleList");
@@ -33,5 +35,11 @@ router
 router
     .route("/register")
     .post(verifyRoles(ROLES_LIST.Staff),registerController.registerStaff);
+
+router 
+    .route("/staffList")
+    .get(verifyRoles(ROLES_LIST.Staff),getAllStaffController.getAllStaffDetails)
+
+router.get("/profile/:id", verifyRoles(ROLES_LIST.Staff), allStaffProfileController.staffProfile);
 
 module.exports = router;

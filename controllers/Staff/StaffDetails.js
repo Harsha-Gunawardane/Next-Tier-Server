@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
-const registerFormSchema = require("../../validators/registerFormValidator");
+
 
 // Controller function to fetch staff details by ID
 const getStaffDetails = async (req, res) => {
@@ -21,6 +21,9 @@ const getStaffDetails = async (req, res) => {
         phone_number: true,
         join_date:true,
         profile_picture:true,
+        DOB:true,
+        address:true,
+        NIC:true,
         // Add other relevant fields you want to retrieve
       },
     });

@@ -99,8 +99,8 @@ model staffOnTutor {
 
 //added institue staff
 model instStaff {
-  inst_staff_id    String   @id
-  qualifications   String[] @default([])
+  inst_staff_id   String                       @id @default(uuid())
+  qualifications String[] @default([])
 
   user users @relation(fields: [inst_staff_id], references: [id])
 }
