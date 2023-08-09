@@ -96,12 +96,36 @@ CREATE TABLE "files" (
     "name" TEXT NOT NULL,
     "path" TEXT NOT NULL,
     "uploaded_at" TIMESTAMP(3) NOT NULL,
-    "updated_at" TIMESTAMP(3),
     "mime_type" TEXT NOT NULL,
     "uploaded_by" TEXT NOT NULL,
     "original_name" TEXT NOT NULL,
+    "url" TEXT,
 
     CONSTRAINT "files_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "folders" (
+    "id" TEXT NOT NULL,
+    "user_id" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "tute_ids" TEXT[] DEFAULT ARRAY[]::TEXT[],
+
+    CONSTRAINT "folders_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "tutes" (
+    "id" TEXT NOT NULL,
+    "folder_id" TEXT NOT NULL DEFAULT '',
+    "user_id" TEXT NOT NULL,
+    "content" TEXT,
+    "file_id" TEXT NOT NULL DEFAULT '',
+    "created_at" TIMESTAMP(3) NOT NULL,
+    "name" TEXT NOT NULL,
+    "url" TEXT,
+
+    CONSTRAINT "tutes_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -385,6 +409,12 @@ ALTER TABLE "staffOnTutor" ADD CONSTRAINT "staffOnTutor_tutor_id_fkey" FOREIGN K
 
 -- AddForeignKey
 ALTER TABLE "files" ADD CONSTRAINT "files_uploaded_by_fkey" FOREIGN KEY ("uploaded_by") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "folders" ADD CONSTRAINT "folders_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "tutes" ADD CONSTRAINT "tutes_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "content_reactions" ADD CONSTRAINT "content_reactions_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
