@@ -3,6 +3,8 @@ const path = require("path");
 const htmlToPdf = require("html-pdf");
 const { Storage } = require("@google-cloud/storage");
 const uuid = require("uuid").v4;
+const NodeCache = require("node-cache");
+const cache = new NodeCache({ stdTTL: 3600 });
 
 // import ORM to handle Database
 const { PrismaClient } = require("@prisma/client");
@@ -13,6 +15,11 @@ const storage = new Storage({
   projectId: "eastern-button-394702",
 });
 const MAX_FILE_SIZE_MB = 20;
+
+const {
+  fileBucket,
+  googleCloud,
+} = require("../../middleware/fileUpload/fileUpload");
 
 const generatePdf = async (req, res) => {
   const user = req.user;
@@ -178,16 +185,17 @@ const generatePdf = async (req, res) => {
 const initializeTute = async (req, res) => {
   const user = req.user;
   const { id, name } = req.body;
+  const file = req.file;
 
   console.log(id);
 
-  const foundUser = await prisma.users.findUnique({
-    where: {
-      username: user,
-    },
-  });
-
   try {
+    const foundUser = await prisma.users.findUnique({
+      where: {
+        username: user,
+      },
+    });
+
     const foundTute = await prisma.tutes.findUnique({
       where: {
         id,
@@ -198,6 +206,19 @@ const initializeTute = async (req, res) => {
 
     let date = new Date();
     date = date.toISOString();
+
+    if (file) {
+      const newPdfFileName = `${date}_${uuid()}_${file.originalname.replace(/ /g, '_')}`;
+      console.log(newPdfFileName);
+
+      const blob = fileBucket.file(newPdfFileName);
+      const blobStream = blob.createWriteStream();
+
+      blobStream.on('finish', () => {
+        console.log('success')
+      })
+      blobStream.end(file.buffer);
+    }
 
     const newTute = await prisma.tutes.create({
       data: {
@@ -224,8 +245,8 @@ const getTutesAndFolders = async (req, res) => {
         username: user,
       },
       select: {
-        id: true
-      }
+        id: true,
+      },
     });
 
     const tutes = await prisma.tutes.findMany({
@@ -239,12 +260,12 @@ const getTutesAndFolders = async (req, res) => {
       },
     });
 
-    let pages = []
+    let pages = [];
     tutes.forEach((tute) => {
-      if(!tute.folder_id) {
-        pages.push(tute)
+      if (!tute.folder_id) {
+        pages.push(tute);
       }
-    })
+    });
 
     const folders = await prisma.folders.findMany({
       where: {
@@ -257,10 +278,10 @@ const getTutesAndFolders = async (req, res) => {
       },
     });
 
-    let foldersDic = {}
+    let foldersDic = {};
     folders.forEach((folder) => {
-      foldersDic[folder.id] = folder
-    })
+      foldersDic[folder.id] = folder;
+    });
 
     res.status(200).json({ data: { pages, tutes, folders: foldersDic } });
   } catch (error) {
@@ -280,13 +301,87 @@ const getTuteContent = async (req, res) => {
       select: {
         name: true,
         content: true,
-      }
-    })
+      },
+    });
 
-    res.status(200).json({ tute })
+    res.status(200).json({ tute });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
-}
+};
 
-module.exports = { generatePdf, initializeTute, getTutesAndFolders, getTuteContent };
+const viewPdf = async (req, res) => {
+  const user = req.user;
+  const { id } = req.query;
+
+  try {
+    const tute = await prisma.tutes.findUnique({
+      where: {
+        id,
+      },
+      select: {
+        name: true,
+        gcs_name: true,
+      },
+    });
+
+    console.log(cache);
+    const cachedData = cache.get(id);
+    if (cachedData) {
+      // Serve the cached PDF data
+
+      const response = {
+        name: tute.name,
+        file: cachedData,
+      };
+
+      console.log(response);
+
+      return res.send({ response });
+    } else {
+      console.log(tute);
+      try {
+        const bucketName = "next_tier_file_bucket";
+        const [file] = await storage
+          .bucket(bucketName)
+          .file(tute.gcs_name)
+          .download();
+
+        const zlib = require("zlib");
+        const compressedData = zlib.gzipSync(file);
+
+        const response = {
+          name: tute.name,
+          file: compressedData,
+        };
+
+        const keys = cache.keys();
+        // If cache has reached the limit, remove the oldest item
+        if (keys.length >= 3) {
+          const oldestKey = keys[0];
+          cache.del(oldestKey);
+        }
+
+        // Cache the PDF data for future requests
+        cache.set(id, compressedData);
+        console.log(response);
+
+        res.send({ response });
+      } catch (error) {
+        console.log(error);
+        res.status(404).json({ message: "PDF not found" });
+      }
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+module.exports = {
+  generatePdf,
+  initializeTute,
+  getTutesAndFolders,
+  getTuteContent,
+  viewPdf,
+};
