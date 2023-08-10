@@ -31,6 +31,7 @@ router
   .route("/info")
   .get(
     // verifyRoles(ROLES_LIST.User),
-    userInfoController.getUserInfo)
+    userInfoController.getUserInfo
+  )
 
 module.exports = router;
