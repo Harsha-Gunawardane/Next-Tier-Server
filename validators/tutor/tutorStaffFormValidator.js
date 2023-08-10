@@ -44,5 +44,5 @@ const tutorStaffFormSchema = Joi.object({
   }),
 });
 
-module.exports = staffFormSchema;
+module.exports = tutorStaffFormSchema;
 

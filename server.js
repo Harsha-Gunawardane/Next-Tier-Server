@@ -52,7 +52,7 @@ app.use("/verify-otp", require("./routes/verify-otp"));
 app.use("/forgot-password", require("./routes/reset-password"));
 
 // check authentication of user
-// app.use(verifyJWT);
+app.use(verifyJWT);
 
 app.use("/employees", require("./routes/api/employees"));
 app.use("/user", require("./routes/api/user"));
@@ -73,5 +73,3 @@ app.listen(PORT, () => {
   console.log("listening on port " + PORT);
 });
 
-  console.log("listening on port " + PORT);
-});
