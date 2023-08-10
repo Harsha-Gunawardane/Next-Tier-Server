@@ -1,5 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["selectRelationCount"]
 }
 
 datasource db {
@@ -33,7 +34,8 @@ model users {
   supporting_staff           supporting_staff[]
   content_reactions          content_reactions[]
   content_views              content_views[]
-  comments                   comments[]
+  comments                   comments[]                   @relation("commenter")
+  comments_recieved          comments[]                   @relation("reciever")
   student_purchase_studypack student_purchase_studypack[]
   student_enrolled_course    student_enrolled_course[]
   student_attendance         student_attendance[]
@@ -41,6 +43,8 @@ model users {
   student_attempt_quiz       student_attempt_quiz[]
   posts                      posts[]
   reset_password             reset_password[]
+  comment_reactions          comment_reactions[]
+  content                    content[]
 }
 
 model reset_password {
@@ -111,6 +115,7 @@ model content {
   id                String              @id @default(uuid())
   title             String
   description       String
+  user_id           String
   type              content_type
   subject           String
   subject_areas     String[]
@@ -122,18 +127,20 @@ model content {
   content_reactions content_reactions[]
   content_views     content_views[]
   comments          comments[]
+
+  user users @relation(fields: [user_id], references: [id])
 }
 
 model content_reactions {
   id         String   @id @default(uuid())
   user_id    String
-  content_id String   @default("")
-  post_id    String   @default("")
+  content_id String?  @default("")
+  post_id    String?  @default("")
   islike     Boolean?
 
-  user    users   @relation(fields: [user_id], references: [id])
-  content content @relation(fields: [content_id], references: [id])
-  post    posts   @relation(fields: [post_id], references: [id])
+  user    users    @relation(fields: [user_id], references: [id])
+  content content? @relation(fields: [content_id], references: [id])
+  post    posts?   @relation(fields: [post_id], references: [id])
 }
 
 model content_views {
@@ -148,17 +155,34 @@ model content_views {
 }
 
 model comments {
-  id         String   @id @default(uuid())
-  user_id    String
-  content_id String   @default("")
-  post_id    String   @default("")
-  message    String
-  parent_id  String   @default("")
-  posted_at  DateTime @default(now())
+  id          String   @id @default(uuid())
+  user_id     String
+  content_id  String?  @default("")
+  post_id     String?  @default("")
+  message     String
+  parent_id   String?  @default("")
+  replied_to  String?  @default("")
+  reply_count Int      @default(0)
+  posted_at   DateTime @default(now())
 
-  user    users   @relation(fields: [user_id], references: [id])
-  content content @relation(fields: [content_id], references: [id])
-  post    posts   @relation(fields: [post_id], references: [id])
+  replies           comments[]          @relation("parent")
+  commenter         users               @relation("commenter", fields: [user_id], references: [id])
+  reciever          users?              @relation("reciever", fields: [replied_to], references: [id])
+  content           content?            @relation(fields: [content_id], references: [id])
+  post              posts?              @relation(fields: [post_id], references: [id])
+  parent            comments?           @relation("parent", fields: [parent_id], references: [id])
+  comment_reactions comment_reactions[]
+}
+
+model comment_reactions {
+  user_id    String
+  comment_id String
+  islike     Boolean?
+
+  user    users    @relation(fields: [user_id], references: [id])
+  comment comments @relation(fields: [comment_id], references: [id])
+
+  @@id([user_id, comment_id])
 }
 
 model study_pack {
@@ -362,9 +386,15 @@ model posts {
   attachments attachments[]
 }
 
+enum attachment_type {
+  IMAGE
+  DOCUMENT
+}
+
 model attachments {
-  id        String @id @default(uuid())
+  id        String          @id @default(uuid())
   post_id   String
+  type      attachment_type
   file_path String
 
   post posts @relation(fields: [post_id], references: [id])
