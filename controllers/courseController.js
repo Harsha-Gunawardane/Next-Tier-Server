@@ -50,7 +50,27 @@ const getCourseById = asyncHandler(async (req, res) => {
             });
         }
 
-        res.status(200).json(foundCourse);
+        //structure data to send
+        const course = {
+            id: foundCourse.id,
+            title: foundCourse.title,
+            description: foundCourse.description,
+            tutor: {
+                id: foundCourse.tutor.id,
+                name: `${foundCourse.tutor.user.first_name} ${foundCourse.tutor.user.last_name}`,
+                medum: foundCourse.tutor.medium,
+                school: foundCourse.tutor.school,
+                subjects: foundCourse.tutor.subjects,
+                qualifications: foundCourse.tutor.qualifications,
+            },
+            forum: {
+                id: foundCourse.forum[0].id,
+                title: foundCourse.forum[0].title,
+            },
+        }
+
+
+        res.status(200).json(course);
 
     } catch (error) {
         console.log(error);

@@ -41,6 +41,8 @@ const getForumDetails = asyncHandler(async (req, res) => {
                             },
                         },
                         comments: {
+                            skip: skip,
+                            take: take,
                             include: {
                                 comment_reactions: {
                                     where: {
@@ -50,11 +52,41 @@ const getForumDetails = asyncHandler(async (req, res) => {
                                         islike: true,
                                     },
                                 },
+                                commenter: {
+                                    select: {
+                                        first_name: true,
+                                        last_name: true,
+                                    }
+                                }
                             },
                         },
+                        user: {
+                            select: {
+                                first_name: true,
+                                last_name: true,
+                            }
+                        },
+                        attachments: true,
                     },
-                },
 
+                },
+                course: {
+                    select: {
+                        id: true,
+                        title: true,
+                        tutor: {
+                            select: {
+                                tutor_id: true,
+                                user: {
+                                    select: {
+                                        first_name: true,
+                                        last_name: true,
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
             },
         })
 
@@ -64,7 +96,23 @@ const getForumDetails = asyncHandler(async (req, res) => {
             });
         }
 
-        res.status(200).json(foundForum);
+        //restructure data to send
+        const forum = {
+            id: foundForum.id,
+            title: foundForum.title,
+            course: {
+                id: foundForum.course.id,
+                title: foundForum.course.title,
+                tutor: {
+                    id: foundForum.course.tutor.id,
+                    name: `${foundForum.course.tutor.user.first_name} ${foundForum.course.tutor.user.last_name}`,
+                }
+            },
+            posts: foundForum.posts,
+        }
+
+
+        res.status(200).json(forum);
 
     } catch (error) {
         console.log(error);
@@ -73,6 +121,9 @@ const getForumDetails = asyncHandler(async (req, res) => {
         });
     }
 })
+
+
+
 
 const getPosts = asyncHandler(async (req, res) => {
     const user = req.user;

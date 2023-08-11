@@ -371,19 +371,19 @@ model forum {
 }
 
 model posts {
-  id             String              @id @default(uuid())
-  forum_id       String
-  user_id        String
-  title          String
-  message        String
-  posted_at      DateTime            @default(now())
-  reactions      Json                @default("{}") // {like: 0, dislike: 0, views: 0 ,comments: 0}
-  post_reactions content_reactions[]
+  id        String   @id @default(uuid())
+  forum_id  String
+  user_id   String
+  title     String
+  message   String
+  posted_at DateTime @default(now())
+  reactions Json     @default("{}") // {like: 0, dislike: 0, views: 0 ,comments: 0}
 
-  forum       forum         @relation(fields: [forum_id], references: [id])
-  user        users         @relation(fields: [user_id], references: [id])
-  comments    comments[]
-  attachments attachments[]
+  forum          forum               @relation(fields: [forum_id], references: [id])
+  user           users               @relation(fields: [user_id], references: [id])
+  comments       comments[]
+  attachments    attachments[]
+  post_reactions content_reactions[]
 }
 
 enum attachment_type {

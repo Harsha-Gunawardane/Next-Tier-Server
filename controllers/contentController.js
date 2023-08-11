@@ -28,8 +28,14 @@ const getContentById = asyncHandler(async (req, res) => {
     const skip = req.query.skip ? parseInt(req.query.skip) : 0;
     const take = req.query.take ? parseInt(req.query.take) : 5;
 
+    if (id === undefined || id === null) {
+        return res.status(401).json({
+            message: `Content not found`,
+        });
+    }
+
     try {
-        const foundContent = await prisma.content.findFirst({
+        const foundContent = await prisma.content.findUniqueOrThrow({
             where: {
                 id: id,
             },
@@ -48,7 +54,6 @@ const getContentById = asyncHandler(async (req, res) => {
                             where: {
                                 islike: true,
                             },
-                            // as: 'likes',
                         },
                         // comments: true,
                     }
@@ -153,7 +158,7 @@ const getContentById = asyncHandler(async (req, res) => {
 
 const addReaction = asyncHandler(async (req, res) => {
     const user = req.user;
-    const id = req.params.id;
+    const id = req.params.id ? parseInt(req.params.id) : null;
     const islike = JSON.parse(req.body.islike);
     console.log(req.body);
     console.log(user);
@@ -263,6 +268,14 @@ const getComments = asyncHandler(async (req, res) => {
     const take = req.query.take ? parseInt(req.query.take) : 10;
 
     console.log(req.query);
+    console.log(id);
+
+    if (id === undefined || id === null) {
+        return res.status(401).json({
+            message: `Content not found`,
+        });
+    }
+
 
     try {
         const foundContent = await prisma.content.findFirst({
@@ -326,6 +339,9 @@ const getComments = asyncHandler(async (req, res) => {
             }
 
         })
+
+        console.log("foundContent");
+        console.log(foundContent);
 
         if (!foundContent) {
             return res.status(401).json({

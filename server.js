@@ -61,6 +61,7 @@ app.use(verifyJWT);
 app.use("/employees", require("./routes/api/employees"));
 app.use("/user", require("./routes/api/user"));
 app.use("/notes", require("./routes/api/notes"));
+app.use("/courses", require("./routes/api/courses"));
 app.use("/content", require("./routes/api/content"));
 app.use("/comments", require("./routes/api/comments"));
 app.use("/staff", require("./routes/api/staff"));
