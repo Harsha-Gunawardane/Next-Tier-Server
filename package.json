@@ -9,30 +9,36 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@prisma/client": "^4.16.1",
+    "@google-cloud/storage": "^6.12.0",
+    "@prisma/client": "^5.0.0",
     "@vonage/server-sdk": "^3.6.0",
     "bcrypt": "^5.1.0",
     "body-parser": "^1.20.2",
+    "compression": "^1.7.4",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "date-fns": "^2.30.0",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
     "express-async-handler": "^1.2.0",
-    "express-fileupload": "^1.4.0",
     "express-rate-limit": "^6.7.1",
     "fluent-ffmpeg": "^2.1.2",
+    "html-pdf": "^3.0.1",
+    "html-to-pdf": "^0.1.11",
     "joi": "^17.9.2",
     "jsonwebtoken": "^9.0.0",
     "mocha": "^10.2.0",
     "moment": "^2.29.4",
     "moment-timezone": "^0.5.43",
     "multer": "^1.4.5-lts.1",
+    "node-cache": "^5.1.2",
+    "node-fetch": "^3.3.2",
     "pg": "^8.11.0",
+    "puppeteer": "^21.0.1",
     "uuid": "^9.0.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.22",
-    "prisma": "^4.16.1"
+    "prisma": "^4.16.2"
   }
 }

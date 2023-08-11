@@ -4,7 +4,6 @@ const cors = require("cors");
 const path = require("path");
 const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
-const fileUpload = require("express-fileupload");
 
 const PORT = process.env.PORT || 3500;
 
@@ -13,12 +12,13 @@ const { logger } = require("./middleware/logEvents");
 const errorHandler = require("./middleware/errorHandler");
 const credentials = require("./middleware/credentials");
 const verifyJWT = require("./middleware/verifyJWT");
+const fileErrorHandler = require("./middleware/fileUpload/errorHandler");
 
 // import custom files
 const corsOptions = require("./config/corsOptions");
 
 // custom middleware logger
-app.use(logger);
+// app.use(logger);
 
 // check credentials before cors
 app.use(credentials);
@@ -37,10 +37,6 @@ app.use(cookieParser());
 
 // Middleware to parse JSON
 app.use(bodyParser.json());
-
-// Apply the fileUpload middleware
-app.use(fileUpload({ createParentPath: true }));
-app.use(fileUpload());
 
 //serve static files
 app.use("/", express.static(path.join(__dirname, "/public")));
@@ -64,23 +60,19 @@ app.use("/notes", require("./routes/api/notes"));
 app.use("/courses", require("./routes/api/courses"));
 app.use("/content", require("./routes/api/content"));
 app.use("/comments", require("./routes/api/comments"));
-app.use("/staff", require("./routes/api/staff"));
+app.use("tutor/staffs", require("./routes/api/tutorStaff"));
 app.use("/stu", require("./routes/api/student"));
 app.use("/parent", require("./routes/api/parent"));
+// app.use("/tutor", require("./routes/api/tutor"));
 
 app.all("*", (req, res) => {
-  res.status(404);
-  if (req.accepts("html")) {
-    res.sendFile(path.join(__dirname, "views", "404.html"));
-  } else if (req.accepts("json")) {
-    res.json({ error: "404 Not Found" });
-  } else {
-    res.type("txt").send("404 Not Found");
-  }
+  res.status(404).json({ error: "404 Not Found" });
 });
 
+app.use(fileErrorHandler)
 app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.log("listening on port " + PORT);
 });
+
