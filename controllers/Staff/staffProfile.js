@@ -15,9 +15,21 @@ const staffProfile= async (req, res) => {
         first_name: true,
         last_name: true,
         profile_picture: true,
-        // Include other profile fields you want to return
+        join_date:true,
+        address:true,
+        DOB:true,
+        NIC:true,
+        phone_number:true,
+        username:true,
+        instStaff: {
+          select: {
+            qualifications: true,
+          },
+        },
       },
     });
+
+    console.log("Fetched Staff Profile:", staffProfile);
 
     if (!staffProfile) {
       return res.status(404).json({ error: "Staff profile not found" });

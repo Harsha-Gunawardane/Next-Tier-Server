@@ -7,6 +7,7 @@ const userPasswordController = require("../../controllers/user/resetPassword");
 const registerController = require("../../controllers/Staff/registerStaff")
 const getAllStaffController=require("../../controllers/Staff/getAllStaffDetails")
 const allStaffProfileController = require ("../../controllers/Staff/staffProfile")
+const editDetailsController = require ("../../controllers/Staff/editDetails")
 
 // verify roles
 const ROLES_LIST = require("../../config/roleList");
@@ -31,6 +32,7 @@ router
     .route("/profile")
     .get(verifyRoles(ROLES_LIST.Staff),profileController.getStaffDetails)
     .patch(verifyRoles(ROLES_LIST.Staff), userPasswordController.resetPassword)
+    .put(verifyRoles(ROLES_LIST.Staff), editDetailsController.editDetails)
    
 router
     .route("/register")

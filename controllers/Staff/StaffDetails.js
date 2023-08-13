@@ -24,6 +24,12 @@ const getStaffDetails = async (req, res) => {
         DOB:true,
         address:true,
         NIC:true,
+        username:true,
+        instStaff: {
+          select: {
+            qualifications: true,
+          },
+        },
         // Add other relevant fields you want to retrieve
       },
     });

@@ -17,6 +17,7 @@ const getAllStaffDetails = async (req, res) => {
       first_name: user.first_name, 
       last_name: user.last_name,  
       join_date: user.join_date,
+      profile_picture: user.profile_picture,
     }));
 
     res.status(200).json(staffDetails);

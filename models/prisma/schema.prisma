@@ -10,6 +10,7 @@ datasource db {
 model users {
   id                         String                       @id @default(uuid())
   registration_id            Int?
+  gender                     String?
   username                   String                       @unique
   first_name                 String
   last_name                  String
@@ -99,7 +100,7 @@ model staffOnTutor {
 
 //added institue staff
 model instStaff {
-  inst_staff_id   String                       @id @default(uuid())
+  inst_staff_id  String   @id @default(uuid())
   qualifications String[] @default([])
 
   user users @relation(fields: [inst_staff_id], references: [id])
@@ -295,16 +296,23 @@ enum complaint_type {
 }
 
 model complaints {
-  id        String         @id @default(uuid())
+  id        String          @id @default(uuid())
   user_id   String
   type      complaint_type
   course_id String?
+  action    String?         @default("")
   post_id   String?
   message   String
-  posted_at DateTime       @default(now())
-  resolved  Boolean        @default(false)
+  posted_at DateTime        @default(now())
+  // resolved  Boolean        @default(false)
+  status    ComplaintStatus @default(PENDING)
+  user      users           @relation(fields: [user_id], references: [id])
+}
 
-  user users @relation(fields: [user_id], references: [id])
+enum ComplaintStatus {
+  PENDING
+  RESOLVED
+  IGNORED
 }
 
 model quiz {
