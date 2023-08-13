@@ -8,7 +8,8 @@ const registerController = require("../../controllers/Staff/registerStaff")
 const getAllStaffController=require("../../controllers/Staff/getAllStaffDetails")
 const allStaffProfileController = require ("../../controllers/Staff/staffProfile")
 const editDetailsController = require ("../../controllers/Staff/editDetails")
-
+const complaintsController = require("../../controllers/Staff/complaints")
+// const complaintsManagerController = require("../../controllers/Staff/complaintsManagement")
 // verify roles
 const ROLES_LIST = require("../../config/roleList");
 const verifyRoles = require("../../middleware/verifyRoles");
@@ -43,5 +44,16 @@ router
     .get(verifyRoles(ROLES_LIST.Staff),getAllStaffController.getAllStaffDetails)
 
 router.get("/profile/:id", verifyRoles(ROLES_LIST.Staff), allStaffProfileController.staffProfile);
+
+router 
+    .route("/complaints")
+    .get(verifyRoles(ROLES_LIST.Staff),complaintsController.complaints)
+    
+
+router.route("/complaints/edit/:id")
+  .put(verifyRoles(ROLES_LIST.Staff), complaintsController.editComplaint);
+
+router.route("/complaints/ignore/:id")
+  .put(verifyRoles(ROLES_LIST.Staff), complaintsController.ignoreComplaint);
 
 module.exports = router;
