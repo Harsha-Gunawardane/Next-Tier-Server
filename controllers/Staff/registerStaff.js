@@ -20,9 +20,11 @@ const registerStaff = async (req, res) => {
       console.log(error);
       return res.status(400).json({ error: error.details[0].message });
     }
-    const { firstName, lastName, username, phoneNumber} = req.body;
+    const { firstName, lastName, username, phoneNumber,DOB} = req.body;
     console.log(req.body);
 
+    let date = new Date();
+    date = date.toISOString();
     // Check for duplicate username
     const existingUser = await prisma.users.findUnique({
       where: {
@@ -46,6 +48,7 @@ const registerStaff = async (req, res) => {
         last_name: lastName,
         phone_number:phoneNumber ,
         password: pwd,
+        DOB: new Date(DOB),
         roles: { User: 2001,  Staff : 1984 },
         join_date: joinedTime,
       },

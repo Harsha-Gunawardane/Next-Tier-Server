@@ -28,7 +28,19 @@ const registerStaffSchema = Joi.object({
     'strint.empty': 'Phone number is required',
     'string.pattern.base': 'Enter valid phone number in Sri Lanka',
     'any.required': 'Phone number is required',
-  })
+  }),
+  DOB: Joi.date()
+  .iso()
+  .max(new Date().toISOString().split('T')[0]) // Maximum date is today
+  .min(new Date(new Date().getFullYear() - 60, 0, 1).toISOString().split('T')[0]) // Minimum date is 60 years ago
+  .required()
+  .messages({
+    'date.base': 'Date of Birth should be a valid date',
+    'date.empty': 'Date of Birth is required',
+    'date.max': 'Staff must be above 18 years old',
+    'date.min': 'Staff must be below 60 years old',
+    'any.required': 'Date of Birth is required',
+  }),
 });
 
 module.exports = registerStaffSchema;
