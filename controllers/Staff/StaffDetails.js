@@ -4,7 +4,7 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 
-// Controller function to fetch staff details by ID
+// Controller function to fetch staff details by ID(My Profile)
 const getStaffDetails = async (req, res) => {
   try {
    const user=req.user

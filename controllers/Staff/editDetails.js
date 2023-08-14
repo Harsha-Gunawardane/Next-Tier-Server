@@ -4,7 +4,7 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 const moment = require("moment"); // Import Moment.js library
 
-// PUT /staff/profile
+// edit My profile
 const editDetails = async (req, res) => {
   try {
     const {

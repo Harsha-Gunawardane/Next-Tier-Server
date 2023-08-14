@@ -261,9 +261,11 @@ model student_attendance {
 }
 
 model halls {
-  id       String @id @default(uuid())
-  name     String
-  capacity Int
+  id           String @id @default(uuid())
+  name         String
+  capacity     Int
+  hall_profile String
+  facilities   String
 
   schedule      Json[]          @default([]) // [{day: "monday", start_time: "10:00", end_time: "12:00"},{day: "monday", start_time: "10:00", end_time: "12:00"}]
   courses       courses[]

@@ -56,6 +56,17 @@ const registerStaff = async (req, res) => {
 
     console.log('New staff member registered:', newStaffMember);
 
+    // Add teacher to DB
+    const addedStaff = await prisma.instStaff.create({
+      data: {
+        user: {
+          connect: { id: newStaffMember.id },
+        },
+      },
+    });
+    //send a SMS
+    console.log(addedStaff);
+
     // Send success response
     res.status(201).json({ success: 'New staff member registered' });
   } catch (error) {
