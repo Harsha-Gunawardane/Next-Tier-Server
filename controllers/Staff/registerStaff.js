@@ -4,6 +4,8 @@ const uuid = require("uuid").v4;
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
+const registerStaffSchema = require("../../validators/Staff/registerStaffValidator");
+
 /**
  * Handles the registration of a new institute staff.
  * @param {Object} req - The request object.
@@ -12,6 +14,12 @@ const prisma = new PrismaClient();
  */
 const registerStaff = async (req, res) => {
   try {
+    const { error, value } = registerStaffSchema.validate(req.body);
+
+    if (error) {
+      console.log(error);
+      return res.status(400).json({ error: error.details[0].message });
+    }
     const { firstName, lastName, username, phoneNumber} = req.body;
     console.log(req.body);
 
@@ -28,6 +36,7 @@ const registerStaff = async (req, res) => {
 
     const pwd = uuid();
     const joinedTime = new Date();
+  
 
     // Create a new user with role as Staff
     const newStaffMember = await prisma.users.create({
