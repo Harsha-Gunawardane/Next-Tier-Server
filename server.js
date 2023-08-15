@@ -61,9 +61,9 @@ app.use("/tutor", require("./routes/api/tutorStaff"));
 app.use("/tutor", require("./routes/api/tutorQuiz"));
 app.use("/tutor", require("./routes/api/tutorMcq"));
 app.use("/tutor", require("./routes/api/tutorMcqCategory"));
+app.use("/tutor", require("./routes/api/tutor"));
 app.use("/stu", require("./routes/api/student"));
 app.use("/parent", require("./routes/api/parent"));
-app.use("/tutor", require("./routes/api/tutor"));
 
 app.all("*", (req, res) => {
   res.status(404).json({ error: "404 Not Found" });
