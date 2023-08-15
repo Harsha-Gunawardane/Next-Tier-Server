@@ -21,13 +21,10 @@ router
 
 router
   .route("/info")
-<<<<<<< HEAD
-  .patch(verifyRoles(ROLES_LIST.User), userPasswordController.resetPassword);
-=======
+  .patch(verifyRoles(ROLES_LIST.User), userPasswordController.resetPassword)
   .get(
     // verifyRoles(ROLES_LIST.User),
     userInfoController.getUserInfo
   )
->>>>>>> rahal
 
 module.exports = router;
