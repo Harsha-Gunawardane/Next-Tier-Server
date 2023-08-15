@@ -30,7 +30,7 @@ const getAllStudyPacks = async (req, res) => {
 
 const createStudyPack = async (req, res) => {
   const user = req.user;
-  const {course_id,title, description, subject, price,thumbnail,subject_areas,access_period} = req.body;
+  const {course_id,title, description, subject, price,thumbnail,subject_areas,access_period,type} = req.body;
 
   try {
     const foundUser = await prisma.users.findUnique({
@@ -53,7 +53,9 @@ const createStudyPack = async (req, res) => {
         price:parseInt(price),
         thumbnail,
         subject_areas,
+        type,
         access_period,
+        
         
       },
     });
@@ -385,11 +387,13 @@ const removeIds = async (req, res) => {
       if (key === partToDelete) {
         const updatedTuteIds = content[key].tute_id.filter(id => id !== contentIdToRemove);
         const updatedVideoIds = content[key].video_id.filter(id => id !== contentIdToRemove);
+        const updatedQuizIds = content[key].quiz_id.filter(id => id !== contentIdToRemove);
 
         return {
           [key]: {
             tute_id: updatedTuteIds,
             video_id: updatedVideoIds,
+            quiz_id: updatedQuizIds,
           },
         };
       }

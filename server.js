@@ -38,7 +38,7 @@ app.use(cookieParser());
 // Middleware to parse JSON
 app.use(bodyParser.json());
 
-//serve static files
+// serve static files
 app.use("/", express.static(path.join(__dirname, "/public")));
 
 // routes
@@ -63,6 +63,7 @@ app.use("/tutor/mcqs", require("./routes/api/tutorMcq"));
 app.use("/tutor/categories", require("./routes/api/tutorMcqCategory"));
 app.use("/stu", require("./routes/api/student"));
 app.use("/parent", require("./routes/api/parent"));
+app.use("/tutor", require("./routes/api/tutor"));
 
 app.all("*", (req, res) => {
   res.status(404).json({ error: "404 Not Found" });

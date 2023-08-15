@@ -29,6 +29,7 @@ model users {
   roles                      Json
   otp                        String?
   otp_expire_at              DateTime?
+  active                     Boolean                      @default(true)
   students                   students[]
   tutor                      tutor[]
   supporting_staff           supporting_staff[]
@@ -43,6 +44,10 @@ model users {
   posts                      posts[]
   reset_password             reset_password[]
   files                      files[]
+  folders                    folders[]
+  tutes                      tutes[]
+  admin                      admin[]
+  institute_staff            institute_staff[]
 }
 
 model reset_password {
@@ -98,17 +103,59 @@ model staffOnTutor {
   @@id([staff_id, tutor_id])
 }
 
+model admin {
+  admin_id       String   @id
+  emergency_No   String
+  admin_role     String
+  qualifications String[]
+
+  user users @relation(fields: [admin_id], references: [id])
+}
+
+model institute_staff {
+  staff_id       String   @id
+  emergency_No   String?
+  qualifications String[] @default([])
+
+  user users @relation(fields: [staff_id], references: [id])
+}
+
 model files {
-  id            String    @id @default(uuid())
+  id            String   @id @default(uuid())
   name          String
   path          String
   uploaded_at   DateTime
-  updated_at    DateTime?
   mime_type     String
   uploaded_by   String
   original_name String
+  url           String?
 
   user users @relation(fields: [uploaded_by], references: [id])
+}
+
+model folders {
+  id       String   @id
+  user_id  String
+  name     String
+  tute_ids String[] @default([])
+
+  user users @relation(fields: [user_id], references: [id])
+}
+
+model tutes {
+  id         String   @id
+  folder_id  String   @default("")
+  user_id    String
+  content    String?
+  file_id    String   @default("")
+  created_at DateTime
+  name       String
+  gcs_name   String?
+  url        String?
+  local_url  String?
+  isUpload   Boolean  @default(false)
+
+  user users @relation(fields: [user_id], references: [id])
 }
 
 enum content_type {
@@ -176,6 +223,12 @@ model comments {
   post    posts   @relation(fields: [post_id], references: [id])
 }
 
+
+enum study_pack_type {
+  NORMAL
+  PAID
+}
+
 model study_pack {
   id            String    @id @default(uuid())
   tutor_id      String
@@ -184,7 +237,11 @@ model study_pack {
   description   String
   subject       String
   subject_areas String[]
-  thumbnail     String
+  thumbnail     String?
+  type          study_pack_type
+ 
+  
+
   price         Int
   access_period Json      @default("{}") // {days: 0, months: 0, years: 0}
   uploaded_at   DateTime  @default(now())
@@ -216,6 +273,14 @@ model student_purchase_studypack {
   @@id([student_id, pack_id])
 }
 
+
+
+enum course_type {
+  NORMAL
+  PAID
+}
+
+
 model courses {
   id            String   @id @default(uuid())
   tutor_id      String
@@ -227,6 +292,7 @@ model courses {
   thumbnail     String
   monthly_fee   Int
   hall_id       String?
+  content_ids   Json[]   @default([]) 
   start_date    DateTime @default(now())
   studypack_ids Json[]   @default([]) // [{video_id: [], tute_id: []},{video_id: [], tute_id: "tute_id"}] 
   schedule      Json[]   @default([]) // [{day: "monday", start_time: "10:00", end_time: "12:00"},{day: "monday", start_time: "10:00", end_time: "12:00"}]
