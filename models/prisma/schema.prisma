@@ -83,6 +83,7 @@ model tutor {
   school         String?
   subjects       String[]
   qualifications String[] @default([])
+  email          String
 
   user         users          @relation(fields: [tutor_id], references: [id])
   staffOnTutor staffOnTutor[]
