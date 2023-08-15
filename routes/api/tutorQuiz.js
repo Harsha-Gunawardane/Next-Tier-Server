@@ -8,13 +8,13 @@ const ROLES_LIST = require("../../config/roleList");
 const verifyRoles = require("../../middleware/verifyRoles");
 
 router
-  .route("/quizzes")
+  .route("/")
   .get(quizController.getAllQuizzes)
   // .post(verifyRoles(ROLES_LIST.Tutor), quizController.createNewQuiz);
   .post(quizController.createNewQuiz);
 
 router
-  .route("/quizzes/:id")
+  .route("/:id")
   .get(quizController.getQuiz)
   // .put(verifyRoles(ROLES_LIST.Tutor), quizController.updateQuiz)
   .put(quizController.updateQuiz)
@@ -22,7 +22,7 @@ router
   .delete(quizController.deleteQuiz);
 
 router
-  .route("/quizzes/addMcq/:id")
+  .route("/addMcq/:id")
   // .post(verifyRoles(ROLES_LIST.Tutor), quizController.mcqAddToQuiz);
   .post(quizController.mcqAddToQuiz);
 
