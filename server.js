@@ -26,6 +26,7 @@ app.use(credentials);
 // Cross Origin Resource Sharing
 app.use(cors(corsOptions));
 
+app.use("/video", require("./routes/video"));
 // built-in middleware to handle urlencoded form data
 app.use(express.urlencoded({ extended: false }));
 
@@ -57,11 +58,10 @@ app.use(verifyJWT);
 app.use("/employees", require("./routes/api/employees"));
 app.use("/user", require("./routes/api/user"));
 app.use("/notes", require("./routes/api/notes"));
-app.use("/tutor", require("./routes/api/tutorStaff"));
-app.use("/tutor", require("./routes/api/tutorQuiz"));
-app.use("/tutor", require("./routes/api/tutorMcq"));
-app.use("/tutor", require("./routes/api/tutorMcqCategory"));
-app.use("/tutor", require("./routes/api/tutor"));
+app.use("/courses", require("./routes/api/courses"));
+app.use("/content", require("./routes/api/content"));
+app.use("/comments", require("./routes/api/comments"));
+app.use("tutor/staffs", require("./routes/api/tutorStaff"));
 app.use("/stu", require("./routes/api/student"));
 app.use("/parent", require("./routes/api/parent"));
 

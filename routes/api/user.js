@@ -11,6 +11,9 @@ const { upload } = require("../../middleware/fileUpload/fileUpload");
 // import controllers
 const userPasswordController = require("../../controllers/user/resetPassword");
 const userProfileController = require("../../controllers/user/profilePicture");
+const userInfoController = require("../../controllers/user/userInfo");
+const verifyRoles = require("../../middleware/verifyRoles");
+const ROLES_LIST = require("../../config/roleList");
 
 router
   .route("/profile-image")
@@ -18,6 +21,13 @@ router
 
 router
   .route("/info")
+<<<<<<< HEAD
   .patch(verifyRoles(ROLES_LIST.User), userPasswordController.resetPassword);
+=======
+  .get(
+    // verifyRoles(ROLES_LIST.User),
+    userInfoController.getUserInfo
+  )
+>>>>>>> rahal
 
 module.exports = router;

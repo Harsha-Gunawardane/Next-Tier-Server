@@ -1,5 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["selectRelationCount"]
 }
 
 datasource db {
@@ -35,7 +36,8 @@ model users {
   supporting_staff           supporting_staff[]
   content_reactions          content_reactions[]
   content_views              content_views[]
-  comments                   comments[]
+  comments                   comments[]                   @relation("commenter")
+  comments_recieved          comments[]                   @relation("reciever")
   student_purchase_studypack student_purchase_studypack[]
   student_enrolled_course    student_enrolled_course[]
   student_attendance         student_attendance[]
@@ -48,6 +50,9 @@ model users {
   tutes                      tutes[]
   admin                      admin[]
   institute_staff            institute_staff[]
+  content                    content[]
+  comment_reactions          comment_reactions[]
+  post_reactions             post_reactions[]
 }
 
 model reset_password {
@@ -173,6 +178,7 @@ model content {
   id                String              @id @default(uuid())
   title             String
   description       String
+  user_id           String
   type              content_type?
   subject           String
   subject_areas     String[]
@@ -184,18 +190,18 @@ model content {
   content_reactions content_reactions[]
   content_views     content_views[]
   comments          comments[]
+
+  user users @relation(fields: [user_id], references: [id])
 }
 
 model content_reactions {
   id         String   @id @default(uuid())
   user_id    String
   content_id String   @default("")
-  post_id    String   @default("")
   islike     Boolean?
 
   user    users   @relation(fields: [user_id], references: [id])
   content content @relation(fields: [content_id], references: [id])
-  post    posts   @relation(fields: [post_id], references: [id])
 }
 
 model content_views {
@@ -210,19 +216,35 @@ model content_views {
 }
 
 model comments {
-  id         String   @id @default(uuid())
-  user_id    String
-  content_id String   @default("")
-  post_id    String   @default("")
-  message    String
-  parent_id  String   @default("")
-  posted_at  DateTime @default(now())
+  id          String   @id @default(uuid())
+  user_id     String
+  content_id  String?  @default("")
+  post_id     String?  @default("")
+  message     String
+  parent_id   String?  @default("")
+  replied_to  String?  @default("")
+  reply_count Int      @default(0)
+  posted_at   DateTime @default(now())
 
-  user    users   @relation(fields: [user_id], references: [id])
-  content content @relation(fields: [content_id], references: [id])
-  post    posts   @relation(fields: [post_id], references: [id])
+  replies           comments[]          @relation("parent")
+  commenter         users               @relation("commenter", fields: [user_id], references: [id])
+  reciever          users?              @relation("reciever", fields: [replied_to], references: [id])
+  content           content?            @relation(fields: [content_id], references: [id])
+  post              posts?              @relation(fields: [post_id], references: [id])
+  parent            comments?           @relation("parent", fields: [parent_id], references: [id])
+  comment_reactions comment_reactions[]
 }
 
+model comment_reactions {
+  user_id    String
+  comment_id String
+  islike     Boolean?
+
+  user    users    @relation(fields: [user_id], references: [id])
+  comment comments @relation(fields: [comment_id], references: [id])
+
+  @@id([user_id, comment_id])
+}
 
 enum study_pack_type {
   NORMAL
@@ -230,17 +252,15 @@ enum study_pack_type {
 }
 
 model study_pack {
-  id            String    @id @default(uuid())
+  id            String          @id @default(uuid())
   tutor_id      String
-  course_id     String    @default("")
+  course_id     String          @default("")
   title         String
   description   String
   subject       String
   subject_areas String[]
   thumbnail     String?
   type          study_pack_type
- 
-  
 
   price         Int
   access_period Json      @default("{}") // {days: 0, months: 0, years: 0}
@@ -273,13 +293,10 @@ model student_purchase_studypack {
   @@id([student_id, pack_id])
 }
 
-
-
 enum course_type {
   NORMAL
   PAID
 }
-
 
 model courses {
   id            String   @id @default(uuid())
@@ -292,7 +309,7 @@ model courses {
   thumbnail     String
   monthly_fee   Int
   hall_id       String?
-  content_ids   Json[]   @default([]) 
+  content_ids   Json[]   @default([])
   start_date    DateTime @default(now())
   studypack_ids Json[]   @default([]) // [{video_id: [], tute_id: []},{video_id: [], tute_id: "tute_id"}] 
   schedule      Json[]   @default([]) // [{day: "monday", start_time: "10:00", end_time: "12:00"},{day: "monday", start_time: "10:00", end_time: "12:00"}]
@@ -454,24 +471,40 @@ model forum {
 }
 
 model posts {
-  id             String              @id @default(uuid())
-  forum_id       String
-  user_id        String
-  title          String
-  message        String
-  posted_at      DateTime            @default(now())
-  reactions      Json                @default("{}") // {like: 0, dislike: 0, views: 0 ,comments: 0}
-  post_reactions content_reactions[]
+  id        String   @id @default(uuid())
+  forum_id  String
+  user_id   String
+  title     String
+  message   String
+  posted_at DateTime @default(now())
+  reactions Json     @default("{}") // {like: 0, dislike: 0, views: 0 ,comments: 0}
 
-  forum       forum         @relation(fields: [forum_id], references: [id])
-  user        users         @relation(fields: [user_id], references: [id])
-  comments    comments[]
-  attachments attachments[]
+  forum          forum            @relation(fields: [forum_id], references: [id])
+  user           users            @relation(fields: [user_id], references: [id])
+  comments       comments[]
+  attachments    attachments[]
+  post_reactions post_reactions[]
+}
+
+model post_reactions {
+  id      String   @id @default(uuid())
+  user_id String
+  post_id String   @default("")
+  islike  Boolean?
+
+  user users @relation(fields: [user_id], references: [id])
+  post posts @relation(fields: [post_id], references: [id])
+}
+
+enum attachment_type {
+  IMAGE
+  DOCUMENT
 }
 
 model attachments {
-  id        String @id @default(uuid())
+  id        String          @id @default(uuid())
   post_id   String
+  type      attachment_type
   file_path String
 
   post posts @relation(fields: [post_id], references: [id])

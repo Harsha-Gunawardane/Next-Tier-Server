@@ -6,13 +6,13 @@ const FILE_TYPE = require('../../config/allowedFileTypes')
 
 const googleCloud = new Storage({
   keyFilename: path.join(__dirname, "../../gcsKeyFile.json"),
-  projectId: "eastern-button-394702"
+  projectId: "fluted-clock-395620 "
 });
 
-const fileBucket = googleCloud.bucket('next_tier_file_bucket')
+const fileBucket = googleCloud.bucket('next_tier_bucket')
 
 const VerifyExt = (req, file, callback) => {
-  console.log('req', req)
+  // console.log('req', req)
   if (FILE_TYPE.includes(file.mimetype.split("/")[0])) {
     callback(null, true);
   } else {
@@ -24,7 +24,13 @@ const VerifyExt = (req, file, callback) => {
 const upload = multer({
   storage: multer.memoryStorage(),
   fileFilter: VerifyExt,
-  limits: { fileSize : 5 * 1024 * 1024},
+  limits: { fileSize: 10 * 1024 * 1024 },
 });
 
-module.exports = {upload, fileBucket, googleCloud};
+const multi_upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 10 * 1024 * 1024 },
+})
+
+
+module.exports = { upload, multi_upload, fileBucket, googleCloud };

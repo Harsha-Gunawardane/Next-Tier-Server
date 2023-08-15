@@ -36,8 +36,12 @@ const handleLogin = async (req, res) => {
     if (!foundUser) return res.sendStatus(401); // unauhorized user
 
     // check account is verified ot not
+<<<<<<< HEAD
     if (!foundUser.verified)
       return res.status(410).json({ message: "User not verified" }); // 410 is custom error code for not verified user
+=======
+    if (!foundUser.verified) return res.status(410).json({ message: 'User not verified' }); // 410 is custom error code for not verified user
+>>>>>>> rahal
 
     // match password
     const matchPassword = await bcrypt.compare(pwd, foundUser.password);
@@ -53,7 +57,7 @@ const handleLogin = async (req, res) => {
           },
         },
         process.env.ACCESS_TOKEN_SECRET_KEY,
-        { expiresIn: "12000s" }
+        { expiresIn: "5d" }
       );
       const refreshToken = jwt.sign(
         { username: foundUser.username },
