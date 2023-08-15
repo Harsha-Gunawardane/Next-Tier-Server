@@ -175,6 +175,12 @@ model comments {
   post    posts   @relation(fields: [post_id], references: [id])
 }
 
+
+enum study_pack_type {
+  NORMAL
+  PAID
+}
+
 model study_pack {
   id            String    @id @default(uuid())
   tutor_id      String
@@ -183,7 +189,11 @@ model study_pack {
   description   String
   subject       String
   subject_areas String[]
-  thumbnail     String
+  thumbnail     String?
+  type          study_pack_type
+ 
+  
+
   price         Int
   access_period Json      @default("{}") // {days: 0, months: 0, years: 0}
   uploaded_at   DateTime  @default(now())
@@ -215,6 +225,14 @@ model student_purchase_studypack {
   @@id([student_id, pack_id])
 }
 
+
+
+enum course_type {
+  NORMAL
+  PAID
+}
+
+
 model courses {
   id            String   @id @default(uuid())
   tutor_id      String
@@ -226,6 +244,7 @@ model courses {
   thumbnail     String
   monthly_fee   Int
   hall_id       String?
+  content_ids   Json[]   @default([]) 
   start_date    DateTime @default(now())
   studypack_ids Json[]   @default([]) // [{video_id: [], tute_id: []},{video_id: [], tute_id: "tute_id"}] 
   schedule      Json[]   @default([]) // [{day: "monday", start_time: "10:00", end_time: "12:00"},{day: "monday", start_time: "10:00", end_time: "12:00"}]

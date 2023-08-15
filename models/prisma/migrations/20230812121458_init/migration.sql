@@ -109,14 +109,14 @@ CREATE TABLE "content" (
     "id" TEXT NOT NULL,
     "title" TEXT NOT NULL,
     "description" TEXT NOT NULL,
-    "type" "content_type" NOT NULL,
+    "type" "content_type",
     "subject" TEXT NOT NULL,
     "subject_areas" TEXT[],
-    "uploaded_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "status" "content_status" NOT NULL DEFAULT 'PUBLIC',
-    "file_path" TEXT NOT NULL,
+    "uploaded_at" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
+    "status" "content_status" DEFAULT 'PUBLIC',
+    "file_path" TEXT,
     "thumbnail" TEXT,
-    "reactions" JSONB NOT NULL DEFAULT '{}',
+    "reactions" JSONB DEFAULT '{}',
 
     CONSTRAINT "content_pkey" PRIMARY KEY ("id")
 );
@@ -163,7 +163,7 @@ CREATE TABLE "study_pack" (
     "description" TEXT NOT NULL,
     "subject" TEXT NOT NULL,
     "subject_areas" TEXT[],
-    "thumbnail" TEXT,
+    "thumbnail" TEXT NOT NULL,
     "price" INTEGER NOT NULL,
     "access_period" JSONB NOT NULL DEFAULT '{}',
     "uploaded_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -195,9 +195,9 @@ CREATE TABLE "courses" (
     "subject" TEXT NOT NULL,
     "medium" TEXT NOT NULL,
     "grade" TEXT NOT NULL,
-    "thumbnail" TEXT,
+    "thumbnail" TEXT NOT NULL,
     "monthly_fee" INTEGER NOT NULL,
-    "hall_id" TEXT NOT NULL,
+    "hall_id" TEXT,
     "start_date" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "studypack_ids" JSONB[] DEFAULT ARRAY[]::JSONB[],
     "schedule" JSONB[] DEFAULT ARRAY[]::JSONB[],
@@ -426,7 +426,7 @@ ALTER TABLE "student_purchase_studypack" ADD CONSTRAINT "student_purchase_studyp
 ALTER TABLE "courses" ADD CONSTRAINT "courses_tutor_id_fkey" FOREIGN KEY ("tutor_id") REFERENCES "tutor"("tutor_id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "courses" ADD CONSTRAINT "courses_hall_id_fkey" FOREIGN KEY ("hall_id") REFERENCES "halls"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "courses" ADD CONSTRAINT "courses_hall_id_fkey" FOREIGN KEY ("hall_id") REFERENCES "halls"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "student_enrolled_course" ADD CONSTRAINT "student_enrolled_course_student_id_fkey" FOREIGN KEY ("student_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

@@ -20,13 +20,13 @@ const createContent = async (req, res) => {
     const newContent = await prisma.content.create({
       data: {
 
-        title: "Teminology",
-        description: "A comprehensive study of electricity and magnetism.",
+        title: "Thermodynamics 2.0",
+        description: "The study of the relationships between heat, work, temperature, and energy transfer",
         type: "VIDEO",
         subject: "Physics",
         subject_areas: ["Electricity", "Magnetism"],
         status: "PUBLIC",
-        thumbnail: "https://th.bing.com/th/id/OIP.zdFVJGSqbP-KSSS7AtxOugHaEK?pid=ImgDet&rs=1",
+        thumbnail: "https://www.heatgeek.com/wp-content/uploads/2020/08/Thermal-Dynamics.png",
   
       },
     });
