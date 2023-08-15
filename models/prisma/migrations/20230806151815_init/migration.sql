@@ -76,7 +76,6 @@ CREATE TABLE "tutor" (
 -- CreateTable
 CREATE TABLE "supporting_staff" (
     "staff_id" TEXT NOT NULL,
-    "staff_title" TEXT NOT NULL,
 
     CONSTRAINT "supporting_staff_pkey" PRIMARY KEY ("staff_id")
 );
@@ -92,6 +91,7 @@ CREATE TABLE "staffOnTutor" (
 );
 
 -- CreateTable
+<<<<<<<< HEAD:models/prisma/migrations/20230812121458_init/migration.sql
 CREATE TABLE "files" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
@@ -103,6 +103,14 @@ CREATE TABLE "files" (
     "original_name" TEXT NOT NULL,
 
     CONSTRAINT "files_pkey" PRIMARY KEY ("id")
+========
+CREATE TABLE "instStaff" (
+    "inst_staff_id" TEXT NOT NULL,
+    "qualifications" TEXT[] DEFAULT ARRAY[]::TEXT[],
+    "previous_job_exp" TEXT[] DEFAULT ARRAY[]::TEXT[],
+
+    CONSTRAINT "instStaff_pkey" PRIMARY KEY ("inst_staff_id")
+>>>>>>>> munsira:models/prisma/migrations/20230806151815_init/migration.sql
 );
 
 -- CreateTable
@@ -274,7 +282,6 @@ CREATE TABLE "quiz" (
     "subject" TEXT NOT NULL,
     "subject_areas" TEXT[] DEFAULT ARRAY[]::TEXT[],
     "question_ids" TEXT[],
-    "number_of_questions" INTEGER NOT NULL,
     "published" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "quiz_pkey" PRIMARY KEY ("id")
@@ -386,7 +393,11 @@ ALTER TABLE "staffOnTutor" ADD CONSTRAINT "staffOnTutor_staff_id_fkey" FOREIGN K
 ALTER TABLE "staffOnTutor" ADD CONSTRAINT "staffOnTutor_tutor_id_fkey" FOREIGN KEY ("tutor_id") REFERENCES "tutor"("tutor_id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+<<<<<<<< HEAD:models/prisma/migrations/20230812121458_init/migration.sql
 ALTER TABLE "files" ADD CONSTRAINT "files_uploaded_by_fkey" FOREIGN KEY ("uploaded_by") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+========
+ALTER TABLE "instStaff" ADD CONSTRAINT "instStaff_inst_staff_id_fkey" FOREIGN KEY ("inst_staff_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+>>>>>>>> munsira:models/prisma/migrations/20230806151815_init/migration.sql
 
 -- AddForeignKey
 ALTER TABLE "content_reactions" ADD CONSTRAINT "content_reactions_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

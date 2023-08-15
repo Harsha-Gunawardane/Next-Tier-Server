@@ -10,6 +10,7 @@ datasource db {
 model users {
   id                         String                       @id @default(uuid())
   registration_id            Int?
+  gender                     String?
   username                   String                       @unique
   first_name                 String
   last_name                  String
@@ -43,6 +44,10 @@ model users {
   student_attempt_quiz       student_attempt_quiz[]
   posts                      posts[]
   reset_password             reset_password[]
+  files                      files[]
+  folders                    folders[]
+  tutes                      tutes[]
+  admin                      admin[]
   instStaff                  instStaff[]
 }
 
@@ -100,11 +105,58 @@ model staffOnTutor {
   @@id([staff_id, tutor_id])
 }
 
+model admin {
+  admin_id       String   @id
+  emergency_No   String
+  admin_role     String
+  qualifications String[]
+
+  user users @relation(fields: [admin_id], references: [id])
+}
+
 model instStaff {
   inst_staff_id  String   @id @default(uuid())
   qualifications String[] @default([])
 
   user users @relation(fields: [inst_staff_id], references: [id])
+}
+
+model files {
+  id            String   @id @default(uuid())
+  name          String
+  path          String
+  uploaded_at   DateTime
+  mime_type     String
+  uploaded_by   String
+  original_name String
+  url           String?
+
+  user users @relation(fields: [uploaded_by], references: [id])
+}
+
+model folders {
+  id       String   @id
+  user_id  String
+  name     String
+  tute_ids String[] @default([])
+
+  user users @relation(fields: [user_id], references: [id])
+}
+
+model tutes {
+  id         String   @id
+  folder_id  String   @default("")
+  user_id    String
+  content    String?
+  file_id    String   @default("")
+  created_at DateTime
+  name       String
+  gcs_name   String?
+  url        String?
+  local_url  String?
+  isUpload   Boolean  @default(false)
+
+  user users @relation(fields: [user_id], references: [id])
 }
 
 enum content_type {
@@ -172,24 +224,21 @@ model comments {
   post    posts   @relation(fields: [post_id], references: [id])
 }
 
-
 enum study_pack_type {
   NORMAL
   PAID
 }
 
 model study_pack {
-  id            String    @id @default(uuid())
+  id            String          @id @default(uuid())
   tutor_id      String
-  course_id     String    @default("")
+  course_id     String          @default("")
   title         String
   description   String
   subject       String
   subject_areas String[]
   thumbnail     String?
   type          study_pack_type
- 
-  
 
   price         Int
   access_period Json      @default("{}") // {days: 0, months: 0, years: 0}
@@ -222,13 +271,10 @@ model student_purchase_studypack {
   @@id([student_id, pack_id])
 }
 
-
-
 enum course_type {
   NORMAL
   PAID
 }
-
 
 model courses {
   id            String   @id @default(uuid())
@@ -241,7 +287,7 @@ model courses {
   thumbnail     String
   monthly_fee   Int
   hall_id       String?
-  content_ids   Json[]   @default([]) 
+  content_ids   Json[]   @default([])
   start_date    DateTime @default(now())
   studypack_ids Json[]   @default([]) // [{video_id: [], tute_id: []},{video_id: [], tute_id: "tute_id"}] 
   schedule      Json[]   @default([]) // [{day: "monday", start_time: "10:00", end_time: "12:00"},{day: "monday", start_time: "10:00", end_time: "12:00"}]

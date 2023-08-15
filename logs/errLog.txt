@@ -41,3 +41,123 @@
 20230718	06:17:26	fbe81f64-478f-4819-8dd8-845e15ac0a0f	Error: Unexpected end of form
 20230718	06:23:18	10fa4051-e2ef-4ac3-872e-41d798c76c88	Error: Unexpected end of form
 20230718	06:24:23	303bf696-a40f-43c3-9db5-16c09537040f	Error: Unexpected end of form
+20230731	09:15:16	62ad92f3-4899-416e-82a2-d1fbfcb0de25	Error: 
+Invalid `prisma.users.findFirst()` invocation in
+C:\Users\pc\Desktop\ReactJSProjects\Next-Tier-Server\controllers\staffController.js:133:43
+
+  130 
+  131 try {
+  132   // find user registered or not
+→ 133   const foundStaff = await prisma.users.findFirst({
+          where: {
+            id: NaN
+                ~~~
+          }
+        })
+
+Argument id: Got invalid value NaN on prisma.findFirstusers. Provided Float, expected StringFilter or String:
+type StringFilter {
+  equals?: String
+  in?: List<String> | String
+  notIn?: List<String> | String
+  lt?: String
+  lte?: String
+  gt?: String
+  gte?: String
+  contains?: String
+  startsWith?: String
+  endsWith?: String
+  mode?: QueryMode
+  not?: String | NestedStringFilter
+}
+type StringFilter {
+  equals?: String
+  in?: List<String> | String
+  notIn?: List<String> | String
+  lt?: String
+  lte?: String
+  gt?: String
+  gte?: String
+  contains?: String
+  startsWith?: String
+  endsWith?: String
+  mode?: QueryMode
+  not?: String | NestedStringFilter
+}
+
+
+20230731	10:13:45	06f06893-0c42-4ccc-9aaa-06e62d2f1bba	SyntaxError: Unexpected token e in JSON at position 0
+20230731	05:59:15	1ad01305-89ef-4505-961b-11dc2c78650c	PrismaClientValidationError: 
+Invalid `prisma.users.findFirst()` invocation in
+C:\Users\mrgun\OneDrive\Documents\GitHub\Next-Tier-Server\controllers\staffController.js:133:43
+
+  130 
+  131 try {
+  132   // find user registered or not
+→ 133   const foundStaff = await prisma.users.findFirst({
+          where: {
+        +   id: {
+        +     equals: String | StringFieldRefInput,
+        +     in: String[] | ListStringFieldRefInput,
+        +     notIn: String[] | ListStringFieldRefInput,
+        +     lt: String | StringFieldRefInput,
+        +     lte: String | StringFieldRefInput,
+        +     gt: String | StringFieldRefInput,
+        +     gte: String | StringFieldRefInput,
+        +     contains: String | StringFieldRefInput,
+        +     startsWith: String | StringFieldRefInput,
+        +     endsWith: String | StringFieldRefInput,
+        +     mode: QueryMode,
+        +     not: String | NestedStringFilter
+        +   }
+          }
+        })
+
+Argument `id` is missing.
+20230731	10:06:48	8feb62ea-4378-417b-a7b6-eeb745a94800	Error: Unexpected end of form
+20230731	10:07:13	51d51aa9-9281-492a-bf6f-1c3738ea6fe2	Error: Unexpected end of form
+20230731	10:12:10	95ae654c-0ca5-4621-a294-11560cfbb62f	Error: Unexpected end of form
+20230731	10:22:23	3bb7c3e7-c274-4a45-b3d9-eaccb8fb1652	Error: Unexpected end of form
+20230731	10:24:25	e27a2884-970f-4f4b-8e6a-20c3169b827b	Error: Unexpected end of form
+20230731	10:24:25	3dd2f3fc-af45-4f7f-90e3-351044a66ae4	Error: Unexpected end of form
+20230731	10:24:53	e038ab75-6459-4b3f-8262-c0431e4122ba	Error: Unexpected end of form
+20230731	10:42:11	5fbe128f-0ef7-461a-9b04-4341d0adb618	Error: Unexpected end of form
+20230731	10:44:54	08ea649a-6528-49f6-b38a-aed7f47d4a2d	Error: Unexpected end of form
+20230731	10:48:13	bfd1f779-b4c2-42f0-b79e-e3d03e9d6a91	TypeError: Cannot read properties of undefined (reading 'image')
+20230731	10:49:54	9983fe47-2886-4f7a-a7aa-70085940506b	TypeError: Cannot read properties of undefined (reading 'image')
+20230731	10:52:39	dd9229ca-400a-433c-b7fd-144e683633b6	TypeError: Cannot read properties of undefined (reading 'image')
+20230731	10:55:00	5f523dfc-a89f-451d-9537-28d1c1913d38	TypeError: Cannot read properties of undefined (reading 'image')
+20230731	14:36:15	e419a3b7-78e5-499b-8717-11a640fd2abc	TypeError: Cannot read properties of undefined (reading 'profile')
+20230731	15:58:50	12390709-34fe-409e-a03b-61ecd38b32b7	Error: ENOENT: no such file or directory, open 'C:\Users\mrgun\OneDrive\Documents\public\images\1690799330482-OIP.jpeg'
+20230731	15:59:45	640b4bc4-608a-4097-a6d8-3a7e7ef0d959	Error: ENOENT: no such file or directory, open 'C:\Users\mrgun\OneDrive\Documents\public\images\1690799385527-OIP.jpeg'
+20230731	16:00:07	d428fb1c-6ec8-452e-9c6e-f300368383bf	Error: ENOENT: no such file or directory, open 'C:\Users\mrgun\OneDrive\Documents\public\images\1690799407916-OIP.jpeg'
+20230731	18:54:19	90a8c09d-6b61-4191-bfdd-f3e0559af045	TypeError: Cannot read properties of undefined (reading 'image')
+20230731	19:26:35	22011cc2-d19a-4538-ba33-70bbe705a0b1	Error: ENOENT: no such file or directory, stat 'C:\Users\mrgun\OneDrive\Documents\GitHub\Next-Tier-Server\views\index.html'
+20230801	04:44:47	a9effef8-42f0-4c51-b77a-79b547f042aa	Error: ENOENT: no such file or directory, stat 'C:\Users\mrgun\OneDrive\Documents\GitHub\Next-Tier-Server\views\index.html'
+20230801	05:42:00	17969988-20f2-4ce1-a395-094fc0369486	Error: ENOENT: no such file or directory, stat 'C:\Users\mrgun\OneDrive\Documents\GitHub\Next-Tier-Server\views\index.html'
+20230801	17:44:16	7bb4c41e-4d6d-4260-84fd-0a1d286a1c6d	Error: Invalid file type
+20230801	18:07:36	7c3f9a74-fbd4-4dc1-b4b8-a301721b7a92	MulterError: File too large
+20230801	18:31:08	629980e2-08f5-490d-af62-8a0373f14b9a	Error: ENOENT: no such file or directory, stat 'C:\Users\mrgun\OneDrive\Documents\GitHub\Next-Tier-Server\views\404.html'
+20230801	18:31:34	7b1dfaf6-1bae-4da8-b784-2f4ee4485506	Error: ENOENT: no such file or directory, stat 'C:\Users\mrgun\OneDrive\Documents\GitHub\Next-Tier-Server\views\404.html'
+20230801	18:31:52	3d961ce3-bb45-4c8a-9b05-878938797ecd	Error: ENOENT: no such file or directory, stat 'C:\Users\mrgun\OneDrive\Documents\GitHub\Next-Tier-Server\views\404.html'
+20230801	18:31:59	050e9d3d-e3f2-47aa-9fac-e31e8e6cab99	Error: ENOENT: no such file or directory, stat 'C:\Users\mrgun\OneDrive\Documents\GitHub\Next-Tier-Server\views\404.html'
+20230801	18:37:24	93a9048c-afc5-460d-80bd-da310fcd97ab	Error: ENOENT: no such file or directory, stat 'C:\Users\mrgun\OneDrive\Documents\GitHub\Next-Tier-Server\views\404.html'
+20230801	18:40:19	e5dd418a-e239-435d-99fb-0b78a943e4d3	ReferenceError: multer is not defined
+20230801	18:41:47	8d7ed412-c0fc-41a2-ad06-464562baf9a2	Error: Invalid file type
+20230801	18:42:59	724a929f-4b31-431a-807f-ce5cca4e4b7c	Error: Invalid file type
+20230801	18:44:38	456e8698-86cb-46b3-a6f1-71456969ab89	Error: Invalid file type
+20230801	18:45:06	03eaab67-b38e-4d66-8100-d9be905afed0	Error: Invalid file type
+20230801	18:47:48	7b8af34d-04ae-4125-81a7-964858bef805	Error: Invalid file type
+20230801	18:48:48	d181785d-83ba-44d7-b42a-0887d1b91890	Error: Invalid file type
+20230801	18:49:56	abb98703-70a4-46d8-8b99-37dbeab1d696	undefined: undefined
+20230801	18:50:34	f5cf81fa-73fe-4275-9918-2d1d2c9fc73d	Error: Invalid file type
+20230801	18:54:01	a4dd7caa-41f3-43b1-9c91-f0cc8db74927	MulterError: Unexpected field
+20230801	18:54:54	9b44595a-73e6-4b47-8a0f-f283a98ea0b7	MulterError: Unexpected field
+20230801	19:06:39	eec7dd94-66d6-4ac4-a819-31441bd6b331	undefined: undefined
+20230801	19:07:25	7b80e155-23ac-42c4-bd06-b055571580f5	undefined: undefined
+20230801	19:08:21	102cfe52-2fca-4387-9b32-4ee3112d8547	undefined: undefined
+20230801	19:08:33	1c8b63d6-be0a-412e-8644-4b35cf512ba0	undefined: undefined
+20230801	19:08:34	0e1760e4-7907-4c32-94fa-ceb5cc06f20e	undefined: undefined
+20230801	19:08:45	f895c330-39de-46bb-9fbf-405e7e9cfa73	undefined: undefined
+20230802	06:32:35	bacf142b-9466-4d62-993c-e3d85e25ef2e	MulterError: File too large
+20230802	06:35:52	22fed344-be7f-4585-a968-1bb6d88746f5	MulterError: File too large
