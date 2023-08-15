@@ -8,12 +8,12 @@ const ROLES_LIST = require("../../config/roleList");
 const verifyRoles = require("../../middleware/verifyRoles");
 
 router
-  .route("/")
+  .route("/staffs")
   .get(staffController.getAllStaffs)
   .post(verifyRoles(ROLES_LIST.Tutor), staffController.createNewStaff);
 
 router
-  .route("/:id")
+  .route("/staffs/:id")
   .get(staffController.getStaff)
   .put(verifyRoles(ROLES_LIST.Tutor), staffController.updateStaff)
   .delete(verifyRoles(ROLES_LIST.Tutor), staffController.deleteStaff);
