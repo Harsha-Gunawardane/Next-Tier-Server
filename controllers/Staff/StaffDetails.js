@@ -3,7 +3,8 @@ const router = express.Router();
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
-// Controller function to fetch staff details by ID
+
+// Controller function to fetch staff details by ID(My Profile)
 const getStaffDetails = async (req, res) => {
   try {
    const user=req.user
@@ -18,6 +19,17 @@ const getStaffDetails = async (req, res) => {
         first_name: true,
         last_name: true,
         phone_number: true,
+        join_date:true,
+        profile_picture:true,
+        DOB:true,
+        address:true,
+        NIC:true,
+        username:true,
+        instStaff: {
+          select: {
+            qualifications: true,
+          },
+        },
         // Add other relevant fields you want to retrieve
       },
     });
@@ -35,3 +47,6 @@ const getStaffDetails = async (req, res) => {
 
 
 module.exports = {getStaffDetails}
+
+
+

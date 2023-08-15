@@ -11,6 +11,7 @@ datasource db {
 model users {
   id                         String                       @id @default(uuid())
   registration_id            Int?
+  gender                     String?
   username                   String                       @unique
   first_name                 String
   last_name                  String
@@ -49,7 +50,7 @@ model users {
   folders                    folders[]
   tutes                      tutes[]
   admin                      admin[]
-  institute_staff            institute_staff[]
+  instStaff                  instStaff[]
   content                    content[]
   comment_reactions          comment_reactions[]
   post_reactions             post_reactions[]
@@ -117,12 +118,11 @@ model admin {
   user users @relation(fields: [admin_id], references: [id])
 }
 
-model institute_staff {
-  staff_id       String   @id
-  emergency_No   String?
+model instStaff {
+  inst_staff_id  String   @id @default(uuid())
   qualifications String[] @default([])
 
-  user users @relation(fields: [staff_id], references: [id])
+  user users @relation(fields: [inst_staff_id], references: [id])
 }
 
 model files {
@@ -349,9 +349,11 @@ model student_attendance {
 }
 
 model halls {
-  id       String @id @default(uuid())
-  name     String
-  capacity Int
+  id           String @id @default(uuid())
+  name         String
+  capacity     Int
+  hall_profile String
+  facilities   String
 
   schedule      Json[]          @default([]) // [{day: "monday", start_time: "10:00", end_time: "12:00"},{day: "monday", start_time: "10:00", end_time: "12:00"}]
   courses       courses[]
@@ -384,16 +386,23 @@ enum complaint_type {
 }
 
 model complaints {
-  id        String         @id @default(uuid())
+  id        String          @id @default(uuid())
   user_id   String
   type      complaint_type
   course_id String?
+  action    String?         @default("")
   post_id   String?
   message   String
-  posted_at DateTime       @default(now())
-  resolved  Boolean        @default(false)
+  posted_at DateTime        @default(now())
+  // resolved  Boolean        @default(false)
+  status    ComplaintStatus @default(PENDING)
+  user      users           @relation(fields: [user_id], references: [id])
+}
 
-  user users @relation(fields: [user_id], references: [id])
+enum ComplaintStatus {
+  PENDING
+  RESOLVED
+  IGNORED
 }
 
 model mcq_category {

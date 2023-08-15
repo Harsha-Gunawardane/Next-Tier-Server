@@ -8,12 +8,12 @@ const ROLES_LIST = require("../../config/roleList");
 const verifyRoles = require("../../middleware/verifyRoles");
 
 router
-  .route("/categories")
+  .route("/")
   .get(tutorCategoryController.getAllMcqCategories)
   // .post(verifyRoles(ROLES_LIST.Tutor), tutorCategoryController.createNewMcqCategory);
   .post(tutorCategoryController.createNewMcqCategory);
 
-router.route("/categories/:id").get(tutorCategoryController.getMcqCategory);
+router.route("/:id").get(tutorCategoryController.getMcqCategory);
 // .put(verifyRoles(ROLES_LIST.Tutor), tutorCategoryController.updateMcqCategory)
 // .put(tutorCategoryController.updateMcqCategory)
 // .delete(verifyRoles(ROLES_LIST.Tutor), tutorCategoryController.deleteMcqCategory);

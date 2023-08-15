@@ -9,13 +9,13 @@ const ROLES_LIST = require("../../config/roleList");
 const verifyRoles = require("../../middleware/verifyRoles");
 
 router
-  .route("/mcqs")
+  .route("/")
   .get(mcqController.getAllMcqs)
   // .post(verifyRoles(ROLES_LIST.Tutor), mcqController.createNewMcq);
   .post(mcqController.createNewMcq);
 
 router
-  .route("/mcqs/:id")
+  .route("/:id")
   .get(mcqController.getMcq)
   // .put(verifyRoles(ROLES_LIST.Tutor), mcqController.updateMcq)
   .put(mcqController.updateMcq)
