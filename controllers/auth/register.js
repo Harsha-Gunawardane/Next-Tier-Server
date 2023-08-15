@@ -47,7 +47,7 @@ const handleNewUser = async (req, res) => {
         first_name: fName,
         last_name: lName,
         phone_number: phoneNo,
-        roles: { User: 2001,Tutor : 1932 },
+        roles: { User: 2001, Student: 1942 },
         password: hashedPassword,
         join_date: joinedTime,
       },
@@ -61,7 +61,7 @@ const handleNewUser = async (req, res) => {
         user: {
           connect: { id: addedUser.id },
         },
-        grade: "", 
+        grade: "",
         stream: "",
         emergency_contact: {},
         school: "",

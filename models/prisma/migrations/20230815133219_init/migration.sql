@@ -5,7 +5,13 @@ CREATE TYPE "content_type" AS ENUM ('TUTE', 'VIDEO');
 CREATE TYPE "content_status" AS ENUM ('PUBLIC', 'PAID', 'HOLD');
 
 -- CreateEnum
+CREATE TYPE "study_pack_type" AS ENUM ('NORMAL', 'PAID');
+
+-- CreateEnum
 CREATE TYPE "payment_type" AS ENUM ('ONLINE', 'PHYSICAL');
+
+-- CreateEnum
+CREATE TYPE "course_type" AS ENUM ('NORMAL', 'PAID');
 
 -- CreateEnum
 CREATE TYPE "schedule_type" AS ENUM ('RECURRING', 'ONE_TIME');
@@ -14,18 +20,23 @@ CREATE TYPE "schedule_type" AS ENUM ('RECURRING', 'ONE_TIME');
 CREATE TYPE "complaint_type" AS ENUM ('COURSE_RELATED', 'OTHER');
 
 -- CreateEnum
+CREATE TYPE "ComplaintStatus" AS ENUM ('PENDING', 'RESOLVED', 'IGNORED');
+
+-- CreateEnum
 CREATE TYPE "attachment_type" AS ENUM ('IMAGE', 'DOCUMENT');
 
 -- CreateTable
 CREATE TABLE "users" (
     "id" TEXT NOT NULL,
     "registration_id" INTEGER,
+    "gender" TEXT,
     "username" TEXT NOT NULL,
     "first_name" TEXT NOT NULL,
     "last_name" TEXT NOT NULL,
     "phone_number" TEXT NOT NULL,
     "password" TEXT NOT NULL,
     "address" TEXT,
+    "email" TEXT DEFAULT '',
     "NIC" TEXT,
     "join_date" TIMESTAMP(3) NOT NULL,
     "DOB" TIMESTAMP(3),
@@ -38,6 +49,7 @@ CREATE TABLE "users" (
     "roles" JSONB NOT NULL,
     "otp" TEXT,
     "otp_expire_at" TIMESTAMP(3),
+    "active" BOOLEAN NOT NULL DEFAULT true,
 
     CONSTRAINT "users_pkey" PRIMARY KEY ("id")
 );
@@ -95,22 +107,38 @@ CREATE TABLE "staffOnTutor" (
 );
 
 -- CreateTable
+CREATE TABLE "admin" (
+    "admin_id" TEXT NOT NULL,
+    "emergency_No" TEXT NOT NULL,
+    "admin_role" TEXT NOT NULL,
+    "qualifications" TEXT[],
+
+    CONSTRAINT "admin_pkey" PRIMARY KEY ("admin_id")
+);
+
+-- CreateTable
+CREATE TABLE "instStaff" (
+    "inst_staff_id" TEXT NOT NULL,
+    "qualifications" TEXT[] DEFAULT ARRAY[]::TEXT[],
+
+    CONSTRAINT "instStaff_pkey" PRIMARY KEY ("inst_staff_id")
+);
+
+-- CreateTable
 CREATE TABLE "files" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "path" TEXT NOT NULL,
     "uploaded_at" TIMESTAMP(3) NOT NULL,
-    "updated_at" TIMESTAMP(3),
     "mime_type" TEXT NOT NULL,
     "uploaded_by" TEXT NOT NULL,
     "original_name" TEXT NOT NULL,
+    "url" TEXT,
 
     CONSTRAINT "files_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-<<<<<<<< HEAD:models/prisma/migrations/20230807125838_/migration.sql
-========
 CREATE TABLE "folders" (
     "id" TEXT NOT NULL,
     "user_id" TEXT NOT NULL,
@@ -138,15 +166,11 @@ CREATE TABLE "tutes" (
 );
 
 -- CreateTable
->>>>>>>> rahal:models/prisma/migrations/20230813091024_init/migration.sql
 CREATE TABLE "content" (
     "id" TEXT NOT NULL,
     "title" TEXT NOT NULL,
     "description" TEXT NOT NULL,
-<<<<<<<< HEAD:models/prisma/migrations/20230807125838_/migration.sql
-========
     "user_id" TEXT NOT NULL,
->>>>>>>> rahal:models/prisma/migrations/20230813091024_init/migration.sql
     "type" "content_type",
     "subject" TEXT NOT NULL,
     "subject_areas" TEXT[],
@@ -211,7 +235,8 @@ CREATE TABLE "study_pack" (
     "description" TEXT NOT NULL,
     "subject" TEXT NOT NULL,
     "subject_areas" TEXT[],
-    "thumbnail" TEXT NOT NULL,
+    "thumbnail" TEXT,
+    "type" "study_pack_type" NOT NULL,
     "price" INTEGER NOT NULL,
     "access_period" JSONB NOT NULL DEFAULT '{}',
     "uploaded_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -246,6 +271,7 @@ CREATE TABLE "courses" (
     "thumbnail" TEXT NOT NULL,
     "monthly_fee" INTEGER NOT NULL,
     "hall_id" TEXT,
+    "content_ids" JSONB[] DEFAULT ARRAY[]::JSONB[],
     "start_date" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "studypack_ids" JSONB[] DEFAULT ARRAY[]::JSONB[],
     "schedule" JSONB[] DEFAULT ARRAY[]::JSONB[],
@@ -277,6 +303,8 @@ CREATE TABLE "halls" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "capacity" INTEGER NOT NULL,
+    "hall_profile" TEXT NOT NULL,
+    "facilities" TEXT NOT NULL,
     "schedule" JSONB[] DEFAULT ARRAY[]::JSONB[],
 
     CONSTRAINT "halls_pkey" PRIMARY KEY ("id")
@@ -301,18 +329,29 @@ CREATE TABLE "complaints" (
     "user_id" TEXT NOT NULL,
     "type" "complaint_type" NOT NULL,
     "course_id" TEXT,
+    "action" TEXT DEFAULT '',
     "post_id" TEXT,
     "message" TEXT NOT NULL,
     "posted_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "resolved" BOOLEAN NOT NULL DEFAULT false,
+    "status" "ComplaintStatus" NOT NULL DEFAULT 'PENDING',
 
     CONSTRAINT "complaints_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
+CREATE TABLE "mcq_category" (
+    "id" TEXT NOT NULL,
+    "title" TEXT NOT NULL,
+    "number_of_questions" INTEGER NOT NULL,
+    "question_ids" TEXT[],
+
+    CONSTRAINT "mcq_category_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "quiz" (
     "id" TEXT NOT NULL,
-    "course_id" TEXT NOT NULL DEFAULT '',
+    "course_id" TEXT DEFAULT '',
     "study_pack_id" TEXT,
     "title" TEXT NOT NULL,
     "start_time" TIMESTAMP(3),
@@ -331,6 +370,8 @@ CREATE TABLE "quiz" (
 CREATE TABLE "questions" (
     "id" TEXT NOT NULL,
     "question" TEXT NOT NULL,
+    "points" INTEGER NOT NULL,
+    "difficulty_level" TEXT NOT NULL,
     "options" TEXT[] DEFAULT ARRAY[]::TEXT[],
     "explanation" TEXT NOT NULL,
     "subject" TEXT NOT NULL,
@@ -435,20 +476,24 @@ ALTER TABLE "students" ADD CONSTRAINT "students_student_id_fkey" FOREIGN KEY ("s
 ALTER TABLE "tutor" ADD CONSTRAINT "tutor_tutor_id_fkey" FOREIGN KEY ("tutor_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "supporting_staff" ADD CONSTRAINT "supporting_staff_staff_id_fkey" FOREIGN KEY ("staff_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "supporting_staff" ADD CONSTRAINT "supporting_staff_staff_id_fkey" FOREIGN KEY ("staff_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "staffOnTutor" ADD CONSTRAINT "staffOnTutor_staff_id_fkey" FOREIGN KEY ("staff_id") REFERENCES "supporting_staff"("staff_id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "staffOnTutor" ADD CONSTRAINT "staffOnTutor_staff_id_fkey" FOREIGN KEY ("staff_id") REFERENCES "supporting_staff"("staff_id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "staffOnTutor" ADD CONSTRAINT "staffOnTutor_tutor_id_fkey" FOREIGN KEY ("tutor_id") REFERENCES "tutor"("tutor_id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "staffOnTutor" ADD CONSTRAINT "staffOnTutor_tutor_id_fkey" FOREIGN KEY ("tutor_id") REFERENCES "tutor"("tutor_id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "admin" ADD CONSTRAINT "admin_admin_id_fkey" FOREIGN KEY ("admin_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "instStaff" ADD CONSTRAINT "instStaff_inst_staff_id_fkey" FOREIGN KEY ("inst_staff_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "files" ADD CONSTRAINT "files_uploaded_by_fkey" FOREIGN KEY ("uploaded_by") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-<<<<<<<< HEAD:models/prisma/migrations/20230807125838_/migration.sql
-========
 ALTER TABLE "folders" ADD CONSTRAINT "folders_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -458,7 +503,6 @@ ALTER TABLE "tutes" ADD CONSTRAINT "tutes_user_id_fkey" FOREIGN KEY ("user_id") 
 ALTER TABLE "content" ADD CONSTRAINT "content_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
->>>>>>>> rahal:models/prisma/migrations/20230813091024_init/migration.sql
 ALTER TABLE "content_reactions" ADD CONSTRAINT "content_reactions_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -531,7 +575,7 @@ ALTER TABLE "hall_schedule" ADD CONSTRAINT "hall_schedule_course_id_fkey" FOREIG
 ALTER TABLE "complaints" ADD CONSTRAINT "complaints_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "quiz" ADD CONSTRAINT "quiz_course_id_fkey" FOREIGN KEY ("course_id") REFERENCES "courses"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "quiz" ADD CONSTRAINT "quiz_course_id_fkey" FOREIGN KEY ("course_id") REFERENCES "courses"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "student_attempt_quiz" ADD CONSTRAINT "student_attempt_quiz_student_id_fkey" FOREIGN KEY ("student_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

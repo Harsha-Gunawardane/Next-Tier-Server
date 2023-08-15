@@ -8,6 +8,7 @@ const asyncHandler = require("express-async-handler");
 
 const getAllCourses = async (req, res) => {
   try {
+    console.log("here")
     const user = req.user;
     if (!user) {
       return res.status(401).json({ message: 'Not logged in' });
@@ -70,10 +71,10 @@ const createCourse = async (req, res) => {
 
 
   const user = req.user;
-  const {title, description, subject, medium, grade,thumbnail, monthly_fee,schedule,start_date } = req.body;
+  const { title, description, subject, medium, grade, thumbnail, monthly_fee, schedule, start_date } = req.body;
   console.log(req.body);
-  
-console.log(req.body);
+
+  console.log(req.body);
   try {
     const foundUser = await prisma.users.findUnique({
       where: {
@@ -103,11 +104,11 @@ console.log(req.body);
           }
         ],
         schedule: [
-         schedule
+          schedule
         ]
       },
     });
-   console.log(newCourse);
+    console.log(newCourse);
     res.status(201).json(newCourse);
   } catch (error) {
     console.log(error)
@@ -132,7 +133,7 @@ const removeCourse = async (req, res) => {
       return res.status(404).json({ message: 'Course not found' });
     }
 
- 
+
     const user = req.user;
     const tutorId = course.tutor_id;
 
@@ -146,7 +147,7 @@ const removeCourse = async (req, res) => {
       return res.status(401).json({ message: 'Unauthorized to remove this course' });
     }
 
-  
+
     await prisma.courses.delete({
       where: {
         id: courseId,
@@ -165,12 +166,12 @@ const removeCourse = async (req, res) => {
 
 
 const editCourse = async (req, res) => {
-  const courseId = req.params.id; 
-  const user = req.user; 
-  const { title, description, medium, thumbnail, monthly_fee,schedule,studypack_ids,content_ids } = req.body;
+  const courseId = req.params.id;
+  const user = req.user;
+  const { title, description, medium, thumbnail, monthly_fee, schedule, studypack_ids, content_ids } = req.body;
 
   try {
-  
+
     const course = await prisma.courses.findUnique({
       where: {
         id: courseId,
@@ -203,10 +204,10 @@ const editCourse = async (req, res) => {
       data: {
         title,
         description,
-    
+
         thumbnail,
         medium,
-        
+
         schedule,
         studypack_ids,
         content_ids,
@@ -555,14 +556,15 @@ const removePublicIds = async (req, res) => {
 
 
 
-module.exports = { 
+module.exports = {
   createCourse,
   getAllCourses,
   removeCourse,
   editCourse,
-getCourseById,
-editStudypack_ids,
-removeStudyPack,
-removeIds,
-addIds,
-removePublicIds }
+  getCourseById,
+  editStudypack_ids,
+  removeStudyPack,
+  removeIds,
+  addIds,
+  removePublicIds
+}

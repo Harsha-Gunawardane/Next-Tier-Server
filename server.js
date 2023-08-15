@@ -55,15 +55,21 @@ app.use("/forgot-password", require("./routes/reset-password"));
 // check authentication of user
 app.use(verifyJWT);
 
+app.use("/admin", require("./routes/api/admin"))
 app.use("/employees", require("./routes/api/employees"));
 app.use("/user", require("./routes/api/user"));
 app.use("/notes", require("./routes/api/notes"));
+app.use("/content", require("./routes/api/content"));
+app.use("/comments", require("./routes/api/comments"))
+app.use("/courses", require("./routes/api/courses"))
+app.use("/tutor", require("./routes/api/tutor"));
 app.use("/tutor/staffs", require("./routes/api/tutorStaff"));
 app.use("/tutor/quizzes", require("./routes/api/tutorQuiz"));
 app.use("/tutor/mcqs", require("./routes/api/tutorMcq"));
 app.use("/tutor/categories", require("./routes/api/tutorMcqCategory"));
 app.use("/stu", require("./routes/api/student"));
 app.use("/parent", require("./routes/api/parent"));
+app.use("/staff", require("./routes/api/staff"));
 
 app.all("*", (req, res) => {
   res.status(404).json({ error: "404 Not Found" });

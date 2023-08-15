@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const staffController = require("../../controllers/staffController");
+// const staffController = require("../../controllers/staffController");
 
 const profileController = require("../../controllers/Staff/StaffDetails");
 const userPasswordController = require("../../controllers/Staff/resetPassword");
