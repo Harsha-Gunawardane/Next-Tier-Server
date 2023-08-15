@@ -143,84 +143,84 @@ const getMcqCategory = asyncHandler(async (req, res) => {
 
 //Special feature
 
-// const mcqAddToQuiz = asyncHandler(async (req, res) => {
-//   const id = req.params.id;
+const mcqAddToCategory = asyncHandler(async (req, res) => {
+  const id = req.params.id;
 
-//   try {
-//     // Validate input form data
-//     const { error, value } = tutorMcqFormSchema.validate(req.body);
+  try {
+    // Validate input form data
+    const { error, value } = tutorMcqFormSchema.validate(req.body);
 
-//     if (error) {
-//       console.log(error);
-//       return res.status(400).json({ error: error.details[0].message });
-//     }
+    if (error) {
+      console.log(error);
+      return res.status(400).json({ error: error.details[0].message });
+    }
   
-//     // Destructuring
-//     const {
-//       question,
-//       points,
-//       difficulty_level,
-//       subject,
-//       subject_areas,
-//       options,
-//       correct_answer,
-//       explanation,
-//     } = value;
+    // Destructuring
+    const {
+      question,
+      points,
+      difficulty_level,
+      subject,
+      subject_areas,
+      options,
+      correct_answer,
+      explanation,
+    } = value;
 
-//     // Store new mcq
-//     const addedMcq = await prisma.questions.create({
-//       data: {
-//         question,
-//         points: parseInt(points),
-//         difficulty_level,
-//         subject,
-//         subject_areas: { set: subject_areas }, // Set the array of subject_areas
-//         options: { set: options }, // Set the array of options
-//         correct_answer: parseInt(correct_answer),
-//         explanation,
-//       },
-//     });
+    // Store new mcq
+    const addedMcq = await prisma.questions.create({
+      data: {
+        question,
+        points: parseInt(points),
+        difficulty_level,
+        subject,
+        subject_areas: { set: subject_areas }, // Set the array of subject_areas
+        options: { set: options }, // Set the array of options
+        correct_answer: parseInt(correct_answer),
+        explanation,
+      },
+    });
 
-//     console.log("Added Mcq:", addedMcq);
+    console.log("Added Mcq:", addedMcq);
     
-//     // Extract the ID of the added MCQ
-//     const addedMcqId = addedMcq.id;
+    // Extract the ID of the added MCQ
+    const addedMcqId = addedMcq.id;
   
-//     // find quiz available or not before update
-//     const foundQuiz = await prisma.quiz.findFirst({
-//       where: {
-//         id: id,
-//       },
-//     });
+    // find quiz available or not before update
+    const found = await prisma.quiz.findFirst({
+      where: {
+        id: id,
+      },
+    });
 
-//     if (!foundQuiz) {
-//       return res.status(400).json({
-//         message: `Quiz not found`,
-//       });
-//     }
+    if (!foundQuiz) {
+      return res.status(400).json({
+        message: `Quiz not found`,
+      });
+    }
 
-//     // Update the quiz's question_ids array and number_of_questions based on the added MCQ
-//     const updatedQuiz = await prisma.quiz.update({
-//       where: {
-//         id: id,
-//       },
-//       data: {
-//         question_ids: {
-//           set: [...foundQuiz.question_ids, addedMcqId], // Add the new MCQ ID to the existing array
-//         },
-//         number_of_questions: foundQuiz.question_ids.length + 1, // Update the number based on the new length
-//       },
-//     });
+    // Update the quiz's question_ids array and number_of_questions based on the added MCQ
+    const updatedQuiz = await prisma.quiz.update({
+      where: {
+        id: id,
+      },
+      data: {
+        question_ids: {
+          set: [...foundQuiz.question_ids, addedMcqId], // Add the new MCQ ID to the existing array
+        },
+        number_of_questions: foundQuiz.question_ids.length + 1, // Update the number based on the new length
+      },
+    });
 
-//     console.log("Added mcq to the quiz:", updatedQuiz);
+    console.log("Added mcq to the quiz:", updatedQuiz);
 
-//     res.status(201).json(addedMcq);
+    res.status(201).json(addedMcq);
 
-//   } catch (error) {
-//     console.error("Error handling added mcq to the quiz:", error);
-//     res.status(500).json({ error: "Internal server error" });
-//   }
-// });
+  } catch (error) {
+    console.error("Error handling added mcq to the quiz:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
 
 module.exports = {
   getAllMcqCategories,
@@ -228,5 +228,5 @@ module.exports = {
   // updateQuiz,
   // deleteQuiz,
   getMcqCategory,
-  // mcqAddToQuiz,
+  mcqAddToCategory,
 };
