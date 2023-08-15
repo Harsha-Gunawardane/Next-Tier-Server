@@ -42,6 +42,8 @@ model users {
   posts                      posts[]
   reset_password             reset_password[]
   files                      files[]
+  folders                    folders[]
+  tutes                      tutes[]
 }
 
 model reset_password {
@@ -98,16 +100,41 @@ model staffOnTutor {
 }
 
 model files {
-  id            String    @id @default(uuid())
+  id            String   @id @default(uuid())
   name          String
   path          String
   uploaded_at   DateTime
-  updated_at    DateTime?
   mime_type     String
   uploaded_by   String
   original_name String
+  url           String?
 
   user users @relation(fields: [uploaded_by], references: [id])
+}
+
+model folders {
+  id       String   @id
+  user_id  String
+  name     String
+  tute_ids String[] @default([])
+
+  user users @relation(fields: [user_id], references: [id])
+}
+
+model tutes {
+  id         String   @id
+  folder_id  String   @default("")
+  user_id    String
+  content    String?
+  file_id    String   @default("")
+  created_at DateTime
+  name       String
+  gcs_name   String?
+  url        String?
+  local_url  String?
+  isUpload   Boolean  @default(false)
+
+  user users @relation(fields: [user_id], references: [id])
 }
 
 enum content_type {
@@ -342,6 +369,7 @@ model quiz {
   subject       String
   subject_areas String[]  @default([])
   question_ids  String[]
+  number_of_questions Int
   published     Boolean   @default(false)
 
   course               courses                @relation(fields: [course_id], references: [id])

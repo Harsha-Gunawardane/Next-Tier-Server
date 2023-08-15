@@ -9,6 +9,6 @@ const userProfileController = require("../../controllers/user/profilePicture");
 
 router
   .route("/profile-image")
-  .post(upload.single("image"), userProfileController.uploadProfilePicture);
+  .post(upload.single("file"), userProfileController.uploadProfilePicture);
 
 module.exports = router;
