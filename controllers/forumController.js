@@ -9,7 +9,7 @@ const getForumDetails = asyncHandler(async (req, res) => {
     const id = req.params.id;
     const user = req.user;
     const skip = req.query.skip ? parseInt(req.query.skip) : 0;
-    const take = req.query.take ? parseInt(req.query.take) : 0;
+    const take = req.query.take ? parseInt(req.query.take) : 10;
 
     try {
 
@@ -29,8 +29,12 @@ const getForumDetails = asyncHandler(async (req, res) => {
             where: {
                 id: id,
             },
+
             include: {
                 posts: {
+                    orderBy: {
+                        posted_at: "desc",
+                    },
                     include: {
                         post_reactions: {
                             where: {
@@ -67,6 +71,12 @@ const getForumDetails = asyncHandler(async (req, res) => {
                             }
                         },
                         attachments: true,
+                        _count: {
+                            select: {
+                                comments: true,
+                                post_reactions: true,
+                            }
+                        }
                     },
 
                 },
@@ -87,6 +97,12 @@ const getForumDetails = asyncHandler(async (req, res) => {
                         }
                     }
                 },
+                _count: {
+                    select: {
+                        posts: true,
+                    }
+                }
+
             },
         })
 
@@ -109,8 +125,8 @@ const getForumDetails = asyncHandler(async (req, res) => {
                 }
             },
             posts: foundForum.posts,
+            post_count: foundForum._count.posts,
         }
-
 
         res.status(200).json(forum);
 

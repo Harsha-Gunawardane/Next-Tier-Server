@@ -5,6 +5,12 @@ const { User } = require("../config/roleList");
 const prisma = new PrismaClient();
 
 
+//videoStream
+const path = require('path');
+const fs = require('fs');
+const ffmpeg = require('fluent-ffmpeg');
+const m3u8stream = require('m3u8stream');
+
 const getAllContent = asyncHandler(async (req, res) => {
     try {
 
@@ -12,7 +18,6 @@ const getAllContent = asyncHandler(async (req, res) => {
 
     }
 })
-
 
 const getRecommendedContent = asyncHandler(async (req, res) => {
     try {
@@ -22,9 +27,9 @@ const getRecommendedContent = asyncHandler(async (req, res) => {
     }
 })
 
-
 const getContentById = asyncHandler(async (req, res) => {
     const id = req.params.id;
+    const user = req.user;
     const skip = req.query.skip ? parseInt(req.query.skip) : 0;
     const take = req.query.take ? parseInt(req.query.take) : 5;
 
@@ -35,6 +40,19 @@ const getContentById = asyncHandler(async (req, res) => {
     }
 
     try {
+        const foundUser = await prisma.users.findFirst({
+            where: {
+                username: user,
+            },
+        });
+
+        if (!foundUser) {
+            return res.status(401).json({
+                message: `User not found`,
+            });
+        }
+
+
         const foundContent = await prisma.content.findUniqueOrThrow({
             where: {
                 id: id,
@@ -84,7 +102,7 @@ const getContentById = asyncHandler(async (req, res) => {
                         },
                         comment_reactions: {
                             where: {
-                                user_id: req.user.id,
+                                user_id: foundUser.id,
                             },
                             select: {
                                 islike: true,
@@ -111,7 +129,7 @@ const getContentById = asyncHandler(async (req, res) => {
                 },
                 content_reactions: {
                     where: {
-                        user_id: req.user.id,
+                        user_id: foundUser.id,
                     },
                 },
             }
@@ -123,9 +141,6 @@ const getContentById = asyncHandler(async (req, res) => {
                 message: `Content not found`,
             });
         }
-
-        console.log("foundContent");
-        console.log(foundContent);
 
         const contentDetails = {
             id: foundContent.id,
@@ -158,10 +173,9 @@ const getContentById = asyncHandler(async (req, res) => {
 
 const addReaction = asyncHandler(async (req, res) => {
     const user = req.user;
-    const id = req.params.id ? parseInt(req.params.id) : null;
+    const id = req.params.id ? req.params.id : null;
+    console.log("HERE")
     const islike = JSON.parse(req.body.islike);
-    console.log(req.body);
-    console.log(user);
 
     try {
 
@@ -240,7 +254,6 @@ const addReaction = asyncHandler(async (req, res) => {
                     islike: islike,
                     user_id: foundUser.id,
                     content_id: id,
-                    post_id: null,
                 },
             })
 
@@ -256,10 +269,6 @@ const addReaction = asyncHandler(async (req, res) => {
         });
     }
 })
-
-
-
-
 
 const getComments = asyncHandler(async (req, res) => {
     // console.log("getComments");
@@ -352,7 +361,6 @@ const getComments = asyncHandler(async (req, res) => {
         res.status(200).json(foundContent);
 
     } catch (error) {
-        console.log("ERROR");
         console.log(error);
         return res.status(500).json({
             message: `Error: ${error.message}`,
@@ -360,6 +368,67 @@ const getComments = asyncHandler(async (req, res) => {
     }
 
 })
+
+const test = asyncHandler(async (req, res) => {
+    console.log("test");
+
+    return res.status(200).json({
+        message: `test`,
+    });
+
+})
+
+const uploadVideo = asyncHandler(async (req, res) => {
+    console.log("uploadVideo");
+
+    return res.status(200).json({
+        message: `uploadVideo`,
+    });
+
+})
+
+// controllers/contentController.js
+
+
+const serveHLS = (req, res) => {
+    console.log(req.params);
+    const hlsFilePath = path.join(__dirname, `../uploads/videos/${req.params.videoName}/hls/output.m3u8`);
+    console.log(hlsFilePath);
+    fs.readFile(hlsFilePath, (err, data) => {
+        if (err) {
+            res.status(500).send('Error reading HLS manifest');
+        } else {
+            res.setHeader('Content-Type', 'application/vnd.apple.mpegurl');
+            res.send(data);
+        }
+    });
+
+    res.status(201)
+};
+
+
+const serveHLSSegment = (req, res) => {
+    console.log(req.params);
+    const videoName = req.params.videoName;
+    const segmentName = req.params.segmentName;
+    const segmentFilePath = path.join(__dirname, `../uploads/videos/${videoName}/hls/${segmentName}`);
+    console.log(segmentFilePath);
+
+    fs.readFile(segmentFilePath, (err, data) => {
+        if (err) {
+            console.log(err);
+            res.status(500).send('Error reading HLS segment');
+        } else {
+            res.setHeader('Content-Type', 'video/MP2T');
+            res.send(data);
+        }
+    });
+
+    // res.sendFile(segmentFilePath);
+};
+
+
+
 
 
 
@@ -369,4 +438,8 @@ module.exports = {
     getRecommendedContent,
     addReaction,
     getComments,
+    uploadVideo,
+    test,
+    serveHLS,
+    serveHLSSegment
 }

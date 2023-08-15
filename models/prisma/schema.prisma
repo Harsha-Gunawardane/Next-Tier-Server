@@ -48,6 +48,7 @@ model users {
   tutes                      tutes[]
   comment_reactions          comment_reactions[]
   content                    content[]
+  post_reactions             post_reactions[]
 }
 
 model reset_password {
@@ -175,13 +176,11 @@ model content {
 model content_reactions {
   id         String   @id @default(uuid())
   user_id    String
-  content_id String?  @default("")
-  post_id    String?  @default("")
+  content_id String   @default("")
   islike     Boolean?
 
-  user    users    @relation(fields: [user_id], references: [id])
-  content content? @relation(fields: [content_id], references: [id])
-  post    posts?   @relation(fields: [post_id], references: [id])
+  user    users   @relation(fields: [user_id], references: [id])
+  content content @relation(fields: [content_id], references: [id])
 }
 
 model content_views {
@@ -437,11 +436,21 @@ model posts {
   posted_at DateTime @default(now())
   reactions Json     @default("{}") // {like: 0, dislike: 0, views: 0 ,comments: 0}
 
-  forum          forum               @relation(fields: [forum_id], references: [id])
-  user           users               @relation(fields: [user_id], references: [id])
+  forum          forum            @relation(fields: [forum_id], references: [id])
+  user           users            @relation(fields: [user_id], references: [id])
   comments       comments[]
   attachments    attachments[]
-  post_reactions content_reactions[]
+  post_reactions post_reactions[]
+}
+
+model post_reactions {
+  id      String   @id @default(uuid())
+  user_id String
+  post_id String   @default("")
+  islike  Boolean?
+
+  user users @relation(fields: [user_id], references: [id])
+  post posts @relation(fields: [post_id], references: [id])
 }
 
 enum attachment_type {

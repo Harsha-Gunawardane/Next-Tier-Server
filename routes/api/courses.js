@@ -10,6 +10,7 @@ const postController = require("../../controllers/postController");
 // Verify roles
 const ROLES_LIST = require("../../config/roleList");
 const verifyRoles = require("../../middleware/verifyRoles");
+const { upload, multi_upload } = require("../../middleware/fileUpload/fileUpload");
 
 
 
@@ -32,12 +33,27 @@ router
 router
     .route("/:id/forum/posts")
     .get(
-        // verifyRoles([ROLES_LIST.Student, ROLES_LIST.Tutor]),
+        verifyRoles([ROLES_LIST.Student, ROLES_LIST.Tutor]),
         forumController.getPosts
     )
     .post(
+        multi_upload.array('files'),
         // verifyRoles([ROLES_LIST.Student, ROLES_LIST.Tutor]),
         postController.createPost
+    )
+
+router
+    .route("/:id/forum/posts/:postId")
+    .get(
+        verifyRoles([ROLES_LIST.Student, ROLES_LIST.Tutor]),
+        postController.getPostById
+    )
+
+router
+    .route("/forum/posts/react")
+    .post(
+        verifyRoles([ROLES_LIST.Student, ROLES_LIST.Tutor]),
+        postController.addReaction
     )
 
 

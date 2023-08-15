@@ -1,3 +1,3 @@
-const FILE_TYPE = ["image", "application"]
+const FILE_TYPE = ["image", "pdf", "application"]
 
 module.exports = FILE_TYPE;
