@@ -38,7 +38,7 @@ app.use(cookieParser());
 // Middleware to parse JSON
 app.use(bodyParser.json());
 
-//serve static files
+// serve static files
 app.use("/", express.static(path.join(__dirname, "/public")));
 
 // routes
@@ -57,19 +57,21 @@ app.use(verifyJWT);
 app.use("/employees", require("./routes/api/employees"));
 app.use("/user", require("./routes/api/user"));
 app.use("/notes", require("./routes/api/notes"));
-app.use("tutor/staffs", require("./routes/api/tutorStaff"));
+app.use("/tutor", require("./routes/api/tutorStaff"));
+app.use("/tutor", require("./routes/api/tutorQuiz"));
+app.use("/tutor", require("./routes/api/tutorMcq"));
+app.use("/tutor", require("./routes/api/tutorMcqCategory"));
+app.use("/tutor", require("./routes/api/tutor"));
 app.use("/stu", require("./routes/api/student"));
 app.use("/parent", require("./routes/api/parent"));
-// app.use("/tutor", require("./routes/api/tutor"));
 
 app.all("*", (req, res) => {
   res.status(404).json({ error: "404 Not Found" });
 });
 
-app.use(fileErrorHandler)
+app.use(fileErrorHandler);
 app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.log("listening on port " + PORT);
 });
-

@@ -16,6 +16,7 @@ model users {
   phone_number               String
   password                   String
   address                    String?
+  email                      String?                      @default("")
   NIC                        String?
   join_date                  DateTime
   DOB                        DateTime?
@@ -28,6 +29,7 @@ model users {
   roles                      Json
   otp                        String?
   otp_expire_at              DateTime?
+  active                     Boolean                      @default(true)
   students                   students[]
   tutor                      tutor[]
   supporting_staff           supporting_staff[]
@@ -44,6 +46,8 @@ model users {
   files                      files[]
   folders                    folders[]
   tutes                      tutes[]
+  admin                      admin[]
+  institute_staff            institute_staff[]
 }
 
 model reset_password {
@@ -81,9 +85,9 @@ model tutor {
 }
 
 model supporting_staff {
-  staff_id String @id
-
-  user         users          @relation(fields: [staff_id], references: [id])
+  staff_id     String         @id
+  staff_title  String
+  user         users          @relation(fields: [staff_id], references: [id], onDelete: Cascade)
   staffOnTutor staffOnTutor[]
 }
 
@@ -93,10 +97,27 @@ model staffOnTutor {
   joined_date      DateTime @default(now())
   no_marked_papers Json     @default("{}")
 
-  staff supporting_staff @relation(fields: [staff_id], references: [staff_id])
-  tutor tutor            @relation(fields: [tutor_id], references: [tutor_id])
+  staff supporting_staff @relation(fields: [staff_id], references: [staff_id], onDelete: Cascade)
+  tutor tutor            @relation(fields: [tutor_id], references: [tutor_id], onDelete: Cascade)
 
   @@id([staff_id, tutor_id])
+}
+
+model admin {
+  admin_id       String   @id
+  emergency_No   String
+  admin_role     String
+  qualifications String[]
+
+  user users @relation(fields: [admin_id], references: [id])
+}
+
+model institute_staff {
+  staff_id       String   @id
+  emergency_No   String?
+  qualifications String[] @default([])
+
+  user users @relation(fields: [staff_id], references: [id])
 }
 
 model files {
@@ -154,12 +175,12 @@ model content {
   description       String
   type              content_type?
   subject           String
-  subject_areas     String[] 
-  uploaded_at       DateTime?            @default(now())
+  subject_areas     String[]
+  uploaded_at       DateTime?           @default(now())
   status            content_status?     @default(PUBLIC)
   file_path         String?
   thumbnail         String?
-  reactions         Json?                @default("{}") // {like: 0, dislike: 0, views: 0 ,comments: 0}
+  reactions         Json?               @default("{}") // {like: 0, dislike: 0, views: 0 ,comments: 0}
   content_reactions content_reactions[]
   content_views     content_views[]
   comments          comments[]
@@ -202,6 +223,12 @@ model comments {
   post    posts   @relation(fields: [post_id], references: [id])
 }
 
+
+enum study_pack_type {
+  NORMAL
+  PAID
+}
+
 model study_pack {
   id            String    @id @default(uuid())
   tutor_id      String
@@ -210,7 +237,11 @@ model study_pack {
   description   String
   subject       String
   subject_areas String[]
-  thumbnail     String
+  thumbnail     String?
+  type          study_pack_type
+ 
+  
+
   price         Int
   access_period Json      @default("{}") // {days: 0, months: 0, years: 0}
   uploaded_at   DateTime  @default(now())
@@ -242,6 +273,14 @@ model student_purchase_studypack {
   @@id([student_id, pack_id])
 }
 
+
+
+enum course_type {
+  NORMAL
+  PAID
+}
+
+
 model courses {
   id            String   @id @default(uuid())
   tutor_id      String
@@ -253,12 +292,13 @@ model courses {
   thumbnail     String
   monthly_fee   Int
   hall_id       String?
+  content_ids   Json[]   @default([]) 
   start_date    DateTime @default(now())
   studypack_ids Json[]   @default([]) // [{video_id: [], tute_id: []},{video_id: [], tute_id: "tute_id"}] 
   schedule      Json[]   @default([]) // [{day: "monday", start_time: "10:00", end_time: "12:00"},{day: "monday", start_time: "10:00", end_time: "12:00"}]
 
   tutor                   tutor                     @relation(fields: [tutor_id], references: [tutor_id])
-  hall                    halls?                     @relation(fields: [hall_id], references: [id])
+  hall                    halls?                    @relation(fields: [hall_id], references: [id])
   study_pack              study_pack[]
   student_enrolled_course student_enrolled_course[]
   student_attendance      student_attendance[]
@@ -339,32 +379,41 @@ model complaints {
   user users @relation(fields: [user_id], references: [id])
 }
 
-model quiz {
-  id            String    @id @default(uuid())
-  course_id     String    @default("")
-  study_pack_id String?
-  title         String
-  start_time    DateTime?
-  end_time      DateTime?
-  duration      String?
-  subject       String
-  subject_areas String[]  @default([])
-  question_ids  String[]
+model mcq_category {
+  id                  String   @id @default(uuid())
+  title               String
   number_of_questions Int
-  published     Boolean   @default(false)
+  question_ids        String[]
+}
 
-  course               courses                @relation(fields: [course_id], references: [id])
+model quiz {
+  id                  String    @id @default(uuid())
+  course_id           String?   @default("")
+  study_pack_id       String?
+  title               String
+  start_time          DateTime?
+  end_time            DateTime?
+  duration            String?
+  subject             String
+  subject_areas       String[]  @default([])
+  question_ids        String[]
+  number_of_questions Int
+  published           Boolean   @default(false)
+
+  course               courses?               @relation(fields: [course_id], references: [id])
   student_attempt_quiz student_attempt_quiz[]
 }
 
 model questions {
-  id             String   @id
-  question       String
-  options        String[] @default([])
-  explanation    String
-  subject        String
-  subject_areas  String[] @default([])
-  correct_answer Int
+  id               String   @id @default(uuid())
+  question         String
+  points           Int
+  difficulty_level String
+  options          String[] @default([])
+  explanation      String
+  subject          String
+  subject_areas    String[] @default([])
+  correct_answer   Int
 }
 
 model student_attempt_quiz {

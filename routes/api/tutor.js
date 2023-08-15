@@ -6,7 +6,7 @@ const verifyRoles = require("../../middleware/verifyRoles");
 const courseController = require('../../controllers/tutor/course')
 const contentController = require('../../controllers/tutor/content')
 const studypackController = require('../../controllers/tutor/studypack')
-const registerController = require('../../controllers/tutor/register')
+// const registerController = require('../../controllers/tutor/register')
 
 
 router
@@ -30,8 +30,25 @@ router
     .put(verifyRoles(ROLES_LIST.Tutor), courseController.editStudypack_ids)
 
     router
-    .route("/course/:id/month/:week")
+    .route("/course/:id/:studypackId")
     .delete(verifyRoles(ROLES_LIST.Tutor), courseController.removeStudyPack)
+
+
+    router
+    .route("/course/:id/:studypackId/:contentId")
+    .delete(verifyRoles(ROLES_LIST.Tutor), courseController.removeIds)
+
+    router
+    .route("/course/public/content/:id/:contentId")
+    .delete(verifyRoles(ROLES_LIST.Tutor), courseController.removePublicIds)
+
+
+    router
+    .route("/course/:id/:studypackId/:week/:contentId")
+    .put(verifyRoles(ROLES_LIST.Tutor), courseController.addIds)
+
+
+
 
 
 
