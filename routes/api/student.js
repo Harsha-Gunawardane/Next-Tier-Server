@@ -2,7 +2,6 @@ const express = require("express");
 const router = express.Router();
 
 const studentInfoController = require("../../controllers/student/studentInfo");
-const userPasswordController = require("../../controllers/user/resetPassword");
 const studentQuizController = require("../../controllers/student/quiz");
 const tuteController = require("../../controllers/student/tute");
 
@@ -17,7 +16,6 @@ router
   .route("/info")
   .get(verifyRoles(ROLES_LIST.Student), studentInfoController.getStudentInfo)
   .put(verifyRoles(ROLES_LIST.Student), studentInfoController.updateStudentInfo)
-  .patch(verifyRoles(ROLES_LIST.Student), userPasswordController.resetPassword);
 
 router
   .route("/quiz")
