@@ -15,7 +15,12 @@ const userInfoController = require("../../controllers/user/userInfo");
 
 router
   .route("/profile-image")
-  .post(upload.single("file"), userProfileController.uploadProfilePicture);
+
+  .post(
+    verifyRoles(ROLES_LIST.User),
+    upload.single("file"),
+    userProfileController.uploadProfilePicture
+  );
 
 router
   .route("/info")
@@ -23,6 +28,6 @@ router
   .get(
     // verifyRoles(ROLES_LIST.User),
     userInfoController.getUserInfo
-  )
+  );
 
 module.exports = router;

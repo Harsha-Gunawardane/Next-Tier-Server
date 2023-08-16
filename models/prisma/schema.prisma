@@ -1,6 +1,5 @@
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["selectRelationCount"]
 }
 
 datasource db {
@@ -140,18 +139,18 @@ model files {
 }
 
 model folders {
-  id       String   @id
-  user_id  String
-  name     String
-  tute_ids String[] @default([])
+  id        String   @id
+  user_name String
+  name      String
+  tute_ids  String[] @default([])
 
-  user users @relation(fields: [user_id], references: [id])
+  user users @relation(fields: [user_name], references: [username])
 }
 
 model tutes {
   id         String   @id
   folder_id  String   @default("")
-  user_id    String
+  user_name  String
   content    String?
   file_id    String   @default("")
   created_at DateTime
@@ -161,7 +160,7 @@ model tutes {
   local_url  String?
   isUpload   Boolean  @default(false)
 
-  user users @relation(fields: [user_id], references: [id])
+  user users @relation(fields: [user_name], references: [username])
 }
 
 enum content_type {

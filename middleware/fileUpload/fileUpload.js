@@ -6,7 +6,7 @@ const FILE_TYPE = require('../../config/allowedFileTypes')
 
 const googleCloud = new Storage({
   keyFilename: path.join(__dirname, "../../gcsKeyFile.json"),
-  projectId: "fluted-clock-395620 "
+  projectId: "eastern-button-394702"
 });
 
 const fileBucket = googleCloud.bucket('next_tier_bucket')
