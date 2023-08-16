@@ -206,8 +206,6 @@ const getMcqsFromQuiz = asyncHandler(async (req, res) => {
 });
 
 
-
-
 const mcqAddToQuiz = asyncHandler(async (req, res) => {
   const id = req.params.id;
 
