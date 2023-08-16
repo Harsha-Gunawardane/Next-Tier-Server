@@ -140,7 +140,7 @@ const createNewStaff = asyncHandler(async (req, res) => {
 
     console.log(addedStaffOnTutor);
 
-    res.status(201).json({ success: `New user ${user} registered` });
+    res.status(201).json({ success: `New staff added` });
 
   } catch (error) {
     console.error("Error handling new user:", error);
