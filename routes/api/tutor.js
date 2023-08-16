@@ -24,12 +24,15 @@ router
 router
   .route("/course/:id")
   .get(verifyRoles(ROLES_LIST.Tutor), courseController.getCourseById);
+
 router
   .route("/course/:id")
   .put(verifyRoles(ROLES_LIST.Tutor), courseController.editCourse);
+
 router
   .route("/course/:id")
   .delete(verifyRoles(ROLES_LIST.Tutor), courseController.removeCourse);
+
 router
   .route("/course/studypack/:id")
   .put(verifyRoles(ROLES_LIST.Tutor), courseController.editStudypack_ids);

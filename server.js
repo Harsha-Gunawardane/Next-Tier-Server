@@ -61,7 +61,7 @@ app.use("/user", require("./routes/api/user"));
 app.use("/notes", require("./routes/api/notes"));
 app.use("/content", require("./routes/api/content"));
 app.use("/comments", require("./routes/api/comments"))
-app.use("/courses", require("./routes/api/courses"))
+app.use("/forum", require("./routes/api/forum"))
 app.use("/tutor", require("./routes/api/tutor"));
 app.use("/stu", require("./routes/api/student"));
 app.use("/parent", require("./routes/api/parent"));

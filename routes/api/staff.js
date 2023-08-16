@@ -12,7 +12,7 @@ const complaintsController = require("../../controllers/Staff/complaints");
 // const complaintsManagerController = require("../../controllers/Staff/complaintsManagement")
 const getHallController = require("../../controllers/Staff/ListHalls");
 const getScheduleController = require("../../controllers/Staff/HallSchedule");
-const registerController = require("../../controllers/Staff/TeacherRegister");
+const teacherRegisterController = require("../../controllers/Staff/TeacherRegister");
 
 
 // verify roles
@@ -55,8 +55,8 @@ router
 
 router
   .route("/tutor")
-.get(registerController.getAllTutorDetails)
-.post(verifyRoles(ROLES_LIST.Staff), registerController.handleNewTeacher);
+  // .get(registerController.getAllTutorDetails)
+  .post(verifyRoles(ROLES_LIST.Staff), teacherRegisterController.handleNewTeacher);
 
 router
   .route("/hall")

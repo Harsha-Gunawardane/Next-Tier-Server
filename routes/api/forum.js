@@ -5,6 +5,7 @@ const router = express.Router();
 const courseController = require("../../controllers/courseController");
 const forumController = require("../../controllers/forumController");
 const postController = require("../../controllers/postController");
+const commentsController = require("../../controllers/commentsController");
 
 //other imports
 // Verify roles
@@ -13,25 +14,16 @@ const verifyRoles = require("../../middleware/verifyRoles");
 const { upload, multi_upload } = require("../../middleware/fileUpload/fileUpload");
 
 
-
-//routes
 router
     .route("/:id")
     .get(
-        // verifyRoles([ROLES_LIST.Student, ROLES_LIST.Tutor]),
-        courseController.getCourseById
-    )
-
-router
-    .route("/:id/forum")
-    .get(
-        // verifyRoles([ROLES_LIST.Student, ROLES_LIST.Tutor]),
+        verifyRoles([ROLES_LIST.Student, ROLES_LIST.Tutor]),
         forumController.getForumDetails
     )
 
 
 router
-    .route("/:id/forum/posts")
+    .route("/:id/posts")
     .get(
         verifyRoles([ROLES_LIST.Student, ROLES_LIST.Tutor]),
         forumController.getPosts
@@ -42,18 +34,23 @@ router
         postController.createPost
     )
 
-router
-    .route("/:id/forum/posts/:postId")
-    .get(
-        verifyRoles([ROLES_LIST.Student, ROLES_LIST.Tutor]),
-        postController.getPostById
-    )
 
 router
-    .route("/forum/posts/react")
+    .route("/posts/react")
     .post(
         verifyRoles([ROLES_LIST.Student, ROLES_LIST.Tutor]),
         postController.addReaction
+    )
+
+router
+    .route("/posts/:post_id/comment")
+    .get(
+        verifyRoles([ROLES_LIST.Student, ROLES_LIST.Tutor]),
+        postController.getComments
+    )
+    .post(
+        verifyRoles([ROLES_LIST.Student, ROLES_LIST.Tutor]),
+        commentsController.createParentComment
     )
 
 

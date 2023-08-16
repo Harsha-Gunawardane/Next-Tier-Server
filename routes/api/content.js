@@ -58,6 +58,9 @@ router
 router
     .get('/video/:videoName/hls', contentController.serveHLS);
 
+router
+    .get('/video/:videoName/hls/:quality', contentController.serveHLS);
+
 
 
 module.exports = router;

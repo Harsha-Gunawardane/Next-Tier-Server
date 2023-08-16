@@ -58,14 +58,25 @@ const getForumDetails = asyncHandler(async (req, res) => {
                                 },
                                 commenter: {
                                     select: {
+                                        id: true,
                                         first_name: true,
                                         last_name: true,
+                                    }
+                                },
+                                replies: {
+                                    skip: 0,
+                                    take: 0,
+                                },
+                                _count: {
+                                    select: {
+                                        replies: true,
                                     }
                                 }
                             },
                         },
                         user: {
                             select: {
+                                id: true,
                                 first_name: true,
                                 last_name: true,
                             }
@@ -84,6 +95,7 @@ const getForumDetails = asyncHandler(async (req, res) => {
                     select: {
                         id: true,
                         title: true,
+                        thumbnail: true,
                         tutor: {
                             select: {
                                 tutor_id: true,
@@ -119,6 +131,7 @@ const getForumDetails = asyncHandler(async (req, res) => {
             course: {
                 id: foundForum.course.id,
                 title: foundForum.course.title,
+                thumbnail: foundForum.course.thumbnail,
                 tutor: {
                     id: foundForum.course.tutor.id,
                     name: `${foundForum.course.tutor.user.first_name} ${foundForum.course.tutor.user.last_name}`,

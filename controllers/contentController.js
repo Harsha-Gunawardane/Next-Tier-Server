@@ -142,6 +142,9 @@ const getContentById = asyncHandler(async (req, res) => {
             });
         }
 
+        console.log("foundContent");
+        console.log(foundContent);
+
         const contentDetails = {
             id: foundContent.id,
             title: foundContent.title,
@@ -378,12 +381,81 @@ const test = asyncHandler(async (req, res) => {
 
 })
 
-const uploadVideo = asyncHandler(async (req, res) => {
-    console.log("uploadVideo");
+// model content {
+//     id                String              @id @default(uuid())
+//     title             String
+//     description       String
+//     user_id           String
+//     type              content_type?
+//     subject           String
+//     subject_areas     String[]
+//     uploaded_at       DateTime?           @default(now())
+//     status            content_status?     @default(PUBLIC)
+//     file_path         String?
+//     thumbnail         String?
+//     reactions         Json?               @default("{}") // {like: 0, dislike: 0, views: 0 ,comments: 0}
+//     content_reactions content_reactions[]
+//     content_views     content_views[]
+//     comments          comments[]
 
-    return res.status(200).json({
-        message: `uploadVideo`,
-    });
+//     user users @relation(fields: [user_id], references: [id])
+//   }
+
+const uploadVideo = asyncHandler(async (req, res) => {
+    const user = req.user;
+    const title = req.body.title;
+    const description = req.body.description;
+    const subject = req.body.subject;
+    const subject_areas = req.body.subject_areas;
+    const type = req.body.type;
+    const file = req.file;
+    const thumbnail = req.body.thumbnail;
+
+    console.log(req.body);
+    console.log(req.file);
+
+    if (!file) {
+        return res.status(400).json({
+            message: "No file uploaded",
+        });
+    }
+
+    try {
+        const foundUser = await prisma.users.findFirst({
+            where: {
+                username: user,
+            },
+        });
+
+        if (!foundUser) {
+            return res.status(401).json({
+                message: `User not found`,
+            });
+        }
+
+        const createdContent = await prisma.content.create({
+            data: {
+                title: title,
+                description: description,
+                user_id: foundUser.id,
+                type: type,
+                subject: subject,
+                subject_areas: subject_areas,
+                file_path: file.path,
+                thumbnail: thumbnail,
+            },
+        });
+
+        res.status(200).json({
+            message: `Content uploaded`,
+            data: createdContent,
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            message: `Error: ${error.message}`,
+        });
+    }
 
 })
 
@@ -391,8 +463,17 @@ const uploadVideo = asyncHandler(async (req, res) => {
 
 
 const serveHLS = (req, res) => {
+    const videoName = req.params.videoName;
+    const quality = req.params.quality;
+
+    // const hlsFilePath = path.join(__dirname, `../uploads/videos/${videoName}/hls/output.m3u8`);
+    const hlsFilePath = path.join(__dirname, `../uploads/videos/${videoName}/hls/output.m3u8`);
+
+    if (quality !== 'undefined') {
+        const hlsFilePath = path.join(__dirname, `../uploads/videos/${videoName}/hls/${quality}/output.m3u8`);
+    }
+
     console.log(req.params);
-    const hlsFilePath = path.join(__dirname, `../uploads/videos/${req.params.videoName}/hls/output.m3u8`);
     console.log(hlsFilePath);
     fs.readFile(hlsFilePath, (err, data) => {
         if (err) {
