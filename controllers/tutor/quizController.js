@@ -94,7 +94,7 @@ const updateQuiz = asyncHandler(async (req, res) => {
 
     console.log("Updated quiz:", updatedQuiz);
 
-    res.status(201).json({ success: "Quiz updated", quiz: updatedQuiz });
+    res.status(201).json(updatedQuiz);
   } catch (error) {
     console.error("Error handling update quiz:", error);
     res.status(500).json({ error: "Internal server error" });
@@ -148,7 +148,65 @@ const getQuiz = asyncHandler(async (req, res) => {
   }
 });
 
-//Special feature
+//Special features
+
+const getMcqsFromQuiz = asyncHandler(async (req, res) => {
+  const quizId = req.params.quizId;
+
+  try {
+    // Use Prisma Client to retrieve the quiz by its ID
+    const quiz = await prisma.quiz.findUnique({
+      where: {
+        id: quizId,
+      },
+    });
+
+    if (!quiz) {
+      return res.sendStatus(404); // Return a 404 response if the quiz is not found
+    }
+
+    // Filter out non-existing question IDs
+    const existingQuestionIds = [];
+    for (const questionId of quiz.question_ids) {
+      const question = await prisma.questions.findUnique({
+        where: {
+          id: questionId,
+        },
+      });
+      if (question) {
+        existingQuestionIds.push(questionId);
+      } else {
+        // Delete the non-existing question ID from the quiz's question_ids array
+        await prisma.quiz.update({
+          where: {
+            id: quiz.id,
+          },
+          data: {
+            question_ids: {
+              set: quiz.question_ids.filter((id) => id !== questionId),
+            },
+          },
+        });
+      }
+    }
+
+    // Retrieve questions based on existing question IDs
+    const questions = await prisma.questions.findMany({
+      where: {
+        id: {
+          in: existingQuestionIds,
+        },
+      },
+    });
+
+    res.status(200).json(questions);
+  } catch (error) {
+    throw new Error("Error fetching questions: " + error.message);
+  }
+});
+
+
+
 
 const mcqAddToQuiz = asyncHandler(async (req, res) => {
   const id = req.params.id;
@@ -229,11 +287,114 @@ const mcqAddToQuiz = asyncHandler(async (req, res) => {
   }
 });
 
+const mcqIdAddToQuiz = asyncHandler(async (req, res) => {
+  
+  const quizId = req.params.quizId;
+  const mcqId = req.body.id;
+
+  console.log("here")
+
+  try {
+
+    // find quiz available or not before update
+    const foundQuiz = await prisma.quiz.findFirst({
+      where: {
+        id: quizId,
+      },
+    });
+
+    if (!foundQuiz) {
+      return res.status(400).json({
+        message: `Quiz not found`,
+      });
+    }
+
+    const foundMcq = await prisma.questions.findFirst({
+      where: {
+        id: mcqId,
+      },
+    });
+
+    if (!foundMcq) {
+      return res.status(400).json({
+        message: `Mcq not found`,
+      });
+    }
+
+    // Update the quiz's question_ids array and number_of_questions based on the added MCQ
+    const updatedQuiz = await prisma.quiz.update({
+      where: {
+        id: quizId,
+      },
+      data: {
+        question_ids: {
+          set: [...foundQuiz.question_ids, mcqId], // Add the new MCQ ID to the existing array
+        },
+        number_of_questions: foundQuiz.question_ids.length + 1, // Update the number based on the new length
+      },
+    });
+
+    console.log("Added mcq id to the quiz:", updatedQuiz);
+
+    res.status(201).json(foundMcq);
+
+  } catch (error) {
+    console.error("Error handling added mcq id to the quiz:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+const mcqDeleteFromQuiz = asyncHandler(async (req, res) => {
+   const quizId = req.params.quizId;
+   const mcqId = req.params.mcqId;
+
+  try {
+    
+    // find quiz available or not before update
+    const foundQuiz = await prisma.quiz.findFirst({
+      where: {
+        id: quizId,
+      },
+    });
+
+    if (!foundQuiz) {
+      return res.status(400).json({
+        message: `Quiz not found`,
+      });
+    }
+
+    const updatedQuiz = await prisma.quiz.update({
+      where: {
+        id: quizId,
+      },
+      data: {
+        question_ids: {
+          set: foundQuiz.question_ids.filter(
+            (questionId) => questionId !== mcqId
+          ), // Remove the specified mcqId
+        },
+        number_of_questions: foundQuiz.question_ids.length - 1, // Update the number based on the new length
+      },
+    });
+
+
+    console.log("Delete mcq from the quiz:", updatedQuiz);
+
+    res.status(201).json(updatedQuiz);
+  } catch (error) {
+    console.error("Error handling delete mcq from the quiz:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 module.exports = {
   getAllQuizzes,
   createNewQuiz,
   updateQuiz,
   deleteQuiz,
   getQuiz,
+  getMcqsFromQuiz,
   mcqAddToQuiz,
+  mcqIdAddToQuiz,
+  mcqDeleteFromQuiz,
 };

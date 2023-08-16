@@ -10,12 +10,10 @@ const studypackController = require("../../controllers/tutor/studypack");
 // const registerController = require('../../controllers/tutor/register')
 
 //Sithija
-const quizController = require("../../controllers/tutor/tutorQuizController");
-const mcqController = require("../../controllers/tutor/tutorMcqController");
-const tutorCategoryController = require("../../controllers/tutor/tutorCategoryController");
-const staffController = require("../../controllers/tutor/tutorStaffController");
-
-
+const quizController = require("../../controllers/tutor/quizController");
+const mcqController = require("../../controllers/tutor/mcqController");
+const categoryController = require("../../controllers/tutor/categoryController");
+const staffController = require("../../controllers/tutor/staffController");
 
 router
 
@@ -112,11 +110,25 @@ router
   .delete(quizController.deleteQuiz);
 
 router
+  .route("/quizzes/getMcqs/:quizId")
+  // .post(verifyRoles(ROLES_LIST.Tutor), quizController.getMcqsFromQuiz);
+  .get(quizController.getMcqsFromQuiz);
+
+router
   .route("/quizzes/addMcq/:id")
   // .post(verifyRoles(ROLES_LIST.Tutor), quizController.mcqAddToQuiz);
   .post(quizController.mcqAddToQuiz);
 
-  //Mcqs
+router
+  .route("/quizzes/addMcqId/:quizId")
+  // .post(verifyRoles(ROLES_LIST.Tutor), quizController.mcqIdAddToQuiz);
+  .post(quizController.mcqIdAddToQuiz);
+
+router
+  .route("/quizzes/deleteMcq/:quizId/:mcqId")
+  .delete(quizController.mcqDeleteFromQuiz);
+
+//Mcqs
 router
   .route("/mcqs")
   .get(mcqController.getAllMcqs)
@@ -135,20 +147,26 @@ router
 
 router
   .route("/categories")
-  .get(tutorCategoryController.getAllMcqCategories)
-  // .post(verifyRoles(ROLES_LIST.Tutor), tutorCategoryController.createNewMcqCategory);
-  .post(tutorCategoryController.createNewMcqCategory);
+  .get(categoryController.getAllMcqCategories)
+  // .post(verifyRoles(ROLES_LIST.Tutor), categoryController.createNewMcqCategory);
+  .post(categoryController.createNewMcqCategory);
 
-router.route("/categories/:id").get(tutorCategoryController.getMcqCategory);
-// .put(verifyRoles(ROLES_LIST.Tutor), tutorCategoryController.updateMcqCategory)
-// .put(tutorCategoryController.updateMcqCategory)
-// .delete(verifyRoles(ROLES_LIST.Tutor), tutorCategoryController.deleteMcqCategory);
-// .delete(tutorCategoryController.deleteMcqCategory);
+router
+  .route("/categories/:id")
+  .get(categoryController.getMcqCategory)
+  // .put(verifyRoles(ROLES_LIST.Tutor), categoryController.updateMcqCategory)
+  .put(categoryController.updateMcqCategory)
+  // .delete(verifyRoles(ROLES_LIST.Tutor), categoryController.deleteMcqCategory);
+  .delete(categoryController.deleteMcqCategory);
 
-router;
-// .route("/addMcq/:id")
-// .post(verifyRoles(ROLES_LIST.Tutor), tutorCategoryController.mcqAddToMcqCategory);
-// .post(tutorCategoryController.mcqAddToMcqCategory);
+router
+  .route("/categories/addMcq/:id")
+  // .post(verifyRoles(ROLES_LIST.Tutor), categoryController.mcqAddToCategory);
+  .post(categoryController.mcqAddToCategory);
+
+router
+  .route("/categories/deleteMcq/:categoryId/:mcqId")
+  .delete(categoryController.mcqDeleteFromCategory);
 
 //Staffs
 
@@ -162,6 +180,5 @@ router
   .get(staffController.getStaff)
   .put(verifyRoles(ROLES_LIST.Tutor), staffController.updateStaff)
   .delete(verifyRoles(ROLES_LIST.Tutor), staffController.deleteStaff);
-
 
 module.exports = router;
