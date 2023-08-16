@@ -84,6 +84,7 @@ CREATE TABLE "tutor" (
     "school" TEXT,
     "subjects" TEXT[],
     "qualifications" TEXT[] DEFAULT ARRAY[]::TEXT[],
+    "email" TEXT NOT NULL,
 
     CONSTRAINT "tutor_pkey" PRIMARY KEY ("tutor_id")
 );
@@ -152,7 +153,7 @@ CREATE TABLE "folders" (
 CREATE TABLE "tutes" (
     "id" TEXT NOT NULL,
     "folder_id" TEXT NOT NULL DEFAULT '',
-    "user_id" TEXT NOT NULL,
+    "user_name" TEXT NOT NULL,
     "content" TEXT,
     "file_id" TEXT NOT NULL DEFAULT '',
     "created_at" TIMESTAMP(3) NOT NULL,
@@ -497,7 +498,7 @@ ALTER TABLE "files" ADD CONSTRAINT "files_uploaded_by_fkey" FOREIGN KEY ("upload
 ALTER TABLE "folders" ADD CONSTRAINT "folders_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "tutes" ADD CONSTRAINT "tutes_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "tutes" ADD CONSTRAINT "tutes_user_name_fkey" FOREIGN KEY ("user_name") REFERENCES "users"("username") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "content" ADD CONSTRAINT "content_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

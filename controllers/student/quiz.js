@@ -50,12 +50,16 @@ const generateQuiz = async (req, res) => {
   // validate inputs
   if (!subject) {
     return res.status(400).json({ error: "Already done quiz!" });
-  } else if(!value) {
+  } else if (!value) {
     return res.status(400).json({ error: "No of questions is required" });
   } else if (value > 50) {
-    return res.status(400).json({ error: "No of questions must not be more than 50" });
+    return res
+      .status(400)
+      .json({ error: "No of questions must not be more than 50" });
   } else if (value < 0) {
-    return res.status(400).json({ error: "No of questions must not be less than zero" });
+    return res
+      .status(400)
+      .json({ error: "No of questions must not be less than zero" });
   }
 
   // restructure subject input
@@ -190,10 +194,9 @@ const doneQuiz = async (req, res) => {
     const mark = Math.floor((noOfCorrectAnswers / questions.length) * 100);
 
     // update result array in correct format
-    const resultInInt = result
-      .map((value) => (value !== null ? value : -1));
+    const resultInInt = result.map((value) => (value !== null ? value : -1));
 
-    console.log(resultInInt)
+    console.log(resultInInt);
 
     // update as quiz is done
     const updatedQuiz = await prisma.student_generate_quiz.update({
@@ -289,9 +292,69 @@ const getQuizMarking = async (req, res) => {
   }
 };
 
+// const getPreviousQuizzes = async (req, res) => {
+//   const user = req.user;
+//   let { subject, quizname } = req.params;
+
+//   // restructure subject input
+//   if (!isFirstLetterInCapital(subject)) {
+//     subject = capitalizeFirstLetter(subject);
+//   }
+
+//   try {
+//     const foundUser = await prisma.users.findUnique({
+//       where: {
+//         username: user,
+//       },
+//     });
+//     if (!foundUser) return res.sendStatus(401);
+
+//     let previousQuizzes;
+//     if(quizname) {
+//       previousQuizzes = await prisma.student_generate_quiz.findMany({
+//         where: {
+//           subject: subject,
+//           done: true,
+//           quiz_name: {
+//             contains: quizname
+//           }
+//         },
+//       });
+//     } else {
+//       previousQuizzes = await prisma.student_generate_quiz.findMany({
+//         where: {
+//           subject: subject,
+//           done: true,
+//         },
+//         take: 3,
+//       });
+//     }
+
+//     let responseQuizzes = [];
+//     previousQuizzes.forEach((quiz) => {
+//       const quizData = {
+//         subject: quiz.subject,
+//         quizname: quiz.quiz_name,
+//         value: quiz.mark,
+//         date: formatDate(quiz.date),
+//         color:
+//           quiz.mark > 75 ? "#15BD66" : quiz.mark > 35 ? "#FFD466" : "#D93400",
+//       };
+
+//       responseQuizzes.push(quizData);
+//     });
+//     res.json({ responseQuizzes });
+//   } catch (error) {
+//     console.log(error);
+//     res.status(500).json({ message: error.message });
+//   }
+// };
+
 const getPreviousQuizzes = async (req, res) => {
   const user = req.user;
-  let { subject, quizname } = req.params;
+  let { subject, isAll } = req.query;
+
+  console.log(req.query);
 
   // restructure subject input
   if (!isFirstLetterInCapital(subject)) {
@@ -307,17 +370,7 @@ const getPreviousQuizzes = async (req, res) => {
     if (!foundUser) return res.sendStatus(401);
 
     let previousQuizzes;
-    if(quizname) {
-      previousQuizzes = await prisma.student_generate_quiz.findMany({
-        where: {
-          subject: subject,
-          done: true,
-          quiz_name: {
-            contains: quizname
-          }
-        },
-      });
-    } else {
+    if (isAll === "f") {
       previousQuizzes = await prisma.student_generate_quiz.findMany({
         where: {
           subject: subject,
@@ -325,26 +378,37 @@ const getPreviousQuizzes = async (req, res) => {
         },
         take: 3,
       });
+      console.log("previousQuizzes 1");
+    } else if (isAll === "t") {
+      previousQuizzes = await prisma.student_generate_quiz.findMany({
+        where: {
+          subject: subject,
+          done: true,
+        },
+      });
+      console.log("previousQuizzes 2");
     }
 
     let responseQuizzes = [];
-    previousQuizzes.forEach((quiz) => {
-      const quizData = {
-        subject: quiz.subject,
-        quizname: quiz.quiz_name,
-        value: quiz.mark,
-        date: formatDate(quiz.date),
-        color:
-          quiz.mark > 75 ? "#15BD66" : quiz.mark > 35 ? "#FFD466" : "#D93400",
-      };
+    if (previousQuizzes) {
+      previousQuizzes.forEach((quiz) => {
+        const quizData = {
+          subject: quiz.subject,
+          quizname: quiz.quiz_name,
+          value: quiz.mark,
+          date: formatDate(quiz.date),
+          id: quiz.id,
+          color:
+            quiz.mark > 75 ? "#15BD66" : quiz.mark > 35 ? "#FFD466" : "#D93400",
+        };
 
-      responseQuizzes.push(quizData);
-    });
+        responseQuizzes.push(quizData);
+      });
+    }
     res.json({ responseQuizzes });
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: error.message });
   }
 };
-
 module.exports = { generateQuiz, getQuizMarking, doneQuiz, getPreviousQuizzes };

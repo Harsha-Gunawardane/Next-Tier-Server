@@ -15,7 +15,10 @@ const { upload } = require("../../middleware/fileUpload/fileUpload");
 router
   .route("/info")
   .get(verifyRoles(ROLES_LIST.Student), studentInfoController.getStudentInfo)
-  .put(verifyRoles(ROLES_LIST.Student), studentInfoController.updateStudentInfo)
+  .put(
+    verifyRoles(ROLES_LIST.Student),
+    studentInfoController.updateStudentInfo
+  );
 
 router
   .route("/quiz")
@@ -27,7 +30,7 @@ router
   .post(verifyRoles(ROLES_LIST.Student), studentQuizController.getQuizMarking);
 
 router
-  .route("/quiz-revision/:subject/:quizname?")
+  .route("/quiz-revision/")
   .get(
     verifyRoles(ROLES_LIST.Student),
     studentQuizController.getPreviousQuizzes
@@ -50,5 +53,9 @@ router
 router
   .route("/pdf")
   .get(verifyRoles(ROLES_LIST.Student), tuteController.viewPdf);
+
+router
+  .route("/folder")
+  .post(verifyRoles(ROLES_LIST.Student), tuteController.createFolder);
 
 module.exports = router;

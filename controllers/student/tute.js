@@ -184,18 +184,10 @@ const generatePdf = async (req, res) => {
 
 const initializeTute = async (req, res) => {
   const user = req.user;
-  const { id, name } = req.body;
+  const { id, name, folderName } = req.body;
   const file = req.file;
 
-  console.log(id);
-
   try {
-    const foundUser = await prisma.users.findUnique({
-      where: {
-        username: user,
-      },
-    });
-
     const foundTute = await prisma.tutes.findUnique({
       where: {
         id,
@@ -208,26 +200,62 @@ const initializeTute = async (req, res) => {
     date = date.toISOString();
 
     if (file) {
-      const newPdfFileName = `${date}_${uuid()}_${file.originalname.replace(/ /g, '_')}`;
+      const newPdfFileName = `${date}_${uuid()}_${file.originalname.replace(
+        / /g,
+        "_"
+      )}`;
       console.log(newPdfFileName);
 
       const blob = fileBucket.file(newPdfFileName);
       const blobStream = blob.createWriteStream();
 
-      blobStream.on('finish', () => {
-        console.log('success')
-      })
+      blobStream.on("finish", () => {
+        console.log("success");
+      });
       blobStream.end(file.buffer);
     }
 
-    const newTute = await prisma.tutes.create({
-      data: {
-        id,
-        name,
-        created_at: date,
-        user_id: foundUser.id,
-      },
-    });
+    if (folderName) {
+      const tempF = await prisma.folders.findFirst({
+        where: {
+          user_name: user,
+          name: folderName,
+        }
+      })
+      const updatedFolder = await prisma.folders.update({
+        where: {
+          id: tempF.id
+        },
+        data: {
+          tute_ids: {
+            push: id,
+          },
+        },
+      });
+
+      console.log(updatedFolder);
+      if (!updatedFolder)
+        return res.status(400).jso({ message: "No such folder" });
+
+      const newTute = await prisma.tutes.create({
+        data: {
+          id,
+          name,
+          created_at: date,
+          user_name: user,
+          folder_id: updatedFolder.id,
+        },
+      });
+    } else {
+      const newTute = await prisma.tutes.create({
+        data: {
+          id,
+          name,
+          created_at: date,
+          user_name: user,
+        },
+      });
+    }
 
     res.status(201).json({ message: `${name} is created` });
   } catch (error) {
@@ -240,18 +268,9 @@ const getTutesAndFolders = async (req, res) => {
   const user = req.user;
 
   try {
-    const userData = await prisma.users.findUnique({
-      where: {
-        username: user,
-      },
-      select: {
-        id: true,
-      },
-    });
-
     const tutes = await prisma.tutes.findMany({
       where: {
-        user_id: userData.id,
+        user_name: user,
       },
       select: {
         id: true,
@@ -261,15 +280,21 @@ const getTutesAndFolders = async (req, res) => {
     });
 
     let pages = [];
+    let folders = [];
+
+    let tempPages = {};
+
     tutes.forEach((tute) => {
       if (!tute.folder_id) {
         pages.push(tute);
+      } else {
+        tempPages[tute.id] = tute;
       }
     });
 
-    const folders = await prisma.folders.findMany({
+    const foldersData = await prisma.folders.findMany({
       where: {
-        user_id: userData.id,
+        user_name: user,
       },
       select: {
         id: true,
@@ -278,13 +303,32 @@ const getTutesAndFolders = async (req, res) => {
       },
     });
 
-    let foldersDic = {};
-    folders.forEach((folder) => {
-      foldersDic[folder.id] = folder;
+    foldersData.forEach((folder) => {
+      let folderData = {
+        name: folder.name,
+        pages: [],
+      };
+
+      if (folder.tute_ids) {
+        folder.tute_ids.forEach((tuteId) => {
+          const tuteData = tempPages[tuteId];
+          console.log(tuteData);
+          if (tuteData) {
+            folderData.pages.push(tuteData);
+          }
+        });
+      }
+
+      folders.push(folderData);
     });
 
-    res.status(200).json({ data: { pages, tutes, folders: foldersDic } });
+    console.log("pages", pages);
+    console.log("folder", folders);
+    console.log("Temp tutes", tempPages);
+
+    res.status(200).json({ data: { pages, folders } });
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: error.message });
   }
 };
@@ -378,10 +422,49 @@ const viewPdf = async (req, res) => {
   }
 };
 
+const createFolder = async (req, res) => {
+  const user = req.user;
+  const { name } = req.body;
+
+  if (!name && length(name) < 3)
+    return res.status(400).json({ message: "Invalid name" });
+  try {
+    const existingFolder = await prisma.folders.findFirst({
+      where: {
+        name: name,
+        user_name: user,
+      },
+    });
+    if (existingFolder)
+      return res.status(409).json({ message: "Folder already exists" });
+
+    const newFolder = await prisma.folders.create({
+      data: {
+        id: uuid(),
+        user_name: user,
+        name: name,
+      },
+    });
+
+    res.status(201).json({ message: "Successfully created folder" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+const setReminder = async (req, res) => {
+  const user = req.user;
+  const {message, time, days} = req.body;
+
+  
+}
+
 module.exports = {
   generatePdf,
   initializeTute,
   getTutesAndFolders,
   getTuteContent,
   viewPdf,
+  createFolder,
 };
