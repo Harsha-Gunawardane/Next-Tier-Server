@@ -35,6 +35,7 @@ const tutorProfile= async (req, res) => {
                 subject:true,
                 start_date:true,
                 monthly_fee:true,
+                thumbnail:true,
               }
             }
           },
