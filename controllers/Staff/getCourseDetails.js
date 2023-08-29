@@ -37,8 +37,39 @@ const getCourseDetails = async (req, res) => {
             },
           },
         },
+      study_pack: {
+        select: {
+          id: true,
+          title: true,
+          student_purchase_studypack: {
+            select: {
+              student_id: true,
+              reciept_location: true,
+              ammount: true,
+              type: true,
+              purchased_at: true,
+              expire_date: true,
+              student: {
+                select: {
+                  id: true,
+                  first_name: true,
+                  last_name: true,
+                  join_date: true,
+                  profile_picture: true,
+                  gender: true,
+                  students: {
+                    select: {
+                      stream: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
       },
-    });
+    },
+  });
 
     if (!course) {
       return res.status(404).json({ error: "Course not found" });

@@ -1,10 +1,10 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const { PrismaClient } = require('@prisma/client');
+const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
 // Route to get a specific staff's profile
-const tutorProfile= async (req, res) => {
+const tutorProfile = async (req, res) => {
   const tutorId = req.params.id;
 
   try {
@@ -15,29 +15,31 @@ const tutorProfile= async (req, res) => {
         first_name: true,
         last_name: true,
         profile_picture: true,
-        join_date:true,
-        address:true,
-        DOB:true,
-        NIC:true,
-        phone_number:true,
-        username:true,
+        join_date: true,
+        address: true,
+        DOB: true,
+        NIC: true,
+        phone_number: true,
+        username: true,
         tutor: {
           select: {
             qualifications: true,
-            medium:true,
-            school:true,
-            courses:{
-              select:{
-                id:true,
-                title:true,
-                description:true,
-                medium:true,
-                subject:true,
-                start_date:true,
-                monthly_fee:true,
-                thumbnail:true,
-              }
-            }
+            medium: true,
+            school: true,
+            courses: {
+              select: {
+                id: true,
+                title: true,
+                description: true,
+                medium: true,
+                subject: true,
+                start_date: true,
+                monthly_fee: true,
+                thumbnail: true,
+                status: true,
+              },
+              where: { status: "APPROVED" }, // Filter approved courses
+            },
           },
         },
       },
@@ -56,6 +58,4 @@ const tutorProfile= async (req, res) => {
   }
 };
 
-
-
-module.exports = {tutorProfile};
+module.exports = { tutorProfile };
