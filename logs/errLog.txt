@@ -296,3 +296,8 @@ type StringFilter {
 20230814	22:03:28	84324781-964f-4e25-9301-57430ac6875c	PayloadTooLargeError: request entity too large
 20230815	10:05:15	81bd0962-4109-4209-baab-438670ae6528	PayloadTooLargeError: request entity too large
 20230815	12:06:12	be5af533-7c36-4fc7-a83b-663b6183aa82	PayloadTooLargeError: request entity too large
+20230823	20:52:46	21ec635f-5f77-4326-a25d-9df663bdea19	SyntaxError: Unexpected token } in JSON at position 81
+20230826	00:28:04	c30e593a-1339-4c60-b1d2-69f1de178c2d	SyntaxError: Unexpected token c in JSON at position 49
+20230826	23:36:56	a54de5ce-6444-4f94-a425-fce601c0f0d2	SyntaxError: Unexpected token m in JSON at position 261
+20230827	16:00:08	7aee7003-45cf-41c0-aef2-3cdf8f67cc88	SyntaxError: Unexpected token } in JSON at position 132
+20230901	10:37:10	21e2d0b3-1585-43d6-828d-5e95dd8c4ead	PayloadTooLargeError: request entity too large

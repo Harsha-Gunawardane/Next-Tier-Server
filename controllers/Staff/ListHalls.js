@@ -52,53 +52,59 @@ const registerHall = async (req, res) => {
 };
 
 const updateHall = async (req, res) => {
-try {
-  const {
-    id,
-  name,
-  capacity,
-  facilities,
-  hall_profile,
-  } = req.body;
+  try {
+    const { id, name, capacity, facilities, hall_profile } = req.body;
 
-  const user = req.user; 
-  const convertedCapacity = parseInt(capacity);
-  // Find the user based on the username
-  const foundUser = await prisma.users.findUnique({
-    where: {
-      username: user,
-    },
-  });
+    const user = req.user;
+    const convertedCapacity = parseInt(capacity);
+    // Find the user based on the username
+    const foundUser = await prisma.users.findUnique({
+      where: {
+        username: user,
+      },
+    });
 
-  if (!foundUser) return res.sendStatus(401); // Unauthorized user
+    if (!foundUser) return res.sendStatus(401); // Unauthorized user
 
-  // Update user details if there are differences
-  if (
-    foundUser.id !== id ||
-    foundUser.name !== name ||
-    foundUser.capacity !== capacity ||
-    foundUser.facilities !== facilities ||
-    foundUser.hall_profile !== hall_profile 
-  ) {
-    const updatedData = {
-       name: name,
+    // Update user details if there are differences
+    if (
+      foundUser.id !== id ||
+      foundUser.name !== name ||
+      foundUser.capacity !== capacity ||
+      foundUser.facilities !== facilities ||
+      foundUser.hall_profile !== hall_profile
+    ) {
+      const updatedData = {
+        name: name,
         capacity: convertedCapacity,
         facilities: facilities,
         hall_profile: hall_profile,
-    };
+      };
 
-    const updatedUser = await prisma.halls.update({
-      where: { id: id },
-      data: updatedData,
-    });
+      const updatedUser = await prisma.halls.update({
+        where: { id: id },
+        data: updatedData,
+      });
+    }
+
+    // Return the updated staff info or a success message
+    const updatedHallInfo = req.body;
+    res.json(updatedHallInfo);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
-
-  // Return the updated staff info or a success message
-  const updatedHallInfo = req.body;
-  res.json(updatedHallInfo);
-} catch (error) {
-  res.status(500).json({ message: error.message });
-}
 };
 
-module.exports = { getAllHallDetails, registerHall, updateHall };
+const getHallCount = async (req, res) => {
+  try {
+    // Fetch the hall count from your Prisma model named 'hall'
+    const hallCount = await prisma.halls.count();
+
+    res.status(200).json({ count: hallCount });
+  } catch (error) {
+    console.error("Error fetching hall count:", error);
+    res.status(500).json({ error: "Error fetching hall count" });
+  }
+};
+
+module.exports = { getAllHallDetails, registerHall, updateHall, getHallCount };
