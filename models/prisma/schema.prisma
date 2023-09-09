@@ -1,5 +1,5 @@
 generator client {
-  provider        = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
@@ -121,6 +121,7 @@ model admin {
 model instStaff {
   inst_staff_id  String   @id @default(uuid())
   qualifications String[] @default([])
+  emergency_No   String?
 
   user users @relation(fields: [inst_staff_id], references: [id])
 }
