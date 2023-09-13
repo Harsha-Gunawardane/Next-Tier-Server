@@ -51,7 +51,7 @@ app.use("/logout", require("./routes/logout"));
 app.use("/send-otp", require("./routes/send-otp"));
 app.use("/verify-otp", require("./routes/verify-otp"));
 app.use("/forgot-password", require("./routes/reset-password"));
-
+``
 // for initialize data to DB
 app.use("/initialize", require("./routes/test"));
 
