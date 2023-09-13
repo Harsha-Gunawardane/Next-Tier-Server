@@ -220,11 +220,11 @@ const initializeTute = async (req, res) => {
         where: {
           user_name: user,
           name: folderName,
-        }
-      })
+        },
+      });
       const updatedFolder = await prisma.folders.update({
         where: {
-          id: tempF.id
+          id: tempF.id,
         },
         data: {
           tute_ids: {
@@ -455,10 +455,85 @@ const createFolder = async (req, res) => {
 
 const setReminder = async (req, res) => {
   const user = req.user;
-  const {message, time, days} = req.body;
+  const { message, days } = req.body;
 
-  
-}
+  const wDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  console.log(message, days);
+  try {
+    const userData = await prisma.users.findUnique({
+      where: {
+        username: user,
+      },
+      select: {
+        id: true,
+      },
+    });
+    const existSchedule = await prisma.reading_schedule.findFirst({
+      where: {
+        user_id: userData.id,
+      },
+      select: {
+        schedule: true,
+        id: true,
+      },
+    });
+
+    let schedule = existSchedule.schedule;
+
+    if (Object.keys(schedule).length === 0) {
+      wDays.map((day) => {
+        schedule[day] = days.includes(day) ? message : null;
+      });
+    } else {
+      days.map((day) => {
+        schedule[day] = message;
+      });
+    }
+
+    const updatedSchedule = await prisma.reading_schedule.update({
+      where: {
+        user_id: userData.id,
+        id: existSchedule.id,
+      },
+      data: {
+        schedule: schedule,
+      },
+    });
+
+    res.send({ message: "Successfully created", data: updatedSchedule.schedule });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+const getReminders = async (req, res) => {
+  const user = req.user;
+
+  try {
+    const userData = await prisma.users.findUnique({
+      where: {
+        username: user,
+      },
+      select: {
+        id: true,
+      },
+    });
+    const schedules = await prisma.reading_schedule.findFirst({
+      where: {
+        user_id: userData.id,
+      },
+      select: {
+        schedule: true,
+      },
+    });
+
+    res.send(schedules);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: error.message });
+  }
+};
 
 module.exports = {
   generatePdf,
@@ -467,4 +542,6 @@ module.exports = {
   getTuteContent,
   viewPdf,
   createFolder,
+  setReminder,
+  getReminders,
 };
