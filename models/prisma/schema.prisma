@@ -54,6 +54,8 @@ model users {
   comment_reactions          comment_reactions[]
   post_reactions             post_reactions[]
   notifications              notifications[]
+  reading_schedule           reading_schedule[]
+  parent                     parent[]
 }
 
 model reset_password {
@@ -74,7 +76,8 @@ model students {
   subjects          String[] @default([])
   weak_areas        Json? // {subject: "subject", area: ["area1", "area2"]}
 
-  user users @relation(fields: [student_id], references: [id])
+  user   users    @relation(fields: [student_id], references: [id])
+  parent parent[]
 }
 
 model tutor {
@@ -539,4 +542,20 @@ model notifications {
   reciver_id String
 
   sender users @relation(fields: [sender_id], references: [id])
+}
+
+model reading_schedule {
+  id       String @id @default(uuid())
+  schedule Json   @default("{}")
+  user_id  String
+
+  user users @relation(fields: [user_id], references: [id])
+}
+
+model parent {
+  id       String @id
+  child_id String
+
+  user  users    @relation(fields: [id], references: [id])
+  child students @relation(fields: [child_id], references: [student_id])
 }
