@@ -47,6 +47,11 @@ router
   .get(verifyRoles(ROLES_LIST.Student), tuteController.getTuteContent);
 
 router
+  .route("/tute/schedule")
+  .post(verifyRoles(ROLES_LIST.Student), tuteController.setReminder)
+  .get(verifyRoles(ROLES_LIST.Student), tuteController.getReminders);
+
+router
   .route("/tutes")
   .get(verifyRoles(ROLES_LIST.Student), tuteController.getTutesAndFolders);
 
