@@ -11,9 +11,7 @@ const handleLogout = async (req, res) => {
   try {
     const foundUser = await prisma.users.findFirst({
       where: {
-        refresh_token: {
-          has: refreshToken,
-        },
+        refresh_token: refreshToken,
       },
     });
     if (!foundUser) {
@@ -25,9 +23,7 @@ const handleLogout = async (req, res) => {
     const updatedUser = await prisma.users.update({
       where: { username: foundUser.username },
       data: {
-        refresh_token: {
-          set: foundUser.refresh_token.filter(token => token !== refreshToken),
-        },
+        refresh_token: null,
       },
     });
 
