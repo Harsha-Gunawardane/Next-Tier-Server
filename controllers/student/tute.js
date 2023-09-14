@@ -468,7 +468,8 @@ const setReminder = async (req, res) => {
         id: true,
       },
     });
-    const existSchedule = await prisma.reading_schedule.findFirst({
+    console.log("schedule");
+    let existSchedule = await prisma.reading_schedule.findFirst({
       where: {
         user_id: userData.id,
       },
@@ -478,29 +479,46 @@ const setReminder = async (req, res) => {
       },
     });
 
-    let schedule = existSchedule.schedule;
+    console.log(existSchedule);
+    let schedule = existSchedule?.schedule;
 
-    if (Object.keys(schedule).length === 0) {
-      wDays.map((day) => {
-        schedule[day] = days.includes(day) ? message : null;
-      });
-    } else {
-      days.map((day) => {
-        schedule[day] = message;
-      });
+    if (!existSchedule) {
+      const newSchedule = await prisma.reading_schedule.create({
+        data: {
+          user_id: userData.id
+        }
+      })
+
+      existSchedule = newSchedule
+      console.log(newSchedule);
+      schedule = {
+        Sun: null,
+        Mon: null,
+        Tue: null,
+        Wed: null,
+        Thu: null,
+        Fri: null,
+        Sat: null,
+      };
     }
+    days.map((day) => {
+      schedule[day] = message;
+    });
 
     const updatedSchedule = await prisma.reading_schedule.update({
       where: {
         user_id: userData.id,
-        id: existSchedule.id,
+        id: existSchedule.id
       },
       data: {
         schedule: schedule,
       },
     });
 
-    res.send({ message: "Successfully created", data: updatedSchedule.schedule });
+    res.send({
+      message: "Successfully created",
+      data: updatedSchedule.schedule,
+    });
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: error.message });
