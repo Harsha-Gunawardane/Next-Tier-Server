@@ -16,6 +16,9 @@ const getStudentPaymentHistory = async (req, res) => {
       select: {
       student_purchase_studypack:{
         select:{
+          type:true,
+          student_id:true,
+          pack_id:true,
           ammount:true,
           purchased_at:true,
           pack:{
