@@ -11,6 +11,9 @@ const complaintsController = require("../../controllers/Staff/complaints");
 const allTutorProfileController = require("../../controllers/Staff/tutorProfile");
 const courseProfileController=require("../../controllers/Staff/getCourseDetails");
 const studentProfileController = require ("../../controllers/Staff/getStudentDetails");
+const studentPaymentController = require("../../controllers/Staff/getPaymentDetails");
+const studentPaymentHistoryController = require ("../../controllers/Staff/getStudentPaymentHistory");
+
 
 //shimra's routes
 const registerTeacherController = require("../../controllers/Staff/TeacherRegister");
@@ -65,6 +68,15 @@ router
   router
   .route("/stu-profile/:id")
   .get(verifyRoles(ROLES_LIST.Staff), studentProfileController.getStudentDetails);
+
+  router
+  .route("/stu-payment/:username")
+  .get(verifyRoles(ROLES_LIST.Staff), studentPaymentController.getPaymentDetails);
+
+  router
+  .route("/payment-history/:id")
+  .get(verifyRoles(ROLES_LIST.Staff), studentPaymentHistoryController.getStudentPaymentHistory);
+
 
 //shimra's routes
 
