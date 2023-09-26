@@ -33,7 +33,9 @@ const getPaymentDetails = async (req, res) => {
         },
         student_purchase_studypack: {
           select: {
-            
+            id:true,
+            payment_for:true,
+            status:true,
             ammount: true,
             type: true,
             purchased_at: true,
@@ -43,6 +45,11 @@ const getPaymentDetails = async (req, res) => {
                 title: true,
                 thumbnail: true,
                 price: true,
+                course:{
+                  select:{
+                   title:true,
+                  }
+                },
                 tutor: {
                   select: {
                     qualifications: true,

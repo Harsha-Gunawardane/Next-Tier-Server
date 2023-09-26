@@ -14,14 +14,25 @@ const getStudentPaymentHistory = async (req, res) => {
       where: { id:studentId},
 
       select: {
+        id:true,
       student_purchase_studypack:{
+        where: {
+          status: "PAID",
+          payment_for: {
+            in: ["PURCHASE", "EXTEND"],
+          },
+        },
         select:{
+          id:true,
+          status:true,
+          payment_for:true,
           type:true,
           student_id:true,
           pack_id:true,
           ammount:true,
           purchased_at:true,
           pack:{
+            
             select:{
               title:true,
               tutor:{

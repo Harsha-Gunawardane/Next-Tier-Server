@@ -9,11 +9,14 @@ const allStaffProfileController = require("../../controllers/Staff/staffProfile"
 const editDetailsController = require("../../controllers/Staff/editDetails");
 const complaintsController = require("../../controllers/Staff/complaints");
 const allTutorProfileController = require("../../controllers/Staff/tutorProfile");
-const courseProfileController=require("../../controllers/Staff/getCourseDetails");
-const studentProfileController = require ("../../controllers/Staff/getStudentDetails");
+const courseProfileController = require("../../controllers/Staff/getCourseDetails");
+const studentProfileController = require("../../controllers/Staff/getStudentDetails");
 const studentPaymentController = require("../../controllers/Staff/getPaymentDetails");
-const studentPaymentHistoryController = require ("../../controllers/Staff/getStudentPaymentHistory");
-
+const studentPaymentHistoryController = require("../../controllers/Staff/getStudentPaymentHistory");
+const physicalPaymentReceipt = require("../../controllers/Staff/getPhysicalReceipt");
+const onlinePaymentReceipt = require("../../controllers/Staff/getOnlineReceipt");
+const updatePendingPayment = require("../../controllers/Staff/updatePendingPhysicalPayment");
+const extendExpiredPayment = require("../../controllers/Staff/extendPayment");
 
 //shimra's routes
 const registerTeacherController = require("../../controllers/Staff/TeacherRegister");
@@ -54,29 +57,55 @@ router
   .route("/complaints/ignore/:id")
   .put(verifyRoles(ROLES_LIST.Staff), complaintsController.ignoreComplaint);
 
-  router.get(
-    "/tutor-profile/:id",
-    verifyRoles(ROLES_LIST.Staff),
-    allTutorProfileController.tutorProfile
-  );
+router.get(
+  "/tutor-profile/:id",
+  verifyRoles(ROLES_LIST.Staff),
+  allTutorProfileController.tutorProfile
+);
 
-  router
+router
   .route("/course/:id")
   .get(verifyRoles(ROLES_LIST.Staff), courseProfileController.getCourseDetails);
 
-  
-  router
+router
   .route("/stu-profile/:id")
-  .get(verifyRoles(ROLES_LIST.Staff), studentProfileController.getStudentDetails);
+  .get(
+    verifyRoles(ROLES_LIST.Staff),
+    studentProfileController.getStudentDetails
+  );
 
-  router
+router
   .route("/stu-payment/:username")
-  .get(verifyRoles(ROLES_LIST.Staff), studentPaymentController.getPaymentDetails);
+  .get(
+    verifyRoles(ROLES_LIST.Staff),
+    studentPaymentController.getPaymentDetails
+  );
 
-  router
+router
   .route("/payment-history/:id")
-  .get(verifyRoles(ROLES_LIST.Staff), studentPaymentHistoryController.getStudentPaymentHistory);
+  .get(
+    verifyRoles(ROLES_LIST.Staff),
+    studentPaymentHistoryController.getStudentPaymentHistory
+  );
 
+router
+  .route("/physical-payment-receipt/:id")
+  .get(
+    verifyRoles(ROLES_LIST.Staff),
+    physicalPaymentReceipt.getPhysicalReceipt
+  );
+
+router
+  .route("/online-payment-receipt/:id")
+  .get(verifyRoles(ROLES_LIST.Staff), onlinePaymentReceipt.getOnlineReceipt);
+
+router
+.route("/update-payment/:id")
+.put(verifyRoles(ROLES_LIST.Staff),updatePendingPayment.updatePendingPhysicalPyament);
+
+router
+.route("/extend-payment/:id")
+.put(verifyRoles(ROLES_LIST.Staff),extendExpiredPayment.extendPyament);
 
 //shimra's routes
 
@@ -90,7 +119,5 @@ router
     verifyRoles(ROLES_LIST.Staff),
     registerTeacherController.handleNewTeacher
   );
-
-
 
 module.exports = router;

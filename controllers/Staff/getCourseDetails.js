@@ -48,6 +48,8 @@ const getCourseDetails = async (req, res) => {
               ammount: true,
               type: true,
               purchased_at: true,
+              status:true,
+              payment_for:true,
               expire_date: true,
               student: {
                 select: {
