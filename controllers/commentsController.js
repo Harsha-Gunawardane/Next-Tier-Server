@@ -184,10 +184,19 @@ const createParentComment = asyncHandler(async (req, res) => {
     const parent_id = null
     const replied_to = null
     const contentId = req.params.contentId ? req.params.contentId : null;
-    const post_id = req.params.postId ? req.params.postId : null;
+    const post_id = req.params.post_id ? req.params.post_id : null;
 
+    console.log(req.body);
+    // console.log(contentId, post_id, message);
 
     try {
+
+        if (!contentId && !post_id) {
+            return res.status(400).json({
+                message: `Bad request`,
+            });
+        }
+
         const foundUser = await prisma.users.findFirst({
             where: {
                 username: user,
@@ -200,17 +209,19 @@ const createParentComment = asyncHandler(async (req, res) => {
             });
         }
 
-        const foundContent = await prisma.content.findFirst({
-            where: {
-                id: contentId,
-            },
-        });
+        // if(!contentId && post_id){
+        //     const foundPost = await prisma.posts.findFirst({
+        //         where: {
+        //             id: post_id,
+        //         },
+        //     });
 
-        if (!foundContent) {
-            return res.status(404).json({
-                message: `Content not found`,
-            });
-        }
+        //     if (!foundPost) {
+        //         return res.status(404).json({
+        //             message: `Post not found`,
+        //         });
+        //     }
+        // }
 
         const createdComment = await prisma.comments.create({
             data: {
@@ -271,6 +282,11 @@ const createReplyComment = asyncHandler(async (req, res) => {
     var parent_id = null;
     const comment_id = req.params.id;
 
+    console.log(req.body);
+    console.log(message)
+
+
+
     try {
         const foundUser = await prisma.users.findFirst({
             where: {
@@ -303,15 +319,16 @@ const createReplyComment = asyncHandler(async (req, res) => {
             parent_id = foundComment.parent_id
         }
 
+        console.log(foundComment.content_id)
 
         const createdComment = await prisma.comments.create({
             data: {
                 message: message,
                 user_id: foundUser.id,
-                content_id: foundComment.content_id,
-                post_id: foundComment.post_id,
+                content_id: foundComment.content_id ? foundComment.content_id : null,
+                post_id: foundComment.post_id ? foundComment.post_id : null,
                 parent_id: parent_id,
-                replied_to: replied_to,
+                replied_to: replied_to ? replied_to : null,
             },
             include: {
                 commenter: {

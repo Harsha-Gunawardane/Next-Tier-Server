@@ -26,7 +26,7 @@ app.use(credentials);
 // Cross Origin Resource Sharing
 app.use(cors(corsOptions));
 
-app.use("/video", require("./routes/video"));
+// app.use("/video", require("./routes/video"));
 // built-in middleware to handle urlencoded form data
 app.use(express.urlencoded({ extended: false }));
 
@@ -51,17 +51,20 @@ app.use("/logout", require("./routes/logout"));
 app.use("/send-otp", require("./routes/send-otp"));
 app.use("/verify-otp", require("./routes/verify-otp"));
 app.use("/forgot-password", require("./routes/reset-password"));
+``
+// for initialize data to DB
+app.use("/initialize", require("./routes/test"));
 
 // check authentication of user
 app.use(verifyJWT);
 
-app.use("/admin", require("./routes/api/admin"))
+app.use("/admin", require("./routes/api/admin"));
 app.use("/employees", require("./routes/api/employees"));
 app.use("/user", require("./routes/api/user"));
 app.use("/notes", require("./routes/api/notes"));
 app.use("/content", require("./routes/api/content"));
-app.use("/comments", require("./routes/api/comments"))
-app.use("/courses", require("./routes/api/courses"))
+app.use("/comments", require("./routes/api/comments"));
+app.use("/forum", require("./routes/api/forum"));
 app.use("/tutor", require("./routes/api/tutor"));
 app.use("/stu", require("./routes/api/student"));
 app.use("/parent", require("./routes/api/parent"));

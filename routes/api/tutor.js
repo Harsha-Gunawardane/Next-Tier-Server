@@ -13,12 +13,10 @@ const userPasswordController = require("../../controllers/Staff/resetPassword");
 const editDetailsController = require("../../controllers/Staff/editDetails");
 
 //Sithija
-const quizController = require("../../controllers/tutor/tutorQuizController");
-const mcqController = require("../../controllers/tutor/tutorMcqController");
-const tutorCategoryController = require("../../controllers/tutor/tutorCategoryController");
-const staffController = require("../../controllers/tutor/tutorStaffController");
-
-
+const quizController = require("../../controllers/tutor/quizController");
+const mcqController = require("../../controllers/tutor/mcqController");
+const categoryController = require("../../controllers/tutor/categoryController");
+const staffController = require("../../controllers/tutor/staffController");
 
 router
 
@@ -29,12 +27,15 @@ router
 router
   .route("/course/:id")
   .get(verifyRoles(ROLES_LIST.Tutor), courseController.getCourseById);
+
 router
   .route("/course/:id")
   .put(verifyRoles(ROLES_LIST.Tutor), courseController.editCourse);
+
 router
   .route("/course/:id")
   .delete(verifyRoles(ROLES_LIST.Tutor), courseController.removeCourse);
+
 router
   .route("/course/studypack/:id")
   .put(verifyRoles(ROLES_LIST.Tutor), courseController.editStudypack_ids);
@@ -155,55 +156,83 @@ router
 router
   .route("/quizzes")
   .get(quizController.getAllQuizzes)
-  // .post(verifyRoles(ROLES_LIST.Tutor), quizController.createNewQuiz);
-  .post(quizController.createNewQuiz);
+  .post(verifyRoles(ROLES_LIST.Tutor), quizController.createNewQuiz);
+// .post(quizController.createNewQuiz);
 
 router
   .route("/quizzes/:id")
   .get(quizController.getQuiz)
-  // .put(verifyRoles(ROLES_LIST.Tutor), quizController.updateQuiz)
-  .put(quizController.updateQuiz)
-  // .delete(verifyRoles(ROLES_LIST.Tutor), quizController.deleteQuiz);
-  .delete(quizController.deleteQuiz);
+  .put(verifyRoles(ROLES_LIST.Tutor), quizController.updateQuiz)
+  // .put(quizController.updateQuiz)
+  .delete(verifyRoles(ROLES_LIST.Tutor), quizController.deleteQuiz);
+// .delete(quizController.deleteQuiz);
+
+router
+  .route("/quizzes/getMcqs/:quizId")
+  .post(verifyRoles(ROLES_LIST.Tutor), quizController.getMcqsFromQuiz);
+// .get(quizController.getMcqsFromQuiz);
 
 router
   .route("/quizzes/addMcq/:id")
-  // .post(verifyRoles(ROLES_LIST.Tutor), quizController.mcqAddToQuiz);
-  .post(quizController.mcqAddToQuiz);
+  .post(verifyRoles(ROLES_LIST.Tutor), quizController.mcqAddToQuiz);
+// .post(quizController.mcqAddToQuiz);
 
-  //Mcqs
+router
+  .route("/quizzes/addMcqId/:quizId")
+  .post(verifyRoles(ROLES_LIST.Tutor), quizController.mcqIdAddToQuiz);
+// .post(quizController.mcqIdAddToQuiz);
+
+router
+  .route("/quizzes/deleteMcq/:quizId/:mcqId")
+  .delete(verifyRoles(ROLES_LIST.Tutor), quizController.mcqDeleteFromQuiz);
+
+//Mcqs
 router
   .route("/mcqs")
   .get(mcqController.getAllMcqs)
-  // .post(verifyRoles(ROLES_LIST.Tutor), mcqController.createNewMcq);
-  .post(mcqController.createNewMcq);
+  .post(verifyRoles(ROLES_LIST.Tutor), mcqController.createNewMcq);
+// .post(mcqController.createNewMcq);
 
 router
   .route("/mcqs/:id")
   .get(mcqController.getMcq)
-  // .put(verifyRoles(ROLES_LIST.Tutor), mcqController.updateMcq)
-  .put(mcqController.updateMcq)
-  // .delete(verifyRoles(ROLES_LIST.Tutor), mcqController.deleteMcq);
-  .delete(mcqController.deleteMcq);
+  .put(verifyRoles(ROLES_LIST.Tutor), mcqController.updateMcq)
+  // .put(mcqController.updateMcq)
+  .delete(verifyRoles(ROLES_LIST.Tutor), mcqController.deleteMcq);
+// .delete(mcqController.deleteMcq);
 
 //Categories
 
 router
   .route("/categories")
-  .get(tutorCategoryController.getAllMcqCategories)
-  // .post(verifyRoles(ROLES_LIST.Tutor), tutorCategoryController.createNewMcqCategory);
-  .post(tutorCategoryController.createNewMcqCategory);
+  .get(categoryController.getAllMcqCategories)
+  .post(verifyRoles(ROLES_LIST.Tutor), categoryController.createNewMcqCategory);
+// .post(categoryController.createNewMcqCategory);
 
-router.route("/categories/:id").get(tutorCategoryController.getMcqCategory);
-// .put(verifyRoles(ROLES_LIST.Tutor), tutorCategoryController.updateMcqCategory)
-// .put(tutorCategoryController.updateMcqCategory)
-// .delete(verifyRoles(ROLES_LIST.Tutor), tutorCategoryController.deleteMcqCategory);
-// .delete(tutorCategoryController.deleteMcqCategory);
+router
+  .route("/categories/:id")
+  .get(categoryController.getMcqCategory)
+  .put(verifyRoles(ROLES_LIST.Tutor), categoryController.updateMcqCategory)
+  // .put(categoryController.updateMcqCategory)
+  .delete(verifyRoles(ROLES_LIST.Tutor), categoryController.deleteMcqCategory);
+// .delete(categoryController.deleteMcqCategory);
 
-router;
-// .route("/addMcq/:id")
-// .post(verifyRoles(ROLES_LIST.Tutor), tutorCategoryController.mcqAddToMcqCategory);
-// .post(tutorCategoryController.mcqAddToMcqCategory);
+router
+  .route("/categories/addMcq/:id")
+  .post(verifyRoles(ROLES_LIST.Tutor), categoryController.mcqAddToCategory);
+// .post(categoryController.mcqAddToCategory);
+
+router
+  .route("/categories/getMcqs/:categoryId")
+  .post(verifyRoles(ROLES_LIST.Tutor), categoryController.getMcqsFromCategory);
+// .get(categoryController.getMcqsFromCategory);
+
+router
+  .route("/categories/deleteMcq/:categoryId/:mcqId")
+  .delete(
+    verifyRoles(ROLES_LIST.Tutor),
+    categoryController.mcqDeleteFromCategory
+  );
 
 //Staffs
 

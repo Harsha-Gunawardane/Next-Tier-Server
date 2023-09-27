@@ -73,6 +73,7 @@ const uploadProfilePicture = async (req, res) => {
 
     blobStream.end(profilePic.buffer);
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: error.message });
   }
 };
