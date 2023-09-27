@@ -19,7 +19,6 @@ const getAllStaffDetails = async (req, res) => {
       join_date: user.join_date,
       profile_picture: user.profile_picture,
     }));
-
     res.status(200).json(staffDetails);
   } catch (error) {
     console.error("Error fetching staff details:", error);

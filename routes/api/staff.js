@@ -1,6 +1,5 @@
 const express = require("express");
 const router = express.Router();
-// const staffController = require("../../controllers/staffController");
 
 const profileController = require("../../controllers/Staff/StaffDetails");
 const userPasswordController = require("../../controllers/Staff/resetPassword");
@@ -9,16 +8,22 @@ const getAllStaffController = require("../../controllers/Staff/getAllStaffDetail
 const allStaffProfileController = require("../../controllers/Staff/staffProfile");
 const editDetailsController = require("../../controllers/Staff/editDetails");
 const complaintsController = require("../../controllers/Staff/complaints");
-// const complaintsManagerController = require("../../controllers/Staff/complaintsManagement")
-const getHallController = require("../../controllers/Staff/ListHalls");
-const getScheduleController = require("../../controllers/Staff/HallSchedule");
-const teacherRegisterController = require("../../controllers/Staff/TeacherRegister");
+const allTutorProfileController = require("../../controllers/Staff/tutorProfile");
+const courseProfileController = require("../../controllers/Staff/getCourseDetails");
+const studentProfileController = require("../../controllers/Staff/getStudentDetails");
+const studentPaymentController = require("../../controllers/Staff/getPaymentDetails");
+const studentPaymentHistoryController = require("../../controllers/Staff/getStudentPaymentHistory");
+const physicalPaymentReceipt = require("../../controllers/Staff/getPhysicalReceipt");
+const onlinePaymentReceipt = require("../../controllers/Staff/getOnlineReceipt");
+const updatePendingPayment = require("../../controllers/Staff/updatePendingPhysicalPayment");
+const extendExpiredPayment = require("../../controllers/Staff/extendPayment");
 
+//shimra's routes
+const registerTeacherController = require("../../controllers/Staff/TeacherRegister");
 
 // verify roles
 const ROLES_LIST = require("../../config/roleList");
 const verifyRoles = require("../../middleware/verifyRoles");
-
 
 router
   .route("/profile")
@@ -53,20 +58,67 @@ router
   .route("/complaints/ignore/:id")
   .put(verifyRoles(ROLES_LIST.Staff), complaintsController.ignoreComplaint);
 
+router.get(
+  "/tutor-profile/:id",
+  verifyRoles(ROLES_LIST.Staff),
+  allTutorProfileController.tutorProfile
+);
+
+router
+  .route("/course/:id")
+  .get(verifyRoles(ROLES_LIST.Staff), courseProfileController.getCourseDetails);
+
+router
+  .route("/stu-profile/:id")
+  .get(
+    verifyRoles(ROLES_LIST.Staff),
+    studentProfileController.getStudentDetails
+  );
+
+router
+  .route("/stu-payment/:username")
+  .get(
+    verifyRoles(ROLES_LIST.Staff),
+    studentPaymentController.getPaymentDetails
+  );
+
+router
+  .route("/payment-history/:id")
+  .get(
+    verifyRoles(ROLES_LIST.Staff),
+    studentPaymentHistoryController.getStudentPaymentHistory
+  );
+
+router
+  .route("/physical-payment-receipt/:id")
+  .get(
+    verifyRoles(ROLES_LIST.Staff),
+    physicalPaymentReceipt.getPhysicalReceipt
+  );
+
+router
+  .route("/online-payment-receipt/:id")
+  .get(verifyRoles(ROLES_LIST.Staff), onlinePaymentReceipt.getOnlineReceipt);
+
+router
+.route("/update-payment/:id")
+.put(verifyRoles(ROLES_LIST.Staff),updatePendingPayment.updatePendingPhysicalPyament);
+
+router
+.route("/extend-payment/:id")
+.put(verifyRoles(ROLES_LIST.Staff),extendExpiredPayment.extendPyament);
+
+//shimra's routes
+
 router
   .route("/tutor")
-  // .get(registerController.getAllTutorDetails)
-  .post(verifyRoles(ROLES_LIST.Staff), teacherRegisterController.handleNewTeacher);
-
-router
-  .route("/hall")
-  .get(getHallController.getAllHallDetails)
-  .post(verifyRoles(ROLES_LIST.Staff), getHallController.registerHall)
-  .put(verifyRoles(ROLES_LIST.Staff), getHallController.updateHall);
-
-router
-  .route("/schedule")
-  .get(getScheduleController.getAllHallSchedule);
-
+  .get(
+    verifyRoles(ROLES_LIST.Staff),
+    registerTeacherController.getAllTutorDetails
+  )
+  .post(
+    verifyRoles(ROLES_LIST.Staff),
+    registerTeacherController.handleNewTeacher
+  );
 
 module.exports = router;
