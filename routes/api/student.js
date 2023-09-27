@@ -38,12 +38,8 @@ router
 
 router
   .route("/tute")
-  .post(
-    upload.single("file"),
-    verifyRoles(ROLES_LIST.Student),
-    tuteController.initializeTute
-  )
-  .put(verifyRoles(ROLES_LIST.Student), tuteController.generatePdf)
+  .post(verifyRoles(ROLES_LIST.Student), tuteController.initializeTute)
+  .put(verifyRoles(ROLES_LIST.Student), tuteController.writeOnTute)
   .get(verifyRoles(ROLES_LIST.Student), tuteController.getTuteContent);
 
 router
