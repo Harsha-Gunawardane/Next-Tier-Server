@@ -3,7 +3,7 @@ const Joi = require('joi');
 
 const gradeRegExPattern = /^\+94\d{9}$/;
 
-const courseregisterFormSchema = Joi.object({
+const courseeditFormSchema = Joi.object({
 
   subject: Joi.string().required().messages({
     'string.base': 'Subject should be a string',
@@ -13,8 +13,7 @@ const courseregisterFormSchema = Joi.object({
   description: Joi.string().min(40).max(800).required().messages({
     'string.base': 'Description should be a string',
     'string.empty': 'Description is required',
-    'string.min': 'Description must be at least 40 characters long',
-    'string.max': 'Description must be at most 800 characters long',
+    'string.max': 'Description must be at most 1000 characters long',
     'any.required': 'Description is required',
   }),
   medium: Joi.string().required().messages({
@@ -27,12 +26,12 @@ const courseregisterFormSchema = Joi.object({
     'string.empty': 'Grade name is required',
     'any.required': 'Grade is required',
   }),
-  title: Joi.string().min(3).max(50).required().messages({
-    'string.base': 'Title should be String',
-    'string.empty': 'Title is required',
-    'string.max': 'Title must be at most 50 characters long',
-    'any.required': 'Title is required',
-  }),
+//   title: Joi.string().min(3).max(50).required().messages({
+//     'string.base': 'Title should be String',
+//     'string.empty': 'Title is required',
+//     'string.max': 'Title must be at most 50 characters long',
+//     'any.required': 'Title is required',
+//   }),
   // hall_id: Joi.string().required().messages({
   //   'string.base': 'Hall ID should be String',
   //   'string.empty': 'Hall ID is required',
@@ -42,10 +41,10 @@ const courseregisterFormSchema = Joi.object({
     'string.empty': 'Thumbnail is required',
     'any.required': 'Thumbnail is required',
   }),
-  tutor_id: Joi.string().required().messages({
-    'string.empty': 'Tutor ID is required',
-    'any.required': 'Tutor ID is required',
-  }),
+//   tutor_id: Joi.string().required().messages({
+//     'string.empty': 'Tutor ID is required',
+//     'any.required': 'Tutor ID is required',
+//   }),
   monthly_fee: Joi.number().required().min(0).messages({
     'number.base': 'Monthly fee must be a number',
     'number.empty': 'Monthly fee is required',
@@ -54,5 +53,5 @@ const courseregisterFormSchema = Joi.object({
   })
 });
 
-module.exports = courseregisterFormSchema;
+module.exports = courseeditSchema;
 

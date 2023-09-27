@@ -11,7 +11,7 @@ CREATE TYPE "study_pack_type" AS ENUM ('NORMAL', 'PAID');
 CREATE TYPE "payment_type" AS ENUM ('ONLINE', 'PHYSICAL');
 
 -- CreateEnum
-CREATE TYPE "course_type" AS ENUM ('NORMAL', 'PAID');
+CREATE TYPE "visibility" AS ENUM ('PUBLIC', 'PRIVATE');
 
 -- CreateEnum
 CREATE TYPE "schedule_type" AS ENUM ('RECURRING', 'ONE_TIME');
@@ -84,6 +84,7 @@ CREATE TABLE "tutor" (
     "school" TEXT,
     "subjects" TEXT[],
     "qualifications" TEXT[] DEFAULT ARRAY[]::TEXT[],
+    "email" TEXT NOT NULL,
 
     CONSTRAINT "tutor_pkey" PRIMARY KEY ("tutor_id")
 );

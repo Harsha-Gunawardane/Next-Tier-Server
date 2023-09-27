@@ -83,7 +83,7 @@ model tutor {
   school         String?
   subjects       String[]
   qualifications String[] @default([])
-  email          String
+  description    String @default("Tutor")
 
   user         users          @relation(fields: [tutor_id], references: [id])
   staffOnTutor staffOnTutor[]
@@ -252,6 +252,11 @@ enum study_pack_type {
   PAID
 }
 
+enum visibility {
+  PUBLIC
+  PRIVATE
+}
+
 model study_pack {
   id            String          @id @default(uuid())
   tutor_id      String
@@ -262,12 +267,15 @@ model study_pack {
   subject_areas String[]
   thumbnail     String?
   type          study_pack_type
+  visibility    visibility       @default(PRIVATE)
 
   price         Int
-  access_period Json      @default("{}") // {days: 0, months: 0, years: 0}
+  access_period Json?     @default("{}") // {days: 0, months: 0, years: 0}
   uploaded_at   DateTime  @default(now())
-  content_ids   Json[]    @default([]) // [{video_id: [], tute_id: []},{video_id: [], tute_id: "tute_id"}] 
+  content_ids   Json[]    @default([])
+  public_ids   Json[]    @default([]) // [{video_id: [], tute_id: []},{video_id: [], tute_id: "tute_id"}] 
   expire_date   DateTime?
+  start         String?
 
   tutor                      tutor                        @relation(fields: [tutor_id], references: [tutor_id])
   course                     courses                      @relation(fields: [course_id], references: [id])
@@ -294,9 +302,9 @@ model student_purchase_studypack {
   @@id([student_id, pack_id])
 }
 
-enum course_type {
-  NORMAL
-  PAID
+enum course_visibility {
+  PUBLIC
+  PRIVATE
 }
 
 model courses {
@@ -309,8 +317,10 @@ model courses {
   grade         String
   thumbnail     String
   monthly_fee   Int
+  visibility    course_visibility      @default(PRIVATE)
   hall_id       String?
   content_ids   Json[]   @default([])
+  announcements   Json[]   @default([])
   start_date    DateTime @default(now())
   studypack_ids Json[]   @default([]) // [{video_id: [], tute_id: []},{video_id: [], tute_id: "tute_id"}] 
   schedule      Json[]   @default([]) // [{day: "monday", start_time: "10:00", end_time: "12:00"},{day: "monday", start_time: "10:00", end_time: "12:00"}]
@@ -525,7 +535,19 @@ model poll {
   course_id String
   question  String
   options   String[] @default([]) //
-  votes     Json     @default("{}") // {option1: 0, option2: 0, option3: 0, option4: 0}
-
+  votes     Json   @default("{}") // {option1: 0, option2: 0, option3: 0, option4: 0}
+  datetime  DateTime @default(now())
+  user_id   String[] @default([])
   course courses @relation(fields: [course_id], references: [id])
+}
+
+model papers {
+  paper_id      String          @id @default(uuid())
+  course_id     String?         @default("")
+  title         String
+  type          String
+  date          DateTime
+  subject       String?
+  subject_areas String[]        @default([])
+ 
 }

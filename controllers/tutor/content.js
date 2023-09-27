@@ -13,6 +13,7 @@ const createContent = async (req, res) => {
       },
     });
     if (!foundUser) return res.sendStatus(401);
+    const tutorId = foundUser.id;
 
     // create content
 
@@ -20,9 +21,10 @@ const createContent = async (req, res) => {
     const newContent = await prisma.content.create({
       data: {
 
-        title: "Thermodynamics 2.0",
+        title: "Thermodynamics 1.0",
+        user_id:tutorId,
         description: "The study of the relationships between heat, work, temperature, and energy transfer",
-        type: "VIDEO",
+        type: "TUTE",
         subject: "Physics",
         subject_areas: ["Electricity", "Magnetism"],
         status: "PUBLIC",
@@ -43,13 +45,16 @@ const createContent = async (req, res) => {
 
 
 const getAllContents = async (req, res) => {
+  const user = req.user;
   try {
-    const user = req.user;
-    if (!user) {
-      return res.status(401).json({ message: 'Not logged in' });
-    }
+    const foundUser = await prisma.users.findUnique({
+      where: {
+        username: user,
+      },
+    });
+    if (!foundUser) return res.sendStatus(401);
+    const tutorId = foundUser.id;
 
-    const tutorId = user.id;
 
     const content = await prisma.content.findMany({
     
@@ -66,6 +71,7 @@ const getAllContents = async (req, res) => {
 
 
 const getContentById = async (req, res) => {
+  const user = req.user;
   const contentId = req.params.id; // Assuming the course ID is passed as a URL parameter (e.g., /courses/:id)
   const tutorId = req.user.id; // Assuming the tutor's ID is available in req.user
 
@@ -89,4 +95,51 @@ const getContentById = async (req, res) => {
 };
 
 
-module.exports = { createContent,getAllContents,getContentById }
+
+
+
+
+const getAll = async (req, res) => {
+  const contentId = req.params.id;
+  const user = req.user;
+  try {
+    const foundUser = await prisma.users.findUnique({
+      where: {
+        username: user,
+      },
+    });
+    if (!foundUser) return res.sendStatus(401);
+    const tutorId = foundUser.id;
+
+    const content = await prisma.content.findMany({
+      where: {
+        id: contentId,
+     // Add the condition to filter by tutorId
+      },
+      // Your existing query parameters for content retrieval
+    });
+
+    const quizzes = await prisma.quiz.findMany({
+      where: {
+        id: contentId,
+      // Add the condition to filter by tutorId
+      },
+      // Add any necessary query parameters for quiz retrieval
+    });
+
+    console.log(content);
+    console.log(quizzes);
+
+   
+    const responseData = [...content, ...quizzes];
+
+    res.json(responseData);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
+
+module.exports = { createContent,getAllContents,getContentById,getAll }
