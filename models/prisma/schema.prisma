@@ -283,19 +283,31 @@ enum payment_type {
   PHYSICAL
 }
 
+enum payment_status {
+  PENDING
+  PAID
+  FAILED
+}
+
+enum payment_for {
+  EXTEND
+  PURCHASE
+}
+
 model student_purchase_studypack {
+  id               String         @id @default(uuid())
   student_id       String
   pack_id          String
   reciept_location String
   ammount          Int
   type             payment_type
-  purchased_at     DateTime     @default(now())
+  purchased_at     DateTime       @default(now())
   expire_date      DateTime
+  status           payment_status @default(PENDING)
+  payment_for      payment_for    @default(PURCHASE)
 
   student users      @relation(fields: [student_id], references: [id])
   pack    study_pack @relation(fields: [pack_id], references: [id])
-
-  @@id([student_id, pack_id])
 }
 
 enum course_type {
@@ -304,7 +316,7 @@ enum course_type {
 }
 
 model courses {
-  id            String   @id @default(uuid())
+  id            String        @id @default(uuid())
   tutor_id      String
   title         String
   description   String
@@ -328,6 +340,12 @@ model courses {
   quiz                    quiz[]
   forum                   forum[]
   poll                    poll[]
+}
+
+enum course_status {
+  PENDING
+  APPROVED
+  REJECTED
 }
 
 model student_enrolled_course {
