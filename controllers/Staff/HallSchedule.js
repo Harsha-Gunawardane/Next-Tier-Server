@@ -24,7 +24,9 @@ const getAllHallSchedule = async (req, res) => {
         date: datePart,
         start: startDateTime,
         end: endDateTime,
+        type: event.type,
         title: event.course.title,
+        medium: event.course.medium,
         subject: event.course.subject,
         hall: event.hall.name,
       };
@@ -40,7 +42,7 @@ const getAllHallSchedule = async (req, res) => {
 // Controller function to create a hall schedule
 const createSchedule = async (req, res) => {
   const user = req.user;
-  const { hallId, day, startTime, date, endTime, type, courseId } = req.body;
+  const { hallId, day, startTime, date, endTime, type, courseId, } = req.body;
 
   try {
     const foundUser = await prisma.users.findUnique({
@@ -94,36 +96,48 @@ const createSchedule = async (req, res) => {
 };
 
 const updateHallSchedule = async (req, res) => {
-  const { id, hallId, day, startTime, endTime } = req.params; // Extract the generated event ID from the request parameters
-  const { newDate } = req.body; // Extract the new date from the request body
-
   try {
-    // Update the event's date in the database based on eventId
-    const updatedEvent = await prisma.hall_schedule.update({
+    const { hall_id, day, start_time, end_time } = req.params; 
+    const { newDate, newDay } = req.body; 
+
+    // Check if the schedule with the given parameters exists
+    const existingSchedule = await prisma.hall_schedule.findUnique({
       where: {
-        // Use the generated event ID to uniquely identify the event
-        // id: id,
         hall_id_day_start_time_end_time: {
-          hall_id: hallId,
-          day: day,
-          start_time: startTime,
-          end_time: endTime,
+          hall_id,
+          day,
+          start_time,
+          end_time,
         },
-      },
-      data: {
-        date: newDate, // Update the date field with the new date
       },
     });
 
-    res
-      .status(200)
-      .json({ message: "Event date updated successfully", updatedEvent });
+    if (!existingSchedule) {
+      return res.status(404).json({ error: "Schedule not found" });
+    }
+
+    // Update the date of the schedule
+    const updatedSchedule = await prisma.hall_schedule.update({
+      where: {
+        hall_id_day_start_time_end_time: {
+          hall_id,
+          day,
+          start_time,
+          end_time,
+        },
+      },
+      data: {
+         date: newDate,
+         day: newDay 
+        },
+    });
+
+    res.status(200).json(updatedSchedule);
   } catch (error) {
-    console.error("Error updating event date:", error);
-    res
-      .status(500)
-      .json({ error: "An error occurred while updating the event date" });
+    console.error("Error Updating Schedule Details:", error);
+    res.status(500).json({ error: "Error Updating Schedule Details" });
   }
 };
+
 
 module.exports = { getAllHallSchedule, createSchedule, updateHallSchedule };

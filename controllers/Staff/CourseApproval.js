@@ -167,8 +167,8 @@ const getClassCount = async (req, res) => {
 
 const getClassDetails = async (req, res) => {
   try {
-    const currentDate = new Date(); // Get the current date and time
-
+    const currentDate = new Date(); // Get the current date 
+    currentDate.setHours(0, 0, 0, 0); // Set the time to midnight (00:00:00.000)
     const courseRequests = await prisma.courses.findMany({
       include: {
         tutor: {
@@ -186,6 +186,7 @@ const getClassDetails = async (req, res) => {
         const matchingSchedules = course.hall_schedule.filter(
           (hallSchedule) => {
             const scheduleDate = new Date(hallSchedule.date);
+            scheduleDate.setHours(0, 0, 0, 0);
             return (
               scheduleDate.toISOString().split("T")[0] ===
               currentDate.toISOString().split("T")[0]
@@ -194,7 +195,7 @@ const getClassDetails = async (req, res) => {
         );
 
         if (matchingSchedules.length === 0) {
-          // Skip courses with no matching hall schedules for the current date
+        
           return null;
         }
 
@@ -225,7 +226,7 @@ const getClassDetails = async (req, res) => {
           }),
         };
       })
-      .filter((course) => course !== null); // Remove courses with no matching hall schedules
+      .filter((course) => course !== null); 
 
     res.status(200).json(mappedCourseDetails);
   } catch (error) {

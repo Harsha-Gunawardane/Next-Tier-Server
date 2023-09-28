@@ -52,7 +52,7 @@ router
   // .put(verifyRoles(ROLES_LIST.Staff), getScheduleController.updateHallSchedule);
 
   router
-  .route("/schedule/:id")
+  .route("/schedule/:hall_id/:day/:start_time/:end_time")
   .put(verifyRoles(ROLES_LIST.Staff), getScheduleController.updateHallSchedule);
 
   router
