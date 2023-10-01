@@ -66,7 +66,7 @@ const register = async (req, res) => {
     console.log(addedUser);
 
     // Add Admin to DB
-    const newInstituteStaff = await prisma.institute_staff.create({
+    const newInstituteStaff = await prisma.instStaff.create({
       data: {
         user: {
           connect: { id: addedUser.id },

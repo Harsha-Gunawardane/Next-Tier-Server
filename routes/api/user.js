@@ -12,6 +12,8 @@ const { upload } = require("../../middleware/fileUpload/fileUpload");
 const userPasswordController = require("../../controllers/user/resetPassword");
 const userProfileController = require("../../controllers/user/profilePicture");
 const userInfoController = require("../../controllers/user/userInfo");
+const feedbackController = require("../../controllers/admin/feedback");
+const userFeedbackController = require("../../controllers/user/feedback");
 
 router
   .route("/profile-image")
@@ -29,5 +31,11 @@ router
     // verifyRoles(ROLES_LIST.User),
     userInfoController.getUserInfo
   );
+
+router
+  .route("/sys/feedback")
+  .get(verifyRoles(ROLES_LIST.Admin), feedbackController.getAllFeedbacks)
+  .delete(verifyRoles(ROLES_LIST.User), feedbackController.removeFeedback)
+  .post(verifyRoles(ROLES_LIST.User), userFeedbackController.giveFeedback);
 
 module.exports = router;

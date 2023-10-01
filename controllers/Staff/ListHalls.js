@@ -60,6 +60,7 @@ const updateHall = async (req, res) => {
       facilities,
       hall_profile,
     } = req.body;
+    
 
     const user = req.user;
     const convertedCapacity = parseInt(capacity);
@@ -101,4 +102,16 @@ const updateHall = async (req, res) => {
   }
 };
 
-module.exports = { getAllHallDetails, registerHall, updateHall };
+const getHallCount = async (req, res) => {
+  try {
+    // Fetch the hall count from your Prisma model named 'hall'
+    const hallCount = await prisma.halls.count();
+
+    res.status(200).json({ count: hallCount });
+  } catch (error) {
+    console.error("Error fetching hall count:", error);
+    res.status(500).json({ error: "Error fetching hall count" });
+  }
+};
+
+module.exports = { getAllHallDetails, registerHall, updateHall, getHallCount };
