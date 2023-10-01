@@ -26,7 +26,7 @@ const getScheduleController = require("../../controllers/Staff/HallSchedule");
 const courseController = require("../../controllers/Staff/CourseApproval");
 const complaintsController = require("../../controllers/Staff/ViewComplaints");
 const staffController = require("../../controllers/Staff/GetStaffDetails");
-const studentController = require("../../controllers/Staff/GetStudentDetails");
+const studentController = require("../../controllers/Staff/GetStudentCount");
 
 // verify roles
 const ROLES_LIST = require("../../config/roleList");
