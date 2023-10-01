@@ -3,6 +3,7 @@ const router = express.Router();
 
 const adminController = require("../../controllers/admin/admin");
 const staffController = require("../../controllers/admin/users");
+const feedbackController = require("../../controllers/admin/feedback");
 
 // Verify roles
 const ROLES_LIST = require("../../config/roleList");
@@ -26,5 +27,10 @@ router
 router
   .route("/user/:username")
   .patch(verifyRoles(ROLES_LIST.Admin), staffController.activeUser);
+
+router
+  .route("/sys/feedback")
+  .patch(verifyRoles(ROLES_LIST.Admin), feedbackController.getActionOnFeedback)
+  .delete(verifyRoles(ROLES_LIST.Admin), feedbackController.fixedIssue);
 
 module.exports = router;

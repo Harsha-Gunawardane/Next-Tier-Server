@@ -6,6 +6,7 @@ const studentQuizController = require("../../controllers/student/quiz");
 const tuteController = require("../../controllers/student/tute");
 const courseController = require("../../controllers/student/course")
 const paymentController = require("../../controllers/payementController")
+const tuteActivityController = require("../../controllers/student/tuteActivity");
 
 // Verify roles
 const ROLES_LIST = require("../../config/roleList");
@@ -21,6 +22,29 @@ router
     verifyRoles(ROLES_LIST.Student),
     studentInfoController.updateStudentInfo
   );
+
+//Added for paper marking feature
+router
+  .route("/students")
+  .get(studentInfoController.getAllStudentsInfo);
+
+router
+  .route("/students/attendance")
+  .get(studentInfoController.getStudentAttendance);
+
+router
+  .route("/students/attendance/:studentId")
+  .post(studentInfoController.addStudentAttendance);
+
+router.route("/students/:id").get(studentInfoController.getStudent);
+
+router
+  .route("/students/marks/:paperId")
+  .get(studentInfoController.getStudentMarksDetails);
+
+router
+  .route("/students/addMarks/:studentId/:paperId")
+  .put(studentInfoController.updateStudentMarks);
 
 router
   .route("/quiz")
@@ -40,13 +64,14 @@ router
 
 router
   .route("/tute")
-  .post(
-    upload.single("file"),
-    verifyRoles(ROLES_LIST.Student),
-    tuteController.initializeTute
-  )
-  .put(verifyRoles(ROLES_LIST.Student), tuteController.generatePdf)
+  .post(verifyRoles(ROLES_LIST.Student), tuteController.initializeTute)
+  .put(verifyRoles(ROLES_LIST.Student), tuteController.writeOnTute)
   .get(verifyRoles(ROLES_LIST.Student), tuteController.getTuteContent);
+
+router
+  .route("/tute/schedule")
+  .post(verifyRoles(ROLES_LIST.Student), tuteController.setReminder)
+  .get(verifyRoles(ROLES_LIST.Student), tuteController.getReminders);
 
 router
   .route("/tutes")
@@ -116,5 +141,18 @@ router
   .route("/payment/webhook")
   .post(verifyRoles(ROLES_LIST.Student), paymentController.webHook);
 
+router
+  .route("/dash/tutes")
+  .get(verifyRoles(ROLES_LIST.Student), tuteActivityController.getRecentTutes);
+
+router
+  .route("/tute/archive")
+  .get(verifyRoles(ROLES_LIST.Student), tuteActivityController.getArchivedTutes)
+  .put(verifyRoles(ROLES_LIST.Student), tuteActivityController.archivedTute);
+
+router
+  .route("/tute/star")
+  .get(verifyRoles(ROLES_LIST.Student), tuteActivityController.getStarredTutes)
+  .put(verifyRoles(ROLES_LIST.Student), tuteActivityController.starredTute);
 
 module.exports = router;

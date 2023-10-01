@@ -1,7 +1,3 @@
-const fs = require("fs");
-const path = require("path");
-const htmlToPdf = require("html-pdf");
-const { Storage } = require("@google-cloud/storage");
 const uuid = require("uuid").v4;
 const NodeCache = require("node-cache");
 const cache = new NodeCache({ stdTTL: 3600 });
@@ -10,222 +6,62 @@ const cache = new NodeCache({ stdTTL: 3600 });
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
-const storage = new Storage({
-  keyFilename: path.join(__dirname, "../../gcsKeyFile.json"),
-  projectId: "eastern-button-394702",
-});
-const MAX_FILE_SIZE_MB = 20;
-
-const {
-  fileBucket,
-  googleCloud,
-} = require("../../middleware/fileUpload/fileUpload");
-
-const generatePdf = async (req, res) => {
-  const user = req.user;
+const writeOnTute = async (req, res) => {
   const { id, content } = req.body;
 
-  console.log(id);
+  // console.log(content);
 
   let date = new Date();
   date = date.toISOString();
 
   try {
-    const foundTute = await prisma.tutes.findUnique({
+    const updatedTute = await prisma.tutes.update({
       where: {
-        id,
+        id: id,
+      },
+      data: {
+        content: content,
+        recent_activity: date,
       },
     });
-    if (!foundTute) return res.status(400).json({ message: "No such tute" });
 
-    const styledContent = `<html>
-        <head>
-          <style>
-            body { font-size: 20px; margin-top: 100px}
-            .appName {
-              position: absolute;
-              top: 0;
-              right: 0;
-              width: fit-content
-            }
-          </style>
-        </head>
-        <body>
-          <h4 class="appName">Next-Tier</h4>
-          ${content}
-        </body>
-      </html>
-    `;
-
-    const localFilePath = `./public/tutes/${user}_${foundTute.name.replace(
-      / /g,
-      "_"
-    )}.pdf`;
-    const pdfOptions = {
-      format: "A4",
-      border: {
-        top: "0.5in",
-        right: "1in",
-        bottom: "1in",
-        left: "1in",
-      },
-    };
-    htmlToPdf
-      .create(styledContent, pdfOptions)
-      .toFile(localFilePath, async (err, result) => {
-        if (err) {
-          console.log(err);
-          return res.status(500).json({ message: "Error generating PDF" });
-        }
-
-        // Check the size of the PDF file
-        const stats = fs.statSync(localFilePath);
-        const fileSizeInBytes = stats.size;
-        const fileSizeInMB = fileSizeInBytes / (1024 * 1024); // Convert to MB
-
-        if (fileSizeInMB > MAX_FILE_SIZE_MB) {
-          console.log("PDF size exceeds the limit");
-          // Delete the local file before sending the error response
-          fs.unlinkSync(localFilePath);
-          return res
-            .status(400)
-            .json({ message: "PDF size exceeds the limit (20MB)" });
-        }
-
-        const newPdfFileName = `${date}-${uuid()}-${foundTute.name.replace(
-          / /g,
-          "_"
-        )}.pdf`;
-
-        // Upload the PDF file to GCS
-        const bucketName = "next_tier_file_bucket";
-        const remoteFileName = newPdfFileName;
-
-        try {
-          await storage.bucket(bucketName).upload(localFilePath, {
-            destination: remoteFileName,
-          });
-        } catch (error) {
-          console.error(error);
-
-          const updatedTute = await prisma.tutes.update({
-            where: {
-              id,
-            },
-            data: {
-              content,
-              local_url: localFilePath,
-            },
-          });
-
-          return res
-            .status(201)
-            .json({ message: "Successfully generated pdf but upload later" });
-        }
-
-        const authenticatedUrl = await storage
-          .bucket(bucketName)
-          .file(newPdfFileName)
-          .getSignedUrl({
-            action: "read",
-            expires: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
-          });
-
-        console.log("Authenticated URL " + authenticatedUrl[0]);
-
-        // update the GCS as well
-        if (foundTute.gcs_name) {
-          console.log("delete");
-          const bucket = storage.bucket(bucketName);
-          const file = bucket.file(foundTute.gcs_name);
-
-          try {
-            await file.delete();
-          } catch (error) {
-            console.log(error);
-          }
-        }
-
-        if (authenticatedUrl) {
-          console.log("Authenticated");
-        }
-        const updatedTute = await prisma.tutes.update({
-          where: {
-            id,
-          },
-          data: {
-            content,
-            url: authenticatedUrl[0],
-            isUpload: true,
-            gcs_name: newPdfFileName,
-          },
-        });
-
-        if (fs.existsSync(localFilePath)) {
-          try {
-            fs.unlinkSync(localFilePath);
-          } catch (error) {
-            console.log(error);
-          }
-        }
-
-        console.log(
-          `PDF uploaded to GCS bucket: ${bucketName}/${remoteFileName}`
-        );
-        res
-          .status(201)
-          .json({ message: "Successfully generated and uploaded PDF" });
-      });
+    res.status(201).json({ message: "Successfully updated tute" });
   } catch (error) {
     console.log(error);
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ error: error.message });
   }
 };
 
 const initializeTute = async (req, res) => {
   const user = req.user;
-  console.log(user)
-  const { id, name, folderName } = req.body;
-  const file = req.file;
+  const { id, name, description, folderName } = req.body;
+
+  // console.log(description)
 
   try {
-    const foundTute = await prisma.tutes.findUnique({
+    const foundTute = await prisma.tutes.findFirst({
       where: {
-        id,
+        user_name: user,
+        name: name,
       },
     });
+
     if (foundTute)
       return res.status(409).json({ message: "Tutename is already exist" });
 
     let date = new Date();
     date = date.toISOString();
 
-    if (file) {
-      const newPdfFileName = `${date}_${uuid()}_${file.originalname.replace(
-        / /g,
-        "_"
-      )}`;
-      console.log(newPdfFileName);
-
-      const blob = fileBucket.file(newPdfFileName);
-      const blobStream = blob.createWriteStream();
-
-      blobStream.on("finish", () => {
-        console.log("success");
-      });
-      blobStream.end(file.buffer);
-    }
-
     if (folderName) {
       const tempF = await prisma.folders.findFirst({
         where: {
           user_name: user,
           name: folderName,
-        }
-      })
+        },
+      });
       const updatedFolder = await prisma.folders.update({
         where: {
-          id: tempF.id
+          id: tempF.id,
         },
         data: {
           tute_ids: {
@@ -234,7 +70,7 @@ const initializeTute = async (req, res) => {
         },
       });
 
-      console.log(updatedFolder);
+      // console.log(updatedFolder);
       if (!updatedFolder)
         return res.status(400).jso({ message: "No such folder" });
 
@@ -242,6 +78,7 @@ const initializeTute = async (req, res) => {
         data: {
           id,
           name,
+          description,
           created_at: date,
           user_name: user,
           folder_id: updatedFolder.id,
@@ -252,6 +89,7 @@ const initializeTute = async (req, res) => {
         data: {
           id,
           name,
+          description,
           created_at: date,
           user: {
             connect: { username: user },
@@ -315,7 +153,7 @@ const getTutesAndFolders = async (req, res) => {
       if (folder.tute_ids) {
         folder.tute_ids.forEach((tuteId) => {
           const tuteData = tempPages[tuteId];
-          console.log(tuteData);
+          // console.log(tuteData);
           if (tuteData) {
             folderData.pages.push(tuteData);
           }
@@ -325,9 +163,9 @@ const getTutesAndFolders = async (req, res) => {
       folders.push(folderData);
     });
 
-    console.log("pages", pages);
-    console.log("folder", folders);
-    console.log("Temp tutes", tempPages);
+    // console.log("pages", pages);
+    // console.log("folder", folders);
+    // console.log("Temp tutes", tempPages);
 
     res.status(200).json({ data: { pages, folders } });
   } catch (error) {
@@ -341,17 +179,46 @@ const getTuteContent = async (req, res) => {
   const { id } = req.query;
 
   try {
+    const activityTime = new Date();
+
+    const tute = await prisma.tutes.update({
+      where: { id },
+      data: {
+        recent_activity: activityTime,
+      },
+      select: {
+        name: true,
+        content: true,
+        starred: true,
+        archived: true,
+      },
+    });
+
+    res.status(200).json({ tute });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+const deleteTute = async (req, res) => {
+  const user = req.user;
+  const { id } = req.query;
+
+  try {
     const tute = await prisma.tutes.findUnique({
       where: {
         id,
       },
       select: {
         name: true,
-        content: true,
       },
     });
+    if (!tute) res.status(400).json({ error: "Not Found" });
 
-    res.status(200).json({ tute });
+    const deletedTute = await prisma.tutes.delete({
+      where: { id },
+    });
+    res.status(200).json({ message: "Tute deleted successfully" });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -372,7 +239,7 @@ const viewPdf = async (req, res) => {
       },
     });
 
-    console.log(cache);
+    // console.log(cache);
     const cachedData = cache.get(id);
     if (cachedData) {
       // Serve the cached PDF data
@@ -382,11 +249,11 @@ const viewPdf = async (req, res) => {
         file: cachedData,
       };
 
-      console.log(response);
+      // console.log(response);
 
       return res.send({ response });
     } else {
-      console.log(tute);
+      // console.log(tute);
       try {
         const bucketName = "next_tier_file_bucket";
         const [file] = await storage
@@ -411,7 +278,7 @@ const viewPdf = async (req, res) => {
 
         // Cache the PDF data for future requests
         cache.set(id, compressedData);
-        console.log(response);
+        // console.log(response);
 
         res.send({ response });
       } catch (error) {
@@ -458,16 +325,112 @@ const createFolder = async (req, res) => {
 
 const setReminder = async (req, res) => {
   const user = req.user;
-  const { message, time, days } = req.body;
+  const { message, days } = req.body;
 
+  const wDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-}
+  try {
+    const userData = await prisma.users.findUnique({
+      where: {
+        username: user,
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    let existSchedule = await prisma.reading_schedule.findFirst({
+      where: {
+        user_id: userData.id,
+      },
+      select: {
+        schedule: true,
+        id: true,
+      },
+    });
+
+    // console.log(existSchedule);
+    let schedule = existSchedule?.schedule;
+
+    if (!existSchedule) {
+      const newSchedule = await prisma.reading_schedule.create({
+        data: {
+          user_id: userData.id,
+        },
+      });
+
+      existSchedule = newSchedule;
+      // console.log(newSchedule);
+      schedule = {
+        Sun: null,
+        Mon: null,
+        Tue: null,
+        Wed: null,
+        Thu: null,
+        Fri: null,
+        Sat: null,
+      };
+    }
+    days.map((day) => {
+      schedule[day] = message;
+    });
+
+    const updatedSchedule = await prisma.reading_schedule.update({
+      where: {
+        user_id: userData.id,
+        id: existSchedule.id,
+      },
+      data: {
+        schedule: schedule,
+      },
+    });
+
+    res.send({
+      message: "Successfully created",
+      data: updatedSchedule.schedule,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+const getReminders = async (req, res) => {
+  const user = req.user;
+
+  try {
+    const userData = await prisma.users.findUnique({
+      where: {
+        username: user,
+      },
+      select: {
+        id: true,
+      },
+    });
+    const schedules = await prisma.reading_schedule.findFirst({
+      where: {
+        user_id: userData.id,
+      },
+      select: {
+        schedule: true,
+      },
+    });
+
+    res.send(schedules);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: error.message });
+  }
+};
 
 module.exports = {
-  generatePdf,
+  writeOnTute,
   initializeTute,
   getTutesAndFolders,
   getTuteContent,
   viewPdf,
   createFolder,
+  setReminder,
+  getReminders,
+  deleteTute,
 };

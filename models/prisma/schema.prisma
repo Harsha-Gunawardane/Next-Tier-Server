@@ -41,7 +41,6 @@ model users {
   comments_recieved          comments[]                   @relation("reciever")
   student_purchase_studypack student_purchase_studypack[]
   student_enrolled_course    student_enrolled_course[]
-  student_attendance         student_attendance[]
   complaints                 complaints[]
   student_attempt_quiz       student_attempt_quiz[]
   posts                      posts[]
@@ -55,6 +54,9 @@ model users {
   comment_reactions          comment_reactions[]
   post_reactions             post_reactions[]
   studentFollowTutor         student_follow_tutor[]
+  notifications              notifications[]
+  reading_schedule           reading_schedule[]
+  parent                     parent[]
 }
 
 model reset_password {
@@ -75,7 +77,10 @@ model students {
   subjects          String[] @default([])
   weak_areas        Json? // {subject: "subject", area: ["area1", "area2"]}
 
-  user users @relation(fields: [student_id], references: [id])
+  user               users                @relation(fields: [student_id], references: [id])
+  student_marks      student_marks[]
+  student_attendance student_attendance[]
+  parent             parent[]
 }
 
 model tutor {
@@ -86,6 +91,7 @@ model tutor {
   subjects       String[]
   qualifications String[] @default([])
   email          String
+  // status         tutor_status @default(ENABLED)
 
   user               users                  @relation(fields: [tutor_id], references: [id])
   staffOnTutor       staffOnTutor[]
@@ -93,6 +99,11 @@ model tutor {
   courses            courses[]
   studentFollowTutor student_follow_tutor[]
 }
+
+// enum tutor_status {
+//   ENABLED
+//   BLOCKED
+// }
 
 model supporting_staff {
   staff_id     String         @id
@@ -125,6 +136,7 @@ model admin {
 model instStaff {
   inst_staff_id  String   @id @default(uuid())
   qualifications String[] @default([])
+  emergency_No   String?
 
   user users @relation(fields: [inst_staff_id], references: [id])
 }
@@ -152,17 +164,16 @@ model folders {
 }
 
 model tutes {
-  id         String   @id
-  folder_id  String   @default("")
-  user_name  String
-  content    String?
-  file_id    String   @default("")
-  created_at DateTime
-  name       String
-  gcs_name   String?
-  url        String?
-  local_url  String?
-  isUpload   Boolean  @default(false)
+  id              String   @id
+  folder_id       String   @default("")
+  user_name       String
+  content         String?
+  created_at      DateTime
+  name            String
+  description     String   @default("")
+  recent_activity DateTime @default(now())
+  starred         Boolean  @default(false)
+  archived        Boolean  @default(false)
 
   user users @relation(fields: [user_name], references: [username])
 }
@@ -262,6 +273,11 @@ enum study_pack_type {
   PAID
 }
 
+enum visibility {
+  PUBLIC
+  PRIVATE
+}
+
 model study_pack {
   id            String          @id @default(uuid())
   tutor_id      String
@@ -272,14 +288,17 @@ model study_pack {
   subject_areas String[]
   thumbnail     String?
   type          study_pack_type
+  visibility    visibility      @default(PRIVATE)
 
   price         Int
-  access_period Json      @default("{}") // {days: 0, months: 0, years: 0}
+  access_period Json?     @default("{}") // {days: 0, months: 0, years: 0}
   uploaded_at   DateTime  @default(now())
-  content_ids   Json[]    @default([]) // [{video_id: [], tute_id: []},{video_id: [], tute_id: "tute_id"}] 
+  content_ids   Json[]    @default([])
+  public_ids    Json[]    @default([]) // [{video_id: [], tute_id: []},{video_id: [], tute_id: "tute_id"}] 
   expire_date   DateTime?
   start_date    DateTime?
   month         DateTime?
+  start         String?
 
   tutor                      tutor                        @relation(fields: [tutor_id], references: [tutor_id])
   course                     courses                      @relation(fields: [course_id], references: [id])
@@ -318,13 +337,13 @@ model student_purchase_studypack {
   pack    study_pack @relation(fields: [pack_id], references: [id])
 }
 
-enum course_type {
-  NORMAL
-  PAID
+enum course_visibility {
+  PUBLIC
+  PRIVATE
 }
 
 model courses {
-  id            String   @id @default(uuid())
+  id            String            @id @default(uuid())
   tutor_id      String
   title         String
   description   String
@@ -333,11 +352,14 @@ model courses {
   grade         String
   thumbnail     String
   monthly_fee   Int
+  visibility    course_visibility @default(PRIVATE)
   hall_id       String?
-  content_ids   Json[]   @default([])
-  start_date    DateTime @default(now())
-  studypack_ids Json[]   @default([]) // [{video_id: [], tute_id: []},{video_id: [], tute_id: "tute_id"}] 
-  schedule      Json[]   @default([]) // [{day: "monday", start_time: "10:00", end_time: "12:00"},{day: "monday", start_time: "10:00", end_time: "12:00"}]
+  content_ids   Json[]            @default([])
+  announcements Json[]            @default([])
+  start_date    DateTime          @default(now())
+  studypack_ids Json[]            @default([]) // [{video_id: [], tute_id: []},{video_id: [], tute_id: "tute_id"}] 
+  schedule      Json[]            @default([]) // [{day: "monday", start_time: "10:00", end_time: "12:00"},{day: "monday", start_time: "10:00", end_time: "12:00"}]
+  status        course_status     @default(PENDING)
 
   tutor                   tutor                     @relation(fields: [tutor_id], references: [tutor_id])
   hall                    halls?                    @relation(fields: [hall_id], references: [id])
@@ -348,6 +370,12 @@ model courses {
   quiz                    quiz[]
   forum                   forum[]
   poll                    poll[]
+}
+
+enum course_status {
+  PENDING
+  APPROVED
+  REJECTED
 }
 
 model student_enrolled_course {
@@ -361,14 +389,36 @@ model student_enrolled_course {
   @@id([student_id, course_id])
 }
 
+model papers {
+  paper_id      String          @id @default(uuid())
+  course_id     String?         @default("")
+  title         String
+  type          String
+  date          DateTime
+  subject       String?
+  subject_areas String[]        @default([])
+  student_marks student_marks[]
+}
+
+model student_marks {
+  student_id String
+  paper_id   String
+  course_id  String?  @default("")
+  marks      Int?     @default(0)
+  student    students @relation(fields: [student_id], references: [student_id])
+  paper      papers   @relation(fields: [paper_id], references: [paper_id])
+
+  @@id([student_id, paper_id])
+}
+
 model student_attendance {
   student_id String
   course_id  String
   date       DateTime
   is_present Boolean  @default(false)
 
-  student users   @relation(fields: [student_id], references: [id])
-  course  courses @relation(fields: [course_id], references: [id])
+  student students @relation(fields: [student_id], references: [student_id])
+  course  courses  @relation(fields: [course_id], references: [id])
 
   @@id([student_id, course_id, date])
 }
@@ -420,14 +470,13 @@ model complaints {
   message   String
   posted_at DateTime        @default(now())
   // resolved  Boolean        @default(false)
-  status    ComplaintStatus @default(PENDING)
+  status    ComplaintStatus @default(NEW)
   user      users           @relation(fields: [user_id], references: [id])
 }
 
 enum ComplaintStatus {
-  PENDING
-  RESOLVED
-  IGNORED
+  NEW
+  IN_ACTION
 }
 
 model mcq_category {
@@ -550,8 +599,9 @@ model poll {
   question  String
   options   String[] @default([]) //
   votes     Json     @default("{}") // {option1: 0, option2: 0, option3: 0, option4: 0}
-
-  course courses @relation(fields: [course_id], references: [id])
+  datetime  DateTime @default(now())
+  user_id   String[] @default([])
+  course    courses  @relation(fields: [course_id], references: [id])
 }
 
 model student_follow_tutor {
@@ -562,4 +612,31 @@ model student_follow_tutor {
   tutor   tutor @relation(fields: [tutor_id], references: [tutor_id])
 
   @@id([student_id, tutor_id])
+}
+
+model notifications {
+  id         String   @id @default(uuid())
+  message    String
+  date       DateTime @default(now())
+  url        String?
+  sender_id  String
+  reciver_id String
+
+  sender users @relation(fields: [sender_id], references: [id])
+}
+
+model reading_schedule {
+  id       String @id @default(uuid())
+  schedule Json   @default("{}")
+  user_id  String
+
+  user users @relation(fields: [user_id], references: [id])
+}
+
+model parent {
+  id       String @id
+  child_id String
+
+  user  users    @relation(fields: [id], references: [id])
+  child students @relation(fields: [child_id], references: [student_id])
 }
