@@ -61,9 +61,9 @@ router
   .post(verifyRoles(ROLES_LIST.Tutor), courseController.createPoll);
 // .get(verifyRoles(ROLES_LIST.Tutor), courseController.getAllPolls);
 
-// router
-// .route("/courses/poll/:pollId")
-// .get(verifyRoles(ROLES_LIST.Tutor), courseController.getPoll);
+router
+  .route("/courses/poll/:pollId")
+  .get(verifyRoles(ROLES_LIST.Tutor), courseController.getPoll);
 
 router
   .route("/courses/poll/:courseId")
@@ -138,9 +138,9 @@ router
   .route("/content")
   .get(verifyRoles(ROLES_LIST.Tutor), contentController.getAllContents);
 
-router
-  .route("/getall/:id")
-  .get(verifyRoles(ROLES_LIST.Tutor), contentController.getAll);
+// router
+//   .route("/getall/:id")
+//   .get(verifyRoles(ROLES_LIST.Tutor), contentController.getAll);
 
 router
   .route("/content/:id")
