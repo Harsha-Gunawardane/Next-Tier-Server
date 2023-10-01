@@ -4,6 +4,7 @@ const router = express.Router();
 const studentInfoController = require("../../controllers/student/studentInfo");
 const studentQuizController = require("../../controllers/student/quiz");
 const tuteController = require("../../controllers/student/tute");
+const tuteActivityController = require("../../controllers/student/tuteActivity");
 
 // Verify roles
 const ROLES_LIST = require("../../config/roleList");
@@ -58,5 +59,19 @@ router
 router
   .route("/folder")
   .post(verifyRoles(ROLES_LIST.Student), tuteController.createFolder);
+
+router
+  .route("/dash/tutes")
+  .get(verifyRoles(ROLES_LIST.Student), tuteActivityController.getRecentTutes);
+
+router
+  .route("/tute/archive")
+  .get(verifyRoles(ROLES_LIST.Student), tuteActivityController.getArchivedTutes)
+  .put(verifyRoles(ROLES_LIST.Student), tuteActivityController.archivedTute);
+
+router
+  .route("/tute/star")
+  .get(verifyRoles(ROLES_LIST.Student), tuteActivityController.getStarredTutes)
+  .put(verifyRoles(ROLES_LIST.Student), tuteActivityController.starredTute);
 
 module.exports = router;
