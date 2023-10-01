@@ -1,5 +1,5 @@
 generator client {
-  provider        = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
@@ -40,7 +40,6 @@ model users {
   comments_recieved          comments[]                   @relation("reciever")
   student_purchase_studypack student_purchase_studypack[]
   student_enrolled_course    student_enrolled_course[]
-  student_attendance         student_attendance[]
   complaints                 complaints[]
   student_attempt_quiz       student_attempt_quiz[]
   posts                      posts[]
@@ -73,7 +72,9 @@ model students {
   subjects          String[] @default([])
   weak_areas        Json? // {subject: "subject", area: ["area1", "area2"]}
 
-  user users @relation(fields: [student_id], references: [id])
+  user               users                @relation(fields: [student_id], references: [id])
+  student_marks      student_marks[]
+  student_attendance student_attendance[]
 }
 
 model tutor {
@@ -336,14 +337,36 @@ model student_enrolled_course {
   @@id([student_id, course_id])
 }
 
+model papers {
+  paper_id      String          @id @default(uuid())
+  course_id     String?         @default("")
+  title         String
+  type          String
+  date          DateTime
+  subject       String?
+  subject_areas String[]        @default([])
+  student_marks student_marks[]
+}
+
+model student_marks {
+  student_id String
+  paper_id   String
+  course_id  String?  @default("")
+  marks      Int?     @default(0)
+  student    students @relation(fields: [student_id], references: [student_id])
+  paper      papers   @relation(fields: [paper_id], references: [paper_id])
+
+  @@id([student_id, paper_id])
+}
+
 model student_attendance {
   student_id String
-  course_id  String
+  course_id  String 
   date       DateTime
   is_present Boolean  @default(false)
 
-  student users   @relation(fields: [student_id], references: [id])
-  course  courses @relation(fields: [course_id], references: [id])
+  student students @relation(fields: [student_id], references: [student_id])
+  course  courses  @relation(fields: [course_id], references: [id])
 
   @@id([student_id, course_id, date])
 }

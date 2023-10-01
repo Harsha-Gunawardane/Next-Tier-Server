@@ -5,7 +5,6 @@ const asyncHandler = require("express-async-handler");
 
 // const courseregisterFormSchema = require("../../validators/courseregisterValidator");
 
-
 const getAllCourses = async (req, res) => {
   try {
     console.log("here")
@@ -29,8 +28,6 @@ const getAllCourses = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
-
 
 
 const getCourseById = async (req, res) => {

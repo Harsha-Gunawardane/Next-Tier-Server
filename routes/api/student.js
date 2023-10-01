@@ -20,6 +20,29 @@ router
     studentInfoController.updateStudentInfo
   );
 
+//Added for paper marking feature
+router
+  .route("/students")
+  .get(studentInfoController.getAllStudentsInfo);
+
+router
+  .route("/students/attendance")
+  .get(studentInfoController.getStudentAttendance);
+
+  router
+    .route("/students/attendance/:studentId")
+    .post(studentInfoController.addStudentAttendance);
+
+router.route("/students/:id").get(studentInfoController.getStudent);
+
+router
+  .route("/students/marks/:paperId")
+  .get(studentInfoController.getStudentMarksDetails);
+
+router
+  .route("/students/addMarks/:studentId/:paperId")
+  .put(studentInfoController.updateStudentMarks);
+
 router
   .route("/quiz")
   .post(verifyRoles(ROLES_LIST.Student), studentQuizController.generateQuiz)

@@ -14,6 +14,7 @@ const quizController = require("../../controllers/tutor/quizController");
 const mcqController = require("../../controllers/tutor/mcqController");
 const categoryController = require("../../controllers/tutor/categoryController");
 const staffController = require("../../controllers/tutor/staffController");
+const paperController = require("../../controllers/tutor/paperController");
 
 router
 
@@ -191,5 +192,17 @@ router
   .get(staffController.getStaff)
   .put(verifyRoles(ROLES_LIST.Tutor), staffController.updateStaff)
   .delete(verifyRoles(ROLES_LIST.Tutor), staffController.deleteStaff);
+
+//Papers
+router
+  .route("/papers")
+  .get(paperController.getAllPapers)
+  .post(verifyRoles(ROLES_LIST.Tutor), paperController.addNewPaper);
+
+router
+  .route("/papers/:id")
+  .get(paperController.getPaper)
+  .put(verifyRoles(ROLES_LIST.Tutor), paperController.updatePaper)
+  .delete(verifyRoles(ROLES_LIST.Tutor), paperController.deletePaper);
 
 module.exports = router;
