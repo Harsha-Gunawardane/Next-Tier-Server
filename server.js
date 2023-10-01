@@ -68,7 +68,7 @@ app.use("/forum", require("./routes/api/forum"));
 app.use("/tutor", require("./routes/api/tutor"));
 app.use("/stu", require("./routes/api/student"));
 app.use("/parent", require("./routes/api/parent"));
-app.use("/staff", require("./routes/api/staff"));
+// app.use("/staff", require("./routes/api/staff"));
 
 app.all("*", (req, res) => {
   res.status(404).json({ error: "404 Not Found" });

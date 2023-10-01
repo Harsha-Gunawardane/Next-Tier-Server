@@ -85,6 +85,8 @@ const createNewStaff = asyncHandler(async (req, res) => {
     const hashedPassword = await bcrypt.hash(pwd, 10); // Encrypt password
     const joinedTime = new Date();
 
+    if(staff_title === "Admin"){
+
     // Store new user
     const addedUser = await prisma.users.create({
       data: {
