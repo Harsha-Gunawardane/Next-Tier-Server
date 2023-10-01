@@ -289,16 +289,14 @@ model study_pack {
   thumbnail     String?
   type          study_pack_type
   visibility    visibility      @default(PRIVATE)
-
   price         Int
-  access_period Json?     @default("{}") // {days: 0, months: 0, years: 0}
-  uploaded_at   DateTime  @default(now())
-  content_ids   Json[]    @default([])
-  public_ids    Json[]    @default([]) // [{video_id: [], tute_id: []},{video_id: [], tute_id: "tute_id"}] 
+  access_period Json?           @default("{}") // {days: 0, months: 0, years: 0}
+  uploaded_at   DateTime        @default(now())
+  content_ids   Json[]          @default([])
+  public_ids    Json[]          @default([]) // [{video_id: [], tute_id: []},{video_id: [], tute_id: "tute_id"}] 
   expire_date   DateTime?
   start_date    DateTime?
   month         DateTime?
-  start         String?
 
   tutor                      tutor                        @relation(fields: [tutor_id], references: [tutor_id])
   course                     courses                      @relation(fields: [course_id], references: [id])
