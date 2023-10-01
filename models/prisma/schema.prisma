@@ -153,17 +153,16 @@ model folders {
 }
 
 model tutes {
-  id         String   @id
-  folder_id  String   @default("")
-  user_name  String
-  content    String?
-  file_id    String   @default("")
-  created_at DateTime
-  name       String
-  gcs_name   String?
-  url        String?
-  local_url  String?
-  isUpload   Boolean  @default(false)
+  id              String   @id
+  folder_id       String   @default("")
+  user_name       String
+  content         String?
+  created_at      DateTime
+  name            String
+  description     String   @default("")
+  recent_activity DateTime @default(now())
+  starred         Boolean  @default(false)
+  archived        Boolean  @default(false)
 
   user users @relation(fields: [user_name], references: [username])
 }
