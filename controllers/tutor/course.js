@@ -5,25 +5,32 @@ const asyncHandler = require("express-async-handler");
 
 // const courseregisterFormSchema = require("../../validators/courseregisterValidator");
 
-
 const getAllCourses = async (req, res) => {
+  const user = req.user;
   try {
-    console.log("here")
-    const user = req.user;
-    if (!user) {
+    const foundUser = await prisma.users.findUnique({
+      where: {
+        username: user,
+      },
+    });
+
+    if (!foundUser) {
       return res.status(401).json({ message: 'Not logged in' });
     }
 
-    const tutorId = user.id;
+    const tutorId = foundUser.id;
 
     const courses = await prisma.courses.findMany({
       where: {
         tutor_id: tutorId,
       },
+      // Include the count of courses
+   
     });
 
-    console.log(courses);
-    res.json(courses);
+   // Get the length of the courses array
+
+    res.json(courses );
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: error.message });
@@ -32,16 +39,28 @@ const getAllCourses = async (req, res) => {
 
 
 
-
 const getCourseById = async (req, res) => {
   const courseId = req.params.id; // Assuming the course ID is passed as a URL parameter (e.g., /courses/:id)
   const tutorId = req.user.id; // Assuming the tutor's ID is available in req.user
-
+  const user = req.user;
   try {
+
+    const foundUser = await prisma.users.findUnique({
+      where: {
+        username: user,
+      },
+    });
+
+    if (!foundUser) {
+      return res.status(401).json({ message: 'Not logged in' });
+    }
+
+    const tutorId = foundUser.id;
+
     const course = await prisma.courses.findUnique({
       where: {
         id: courseId,
-        tutorId: tutorId, // Add the condition to filter by tutorId
+        tutor_id: tutorId, // Add the condition to filter by tutorId
       },
     });
 
@@ -72,9 +91,9 @@ const createCourse = async (req, res) => {
 
   const user = req.user;
   const { title, description, subject, medium, grade, thumbnail, monthly_fee, schedule, start_date } = req.body;
-  console.log(req.body);
 
-  console.log(req.body);
+
+ 
   try {
     const foundUser = await prisma.users.findUnique({
       where: {
@@ -85,7 +104,7 @@ const createCourse = async (req, res) => {
 
     // create course
     const tutorId = foundUser.id;
-    console.log("ssss");
+
     const newCourse = await prisma.courses.create({
       data: {
         tutor_id: tutorId,
@@ -97,6 +116,7 @@ const createCourse = async (req, res) => {
         thumbnail,
         start_date,
         monthly_fee,
+        visibility: 'PRIVATE',
         content_ids: [
           {
             tute_id: [],
@@ -118,11 +138,14 @@ const createCourse = async (req, res) => {
 
 
 
+
 const removeCourse = async (req, res) => {
   const courseId = req.params.id; // Assuming the course ID is passed as a URL parameter (e.g., /courses/:id)
-
+  
   try {
     // Check if the course exists before deleting
+
+
     const course = await prisma.courses.findUnique({
       where: {
         id: courseId,
@@ -168,7 +191,7 @@ const removeCourse = async (req, res) => {
 const editCourse = async (req, res) => {
   const courseId = req.params.id;
   const user = req.user;
-  const { title, description, medium, thumbnail, monthly_fee, schedule, studypack_ids, content_ids } = req.body;
+  const { title, description, medium, thumbnail, monthly_fee, schedule, studypack_ids, content_ids,visibility,announcements } = req.body;
 
   try {
 
@@ -207,10 +230,12 @@ const editCourse = async (req, res) => {
 
         thumbnail,
         medium,
+        visibility,
 
         schedule,
         studypack_ids,
         content_ids,
+        announcements,
         monthly_fee: parseInt(monthly_fee),
       },
     });
@@ -343,7 +368,6 @@ const removeStudyPack = async (req, res) => {
 
 
 
-
 const removeIds = async (req, res) => {
   const courseId = req.params.id;
   const studypackId = req.params.studypackId;
@@ -374,17 +398,8 @@ const removeIds = async (req, res) => {
       return res.status(401).json({ message: 'Unauthorized to remove content from this study pack' });
     }
 
-    // Create a new array with the updated content_ids
-    const updatedContentIds = studypack.content_ids.map((content) => {
-      const updatedTuteIds = content.tute_id.filter(id => id !== contentIdToRemove);
-      const updatedVideoIds = content.video_id.filter(id => id !== contentIdToRemove);
-
-      return {
-        ...content,
-        tute_id: updatedTuteIds,
-        video_id: updatedVideoIds,
-      };
-    });
+    // Filter out the content ID to remove from the content_ids array
+    const updatedContentIds = studypack.content_ids.filter(id => id !== contentIdToRemove);
 
     await prisma.study_pack.update({
       where: {
@@ -395,12 +410,13 @@ const removeIds = async (req, res) => {
       },
     });
 
-    res.json({ message: `Content with ID ${contentIdToRemove} removed from tute_id and video_id successfully` });
+    res.json({ message: `Content with ID ${contentIdToRemove} removed from content_ids successfully` });
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: error.message });
   }
 };
+
 
 
 
@@ -449,9 +465,9 @@ const addIds = async (req, res) => {
       const updatedVideoIds = weekContent.video_id.filter(id => id !== contentIdToRemove);
 
       // Add the new contentId to the appropriate array
-      if (req.body.type === 'tute') {
+      if (req.body.type === 'TUTE') {
         updatedTuteIds.push(contentIdToRemove);
-      } else if (req.body.type === 'video') {
+      } else if (req.body.type === 'VIDEO') {
         updatedVideoIds.push(contentIdToRemove);
       }
 
@@ -480,9 +496,6 @@ const addIds = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
-
-
 
 
 
@@ -519,10 +532,14 @@ const removePublicIds = async (req, res) => {
     }
 
     // Filter out the content entry with the specified video_id or tute_id
-    const updatedContentIds = course.content_ids.filter(content => {
-      const containsVideoId = content.video_id.includes(contentIdToRemove);
-      const containsTuteId = content.tute_id.includes(contentIdToRemove);
-      return !containsVideoId && !containsTuteId;
+    const updatedContentIds = course.content_ids.map(content => {
+      if (content.video_id.includes(contentIdToRemove) || content.tute_id.includes(contentIdToRemove)) {
+        return {
+          tute_id: [],
+          video_id: [],
+        };
+      }
+      return content;
     });
 
     await prisma.courses.update({
@@ -549,10 +566,297 @@ const removePublicIds = async (req, res) => {
 
 
 
+const createPoll = async (req, res) => {
+  const user = req.user;
+  const { course_id, question, options } = req.body;
+  
+  try {
+    // Check if the user exists (you can customize this check as needed)
+    const foundUser = await prisma.users.findUnique({
+      where: {
+        username: user,
+      },
+    });
+    if (!foundUser) return res.sendStatus(401);
+  
+    // Split options only if it's a string
+    let optionsArray = options;
+    if (typeof options === 'string') {
+      optionsArray = options.split(',').map(option => option.trim());
+    }
+
+    // Initialize the votes object with all options set to 0
+    const initialVotes = {};
+    optionsArray.forEach(option => {
+      initialVotes[option] = 0;
+    });
+
+    // Create a new poll
+    const newPoll = await prisma.poll.create({
+      data: {
+        course_id,
+        question,
+        options: optionsArray,
+        votes: initialVotes,
+        user_id,
+        // Initialize votes with all counts set to 0
+      },
+    });
+  
+    res.status(201).json(newPoll);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: error.message });
+  }
+};
 
 
 
 
+
+
+
+const getAllPolls = async (req, res) => {
+  const user = req.user;
+  const courseId = req.params.courseId;
+  try {
+   
+    const foundUser = await prisma.users.findUnique({
+      where: {
+        username: user,
+      },
+    });
+
+    if (!foundUser) {
+      return res.status(401).json({ message: 'Not logged in' });
+    }
+
+    const tutorId = foundUser.id;
+    console.log(tutorId);
+  
+
+    const poll = await prisma.poll.findMany({
+      where: {
+        course_id: courseId,
+      },
+    });
+
+    res.json(poll);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
+const getPoll = async (req, res) => {
+  const user = req.user;
+  const pollId = req.params.pollId; // Assuming you pass the poll ID as a route parameter
+
+  try {
+    const foundUser = await prisma.users.findUnique({
+      where: {
+        username: user,
+      },
+    });
+
+    if (!foundUser) {
+      return res.status(401).json({ message: 'Not logged in' });
+    }
+
+    const tutorId = foundUser.id;
+
+    const poll = await prisma.poll.findUnique({
+      where: {
+        id: pollId,
+      },
+    });
+
+    if (!poll) {
+      return res.status(404).json({ message: 'Poll not found' });
+    }
+
+    res.json(poll);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
+
+const deletePoll = async (req, res) => {
+  const user = req.user;
+  const pollId = req.params.pollId; // Assuming you pass the poll ID as a route parameter
+
+  try {
+    const foundUser = await prisma.users.findUnique({
+      where: {
+        username: user,
+      },
+    });
+
+    if (!foundUser) {
+      return res.status(401).json({ message: 'Not logged in' });
+    }
+
+    const tutorId = foundUser.id;
+
+    const poll = await prisma.poll.findUnique({
+      where: {
+        id: pollId,
+      },
+    });
+
+    if (!poll) {
+      return res.status(404).json({ message: 'Poll not found' });
+    }
+
+    // Check if the logged-in user is the owner of the poll
+    // if (poll.ownerId !== tutorId) {
+    //   return res.status(403).json({ message: 'Access denied. You are not the owner of this poll.' });
+    // }
+
+    // Delete the poll
+    await prisma.poll.delete({
+      where: {
+        id: pollId,
+      },
+    });
+
+    res.json({ message: 'Poll deleted successfully' });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
+
+
+const updateVoteCount = async (req, res) => {
+  const user = req.user;
+  const pollId = req.params.pollId;
+  const option = req.params.option;
+
+  try {
+    // Check if the user exists (you can customize this check as needed)
+    const foundUser = await prisma.users.findUnique({
+      where: {
+        username: user,
+      },
+    });
+
+    if (!foundUser) {
+      return res.status(401).json({ message: 'Not logged in' });
+    }
+
+    // Fetch the poll by pollId
+    const poll = await prisma.poll.findUnique({
+      where: {
+        id: pollId,
+      },
+    });
+
+    if (!poll) {
+      return res.status(404).json({ message: 'Poll not found' });
+    }
+
+    // Check if the provided option exists in the poll's options
+    if (!poll.options.includes(option)) {
+      return res.status(400).json({ message: 'Option not found in the poll' });
+    }
+
+    // Update the vote count for the specified option
+    const updatedVotes = { ...poll.votes };
+    updatedVotes[option] += 1;
+
+    // Update the poll with the new vote counts
+    const updatedPoll = await prisma.poll.update({
+      where: {
+        id: pollId,
+      },
+      data: {
+        votes: updatedVotes,
+      },
+    });
+
+    return res.status(200).json(updatedPoll);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+
+
+
+
+const getPapers = async (req, res) => {
+  const user = req.user;
+  const courseId = req.params.courseId;
+  try {
+   
+    const foundUser = await prisma.users.findUnique({
+      where: {
+        username: user,
+      },
+    });
+
+    if (!foundUser) {
+      return res.status(401).json({ message: 'Not logged in' });
+    }
+
+    const tutorId = foundUser.id;
+    console.log(tutorId);
+  
+
+    const poll = await prisma.papers.findMany({
+      where: {
+        course_id: courseId,
+      },
+    });
+
+    res.json(poll);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
+
+const getPapersbyId = async (req, res) => {
+  const user = req.user;
+  const paperId = req.params.paperId;
+  try {
+   
+    const foundUser = await prisma.users.findUnique({
+      where: {
+        username: user,
+      },
+    });
+
+    if (!foundUser) {
+      return res.status(401).json({ message: 'Not logged in' });
+    }
+
+    const tutorId = foundUser.id;
+    console.log(tutorId);
+  
+
+    const poll = await prisma.papers.findUnique({
+      where: {
+        paper_id: paperId,
+      },
+    });
+
+    res.json(poll);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: error.message });
+  }
+};
 
 
 
@@ -566,5 +870,9 @@ module.exports = {
   removeStudyPack,
   removeIds,
   addIds,
-  removePublicIds
+  removePublicIds,
+  createPoll,
+  getAllPolls,
+  getPoll,
+  deletePoll,updateVoteCount,getPapers,getPapersbyId
 }

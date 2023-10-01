@@ -7,13 +7,17 @@ const verifyRoles = require("../../middleware/verifyRoles");
 const courseController = require("../../controllers/tutor/course");
 const contentController = require("../../controllers/tutor/content");
 const studypackController = require("../../controllers/tutor/studypack");
-// const registerController = require('../../controllers/tutor/register')
+const complaintsController = require("../../controllers/tutor/complaints");
+const registerController = require("../../controllers/tutor/register");
+const userPasswordController = require("../../controllers/Staff/resetPassword");
+const editDetailsController = require("../../controllers/Staff/editDetails");
 
 //Sithija
 const quizController = require("../../controllers/tutor/quizController");
 const mcqController = require("../../controllers/tutor/mcqController");
 const categoryController = require("../../controllers/tutor/categoryController");
 const staffController = require("../../controllers/tutor/staffController");
+const paperController = require("../../controllers/tutor/paperController");
 
 router
 
@@ -54,6 +58,35 @@ router
   .put(verifyRoles(ROLES_LIST.Tutor), courseController.addIds);
 
 router
+  .route("/courses/poll")
+  .post(verifyRoles(ROLES_LIST.Tutor), courseController.createPoll);
+// .get(verifyRoles(ROLES_LIST.Tutor), courseController.getAllPolls);
+
+// router
+// .route("/courses/poll/:pollId")
+// .get(verifyRoles(ROLES_LIST.Tutor), courseController.getPoll);
+
+router
+  .route("/courses/poll/:courseId")
+  .get(verifyRoles(ROLES_LIST.Tutor), courseController.getAllPolls);
+
+router
+  .route("/courses/poll/:pollId")
+  .delete(verifyRoles(ROLES_LIST.Tutor), courseController.deletePoll);
+
+router
+  .route("/courses/poll/:pollId/:option")
+  .put(verifyRoles(ROLES_LIST.Tutor), courseController.updateVoteCount);
+
+router
+  .route("/courses/paper/:courseId")
+  .get(verifyRoles(ROLES_LIST.Tutor), courseController.getPapers);
+
+router
+  .route("/courses/paper/unique/:paperId")
+  .get(verifyRoles(ROLES_LIST.Tutor), courseController.getPapersbyId);
+
+router
 
   .route("/studypack")
   .get(studypackController.getAllStudyPacks)
@@ -64,8 +97,16 @@ router
   .get(verifyRoles(ROLES_LIST.Tutor), studypackController.getStudypackById);
 
 router
+  .route("/weekstudypack/:id")
+  .get(verifyRoles(ROLES_LIST.Tutor), studypackController.getWeekStudypackById);
+
+router
   .route("/studypack/:id")
   .put(verifyRoles(ROLES_LIST.Tutor), studypackController.editStudypack);
+
+router
+  .route("/weekstudypack/:id")
+  .put(verifyRoles(ROLES_LIST.Tutor), studypackController.editWeekStudypack);
 
 router
   .route("/studypack/:id")
@@ -84,6 +125,13 @@ router
   .delete(verifyRoles(ROLES_LIST.Tutor), studypackController.removeIds);
 
 router
+  .route("/studypack/remove/:id/:part/:contentId")
+  .delete(
+    verifyRoles(ROLES_LIST.Tutor),
+    studypackController.removecoursepackIds
+  );
+
+router
   .route("/content")
   .post(verifyRoles(ROLES_LIST.Tutor), contentController.createContent);
 
@@ -92,8 +140,18 @@ router
   .get(verifyRoles(ROLES_LIST.Tutor), contentController.getAllContents);
 
 router
+  .route("/getall/:id")
+  .get(verifyRoles(ROLES_LIST.Tutor), contentController.getAll);
+
+router
   .route("/content/:id")
   .get(verifyRoles(ROLES_LIST.Tutor), contentController.getContentById);
+
+router
+  .route("/tutordetails")
+  .get(verifyRoles(ROLES_LIST.Tutor), registerController.getStaffDetails)
+  .patch(verifyRoles(ROLES_LIST.Tutor), userPasswordController.resetPassword)
+  .put(verifyRoles(ROLES_LIST.Tutor), editDetailsController.editDetails);
 
 // Sithija*************
 
@@ -191,5 +249,29 @@ router
   .get(staffController.getStaff)
   .put(verifyRoles(ROLES_LIST.Tutor), staffController.updateStaff)
   .delete(verifyRoles(ROLES_LIST.Tutor), staffController.deleteStaff);
+
+//Papers
+router
+  .route("/papers")
+  .get(paperController.getAllPapers)
+  .post(verifyRoles(ROLES_LIST.Tutor), paperController.addNewPaper);
+
+router
+  .route("/papers/:id")
+  .get(paperController.getPaper)
+  .put(verifyRoles(ROLES_LIST.Tutor), paperController.updatePaper)
+  .delete(verifyRoles(ROLES_LIST.Tutor), paperController.deletePaper);
+
+router
+  .route("/complaints")
+  .get(verifyRoles(ROLES_LIST.Tutor), complaintsController.complaints);
+
+router
+  .route("/complaints/edit/:id")
+  .put(verifyRoles(ROLES_LIST.Tutor), complaintsController.editComplaint);
+
+router
+  .route("/complaints/ignore/:id")
+  .put(verifyRoles(ROLES_LIST.Tutor), complaintsController.ignoreComplaint);
 
 module.exports = router;
