@@ -74,6 +74,7 @@ model students {
   school            String?
   subjects          String[] @default([])
   weak_areas        Json? // {subject: "subject", area: ["area1", "area2"]}
+
   user               users                @relation(fields: [student_id], references: [id])
   student_marks      student_marks[]
   student_attendance student_attendance[]
