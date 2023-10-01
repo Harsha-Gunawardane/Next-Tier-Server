@@ -24,6 +24,7 @@ const getUserInfo = async (req, res) => {
             fName: foundUser.first_name,
             lName: foundUser.last_name,
             userRole: foundUser.roles,
+            profile_picture: foundUser.profile_picture
         }
         res.json(userInfo);
     } catch (error) {

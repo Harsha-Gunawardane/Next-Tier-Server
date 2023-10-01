@@ -11,12 +11,20 @@ const commentsController = require("../../controllers/commentsController");
 const ROLES_LIST = require("../../config/roleList");
 const verifyRoles = require("../../middleware/verifyRoles");
 const convertVideo = require("../../middleware/fileUpload/convertVideo");
-const upload = require("../../middleware/fileUpload/videoUpload");
+const { upload, uploadDirect } = require("../../middleware/fileUpload/videoUpload");
+const convertVideoAll = require("../../middleware/fileUpload/convertVideoAll");
 
 
 
 
 //routes
+router
+    .route("/")
+    .get(
+        // verifyRoles([ROLES_LIST.Student, ROLES_LIST.Tutor]),
+        contentController.getRecommendedContent
+    )
+
 router
     .route("/upload")
     .get(
@@ -25,9 +33,17 @@ router
     .post(
         // verifyRoles([ROLES_LIST.Tutor]),
         upload.single("video"),
-        convertVideo,
+        convertVideoAll,
         contentController.test,
         contentController.uploadVideo
+    )
+
+router
+    .route("/upload_direct")
+    .post(
+        verifyRoles([ROLES_LIST.Tutor]),
+        uploadDirect.single("files"),
+        contentController.uploadVideoDirect
     )
 
 router

@@ -1,5 +1,6 @@
 generator client {
   provider        = "prisma-client-js"
+  previewFeatures = ["fullTextSearch"]
 }
 
 datasource db {
@@ -53,6 +54,7 @@ model users {
   content                    content[]
   comment_reactions          comment_reactions[]
   post_reactions             post_reactions[]
+  studentFollowTutor         student_follow_tutor[]
 }
 
 model reset_password {
@@ -78,16 +80,18 @@ model students {
 
 model tutor {
   tutor_id       String   @id
+  description    String?
   medium         String[] @default(["Sinhala"])
   school         String?
   subjects       String[]
   qualifications String[] @default([])
   email          String
 
-  user         users          @relation(fields: [tutor_id], references: [id])
-  staffOnTutor staffOnTutor[]
-  study_pack   study_pack[]
-  courses      courses[]
+  user               users                  @relation(fields: [tutor_id], references: [id])
+  staffOnTutor       staffOnTutor[]
+  study_pack         study_pack[]
+  courses            courses[]
+  studentFollowTutor student_follow_tutor[]
 }
 
 model supporting_staff {
@@ -174,19 +178,26 @@ enum content_status {
   HOLD
 }
 
+enum available_status {
+  AVAILABLE
+  PENDING
+  ERROR
+}
+
 model content {
   id                String              @id @default(uuid())
   title             String
-  description       String
+  description       String              @default("")
   user_id           String
-  type              content_type?
-  subject           String
-  subject_areas     String[]
+  type              content_type?       @default(VIDEO)
+  subject           String              @default("")
+  subject_areas     String[]            @default([])
   uploaded_at       DateTime?           @default(now())
   status            content_status?     @default(PUBLIC)
   file_path         String?
-  thumbnail         String?
+  thumbnail         String?             @default("")
   reactions         Json?               @default("{}") // {like: 0, dislike: 0, views: 0 ,comments: 0}
+  available_status  available_status?   @default(AVAILABLE)
   content_reactions content_reactions[]
   content_views     content_views[]
   comments          comments[]
@@ -267,6 +278,8 @@ model study_pack {
   uploaded_at   DateTime  @default(now())
   content_ids   Json[]    @default([]) // [{video_id: [], tute_id: []},{video_id: [], tute_id: "tute_id"}] 
   expire_date   DateTime?
+  start_date    DateTime?
+  month         DateTime?
 
   tutor                      tutor                        @relation(fields: [tutor_id], references: [tutor_id])
   course                     courses                      @relation(fields: [course_id], references: [id])
@@ -278,19 +291,31 @@ enum payment_type {
   PHYSICAL
 }
 
+enum payment_status {
+  PENDING
+  PAID
+  FAILED
+}
+
+enum payment_for {
+  EXTEND
+  PURCHASE
+}
+
 model student_purchase_studypack {
+  id               String         @id @default(uuid())
   student_id       String
   pack_id          String
   reciept_location String
   ammount          Int
   type             payment_type
-  purchased_at     DateTime     @default(now())
+  purchased_at     DateTime       @default(now())
   expire_date      DateTime
+  status           payment_status @default(PENDING)
+  payment_for      payment_for    @default(PURCHASE)
 
   student users      @relation(fields: [student_id], references: [id])
   pack    study_pack @relation(fields: [pack_id], references: [id])
-
-  @@id([student_id, pack_id])
 }
 
 enum course_type {
@@ -527,4 +552,14 @@ model poll {
   votes     Json     @default("{}") // {option1: 0, option2: 0, option3: 0, option4: 0}
 
   course courses @relation(fields: [course_id], references: [id])
+}
+
+model student_follow_tutor {
+  student_id String
+  tutor_id   String
+
+  student users @relation(fields: [student_id], references: [id])
+  tutor   tutor @relation(fields: [tutor_id], references: [tutor_id])
+
+  @@id([student_id, tutor_id])
 }

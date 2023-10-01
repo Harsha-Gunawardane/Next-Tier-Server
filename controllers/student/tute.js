@@ -184,6 +184,7 @@ const generatePdf = async (req, res) => {
 
 const initializeTute = async (req, res) => {
   const user = req.user;
+  console.log(user)
   const { id, name, folderName } = req.body;
   const file = req.file;
 
@@ -252,7 +253,9 @@ const initializeTute = async (req, res) => {
           id,
           name,
           created_at: date,
-          user_name: user,
+          user: {
+            connect: { username: user },
+          },
         },
       });
     }
@@ -455,9 +458,9 @@ const createFolder = async (req, res) => {
 
 const setReminder = async (req, res) => {
   const user = req.user;
-  const {message, time, days} = req.body;
+  const { message, time, days } = req.body;
 
-  
+
 }
 
 module.exports = {

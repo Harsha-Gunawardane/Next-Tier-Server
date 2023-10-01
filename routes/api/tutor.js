@@ -16,14 +16,13 @@ const categoryController = require("../../controllers/tutor/categoryController")
 const staffController = require("../../controllers/tutor/staffController");
 
 router
-
   .route("/course")
   .get(verifyRoles(ROLES_LIST.Tutor), courseController.getAllCourses)
   .post(verifyRoles(ROLES_LIST.Tutor), courseController.createCourse);
 
 router
   .route("/course/:id")
-  .get(verifyRoles(ROLES_LIST.Tutor), courseController.getCourseById);
+  .get(courseController.getCourseById);
 
 router
   .route("/course/:id")
@@ -61,7 +60,7 @@ router
 
 router
   .route("/studypack/:id")
-  .get(verifyRoles(ROLES_LIST.Tutor), studypackController.getStudypackById);
+  .get(studypackController.getStudypackById);
 
 router
   .route("/studypack/:id")
@@ -183,5 +182,10 @@ router
   .get(staffController.getStaff)
   .put(verifyRoles(ROLES_LIST.Tutor), staffController.updateStaff)
   .delete(verifyRoles(ROLES_LIST.Tutor), staffController.deleteStaff);
+
+
+router
+  .route("/videos")
+  .get(contentController.getVideoByTutorId)
 
 module.exports = router;

@@ -7,6 +7,7 @@ const asyncHandler = require("express-async-handler");
 
 
 const getAllCourses = async (req, res) => {
+
   try {
     console.log("here")
     const user = req.user;
@@ -61,7 +62,7 @@ const getCourseById = async (req, res) => {
 
 const createCourse = async (req, res) => {
 
-
+  console.log("here")
   // const { error, data } = courseregisterFormSchema.validate(req.body);
 
   // if (error) {
@@ -439,7 +440,7 @@ const addIds = async (req, res) => {
     }
 
     // Find the index of the specified week in the content_ids array
-    const weekIndex = studypack.content_ids.findIndex((content) => Object.keys(content)[0] === week);
+    const weekIndex = studypack.content_ids.findIndex((content) => content.title === week);
 
     if (weekIndex !== -1) {
       const weekContent = studypack.content_ids[weekIndex][week];
@@ -456,7 +457,8 @@ const addIds = async (req, res) => {
       }
 
       // Update the content_ids array with the modified week content
-      studypack.content_ids[weekIndex][week] = {
+      studypack.content_ids[weekIndex] = {
+        title: week, // "title" property added
         tute_id: updatedTuteIds,
         video_id: updatedVideoIds,
       };
