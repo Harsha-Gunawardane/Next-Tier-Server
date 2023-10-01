@@ -20,7 +20,7 @@ const extendExpiredPayment = require("../../controllers/Staff/extendPayment");
 
 //shimra's routes
 const registerTeacherController = require("../../controllers/Staff/TeacherRegister");
-const registerController = require("../../controllers/Staff/TeacherRegister");
+const teacherController = require("../../controllers/Staff/TeacherRegister");
 const getHallController = require("../../controllers/Staff/ListHalls");
 const getScheduleController = require("../../controllers/Staff/HallSchedule");
 const courseController = require("../../controllers/Staff/CourseApproval");
@@ -127,8 +127,8 @@ router
     verifyRoles(ROLES_LIST.Staff),
     registerTeacherController.handleNewTeacher
   )
-  .get(verifyRoles(ROLES_LIST.Staff), registerController.getAllTutorDetails)
-  .post(verifyRoles(ROLES_LIST.Staff), registerController.handleNewTeacher);
+  .get(verifyRoles(ROLES_LIST.Staff), teacherController.getAllTutorDetails)
+  .post(verifyRoles(ROLES_LIST.Staff), teacherController.handleNewTeacher);
 
   router
   .route("/tutor/:id")
