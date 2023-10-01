@@ -84,8 +84,14 @@ const createNewStaff = asyncHandler(async (req, res) => {
     const pwd = "Testing@123";
     const hashedPassword = await bcrypt.hash(pwd, 10); // Encrypt password
     const joinedTime = new Date();
+    let roles = {};
 
-    if(staff_title === "Admin"){
+    if(staff_title === "Cls Supporting Staff"){
+      roles = { User: 2001, TutorSupportStaff: 5566 };
+    }else if(staff_title === "Paper Marking Staff"){
+      roles = { User: 2001, TutorPaperStaff: 5576 };
+    }
+
 
     // Store new user
     const addedUser = await prisma.users.create({
@@ -96,9 +102,9 @@ const createNewStaff = asyncHandler(async (req, res) => {
         NIC: NIC,
         DOB: DOB,
         address: address,
-        email:email,
+        email: email,
         phone_number: phone_number,
-        roles: { User: 2001, TutorStaff: 5566 },
+        roles: roles,
         password: hashedPassword,
         join_date: joinedTime,
       },
