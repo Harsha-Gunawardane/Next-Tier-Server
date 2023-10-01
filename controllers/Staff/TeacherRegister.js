@@ -9,10 +9,7 @@ const prisma = new PrismaClient();
 const handleNewTeacher = async (req, res) => {
   const user = req.user;
 
-  const { fName, lName, phoneNo, nic,
-     dob,
-     address, email, subjects } =
-    req.body;
+  const { image, fName, lName, phoneNo, nic, dob, address, email, subjects } = req.body;
 
   try {
     const pwd = uuid();
@@ -29,6 +26,7 @@ const handleNewTeacher = async (req, res) => {
     // Store new user
     const addedUser = await prisma.users.create({
       data: {
+        profile_picture:image,
         username: email,
         first_name: fName,
         last_name: lName,
@@ -84,6 +82,7 @@ const getAllTutorDetails = async (req, res) => {
       .map((tutor) => ({
         tutor_id: tutor.user.id,
         profileImage: tutor.user.profile_picture,
+        active: tutor.user.status,
         fName: tutor.user.first_name,
         lName: tutor.user.last_name,
         email: tutor.user.username,
@@ -97,5 +96,35 @@ const getAllTutorDetails = async (req, res) => {
   }
 };
 
+const updateTutorStatus = async (req, res) => {
+  const { id } = req.params;
+  const { active } = req.body;
 
-module.exports = { handleNewTeacher, getAllTutorDetails };
+  try {
+    // Update the tutor's status in the database
+    const updatedTutor = await prisma.users.update({
+      where: { id: id },
+      data: { status: active },
+    });
+
+    // Respond with the updated tutor object
+    res.json(updatedTutor);
+  } catch (error) {
+    console.error('Error updating tutor status:', error);
+    res.status(500).json({ error: 'Error updating tutor status. Please try again.' });
+  }
+};
+
+const getTutorCount = async (req, res) => {
+  try {
+    // Fetch the hall count from your Prisma model named 'hall'
+    const tutorCount = await prisma.tutor.count();
+
+    res.status(200).json({ count: tutorCount });
+  } catch (error) {
+    console.error("Error fetching tutor count:", error);
+    res.status(500).json({ error: "Error fetching tutor count" });
+  }
+};
+
+module.exports = { handleNewTeacher, getAllTutorDetails, updateTutorStatus, getTutorCount };

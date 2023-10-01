@@ -86,5 +86,193 @@ type StringFilter {
 }
 
 
-20230731	10:13:45	06f06893-0c42-4ccc-9aaa-06e62d2f1bba	SyntaxError: Unexpected token e in JSON at position 0
-20230823	12:06:10	c3584626-51d8-4162-812c-a8a58b606a3f	PayloadTooLargeError: request entity too large
+20230731	12:47:29	b0c47980-2352-457f-8afb-1bf7e9527bf4	Error: 
+Invalid `prisma.users.findFirst()` invocation in
+C:\Next-Tier-Server\controllers\staffController.js:133:43
+
+  130 
+  131 try {
+  132   // find user registered or not
+→ 133   const foundStaff = await prisma.users.findFirst({
+          where: {
+            id: NaN
+                ~~~
+          }
+        })
+
+Argument id: Got invalid value NaN on prisma.findFirstusers. Provided Float, expected StringFilter or String:
+type StringFilter {
+  equals?: String
+  in?: List<String> | String
+  notIn?: List<String> | String
+  lt?: String
+  lte?: String
+  gt?: String
+  gte?: String
+  contains?: String
+  startsWith?: String
+  endsWith?: String
+  mode?: QueryMode
+  not?: String | NestedStringFilter
+}
+type StringFilter {
+  equals?: String
+  in?: List<String> | String
+  notIn?: List<String> | String
+  lt?: String
+  lte?: String
+  gt?: String
+  gte?: String
+  contains?: String
+  startsWith?: String
+  endsWith?: String
+  mode?: QueryMode
+  not?: String | NestedStringFilter
+}
+
+
+20230731	13:52:46	80ada0c5-76d1-4c8f-86c2-77361611f1b7	Error: 
+Invalid `prisma.users.findFirst()` invocation in
+C:\Next-Tier-Server\controllers\staffController.js:133:43
+
+  130 
+  131 try {
+  132   // find user registered or not
+→ 133   const foundStaff = await prisma.users.findFirst({
+          where: {
+            id: NaN
+                ~~~
+          }
+        })
+
+Argument id: Got invalid value NaN on prisma.findFirstusers. Provided Float, expected StringFilter or String:
+type StringFilter {
+  equals?: String
+  in?: List<String> | String
+  notIn?: List<String> | String
+  lt?: String
+  lte?: String
+  gt?: String
+  gte?: String
+  contains?: String
+  startsWith?: String
+  endsWith?: String
+  mode?: QueryMode
+  not?: String | NestedStringFilter
+}
+type StringFilter {
+  equals?: String
+  in?: List<String> | String
+  notIn?: List<String> | String
+  lt?: String
+  lte?: String
+  gt?: String
+  gte?: String
+  contains?: String
+  startsWith?: String
+  endsWith?: String
+  mode?: QueryMode
+  not?: String | NestedStringFilter
+}
+
+
+20230812	15:15:42	dba21639-34f2-4a9d-b62e-cfbbaa1c4f13	PayloadTooLargeError: request entity too large
+20230812	15:15:44	45c5f2b8-7f46-409c-8e7f-e555f3a0348d	PayloadTooLargeError: request entity too large
+20230812	15:15:44	415858e3-cc14-42ad-9a21-544105b5b1f9	PayloadTooLargeError: request entity too large
+20230812	15:15:45	3e2da2a2-0e9d-49de-afca-556c32c31c3a	PayloadTooLargeError: request entity too large
+20230812	15:15:45	a585c767-93d0-4067-bcb6-f11bb6f39c52	PayloadTooLargeError: request entity too large
+20230812	22:01:12	453349c1-ceba-40ca-994d-91f763224cff	PayloadTooLargeError: request entity too large
+20230812	22:03:31	30897bc2-31f7-49fc-b657-be5034e74499	PayloadTooLargeError: request entity too large
+20230812	22:03:33	16f3de29-cab7-4b63-a535-36b391c42edd	PayloadTooLargeError: request entity too large
+20230812	22:03:34	03887a57-f529-4041-83be-81da961ed0c3	PayloadTooLargeError: request entity too large
+20230812	22:03:35	5bc4016c-5a4c-4d34-9146-632fed4313ce	PayloadTooLargeError: request entity too large
+20230812	22:03:36	c4b2cada-e805-4d16-b4d6-f299d530510b	PayloadTooLargeError: request entity too large
+20230812	22:03:38	42884d8b-2ca9-480c-a2f0-5c25d67713d1	PayloadTooLargeError: request entity too large
+20230813	23:38:49	affc4929-3548-4998-8231-91ba9de069eb	PayloadTooLargeError: request entity too large
+20230813	23:38:51	5587866b-3994-44b9-b11c-e1444668e2f2	PayloadTooLargeError: request entity too large
+20230813	23:38:52	fe3ca619-a7d8-48b0-8484-cd7b34fb9239	PayloadTooLargeError: request entity too large
+20230813	23:38:52	eeffaee0-d090-48b2-bf1e-24d167089b19	PayloadTooLargeError: request entity too large
+20230813	23:38:52	8bb7d52a-26fa-4adc-be54-67b9b65f702a	PayloadTooLargeError: request entity too large
+20230813	23:38:53	f0c08dd3-f4b4-43ba-b894-f276fe4ae0d9	PayloadTooLargeError: request entity too large
+20230813	23:38:53	5a8a6165-4fdc-4389-94e9-376dd50cef9b	PayloadTooLargeError: request entity too large
+20230813	23:38:57	7ffddaea-87cd-4a23-8a1d-7f19879b7dfa	PayloadTooLargeError: request entity too large
+20230813	23:38:57	6297955e-ee44-49a9-ab2d-c36a355fa165	PayloadTooLargeError: request entity too large
+20230813	23:38:58	f1b87240-0e39-4543-a60c-074204d20375	PayloadTooLargeError: request entity too large
+20230813	23:38:58	5c94d9a6-4a72-4148-97e7-9ddb05ddffaa	PayloadTooLargeError: request entity too large
+20230813	23:38:59	4ab3a954-cebe-4c6c-b544-a30fb4114688	PayloadTooLargeError: request entity too large
+20230813	23:38:59	ec6f5bd0-9b96-4c2e-974a-45f172fa4b5b	PayloadTooLargeError: request entity too large
+20230813	23:38:59	8db4f346-1642-4704-bbc4-b605017bdc40	PayloadTooLargeError: request entity too large
+20230813	23:38:59	56e77149-eb0d-4a2b-8b15-be7065c85c3c	PayloadTooLargeError: request entity too large
+20230813	23:39:09	a74b2195-f6bc-4254-a1f9-fc6f2a2a3859	PayloadTooLargeError: request entity too large
+20230813	23:39:11	e23f891e-5697-432a-8dcb-ea3208dc76b0	PayloadTooLargeError: request entity too large
+20230813	23:39:11	d9a26488-dd33-40a9-8951-beefdc030902	PayloadTooLargeError: request entity too large
+20230813	23:39:11	7746d40f-5900-48bf-bdb5-2165cc7c5f07	PayloadTooLargeError: request entity too large
+20230813	23:39:11	05161e11-f354-4b45-9ada-e14a82f72dad	PayloadTooLargeError: request entity too large
+20230813	23:39:11	e7546d85-98e8-4963-b730-ba4902b6a2f0	PayloadTooLargeError: request entity too large
+20230813	23:39:12	35dc5d40-2efa-4b38-8ccd-de2b9c950d33	PayloadTooLargeError: request entity too large
+20230813	23:39:12	550b133a-ca59-4f12-92e5-6d70ddc115a3	PayloadTooLargeError: request entity too large
+20230813	23:39:13	9cb78657-1564-4645-b316-b0c5ce44dea2	PayloadTooLargeError: request entity too large
+20230813	23:39:13	cafc3523-d077-48bb-9446-d05b1be594aa	PayloadTooLargeError: request entity too large
+20230813	23:39:13	1ad57421-1d3f-4b7c-bb55-557d211486a3	PayloadTooLargeError: request entity too large
+20230813	23:39:14	a9e4c347-3d8f-4bee-97e7-59d694ad15eb	PayloadTooLargeError: request entity too large
+20230813	23:41:42	348ac7df-847e-40d5-aadb-e18495ddb1bf	PayloadTooLargeError: request entity too large
+20230813	23:41:43	a775840c-2f64-4fe2-97f8-7441ec082bab	PayloadTooLargeError: request entity too large
+20230813	23:41:43	3362ab49-28fc-4454-83e9-b9e6e0989add	PayloadTooLargeError: request entity too large
+20230813	23:41:44	41110429-45fd-402a-9dbf-e6c3c56331e0	PayloadTooLargeError: request entity too large
+20230813	23:41:44	b606f105-8ba0-4f94-a516-03c66add3036	PayloadTooLargeError: request entity too large
+20230813	23:41:45	4918fb4c-6657-4caa-b4a5-2e3e7aa310c1	PayloadTooLargeError: request entity too large
+20230813	23:41:50	b9e8235d-24d7-40b7-af55-e372845a8773	PayloadTooLargeError: request entity too large
+20230813	23:41:51	901f73c1-d4fe-4916-9b0f-66a1d1bd7d82	PayloadTooLargeError: request entity too large
+20230813	23:41:51	c94795c7-ef48-457b-a0db-84a36c81f113	PayloadTooLargeError: request entity too large
+20230813	23:41:51	f7504a1f-cd53-4cc2-acd6-f2e4de5094d2	PayloadTooLargeError: request entity too large
+20230813	23:41:52	14fd5f02-1131-4d91-8b65-7e9156638599	PayloadTooLargeError: request entity too large
+20230813	23:41:52	67365782-b1d1-48c7-a8e2-b467bb24d251	PayloadTooLargeError: request entity too large
+20230813	23:41:52	a5ebd998-ef54-4c15-893a-71125d863539	PayloadTooLargeError: request entity too large
+20230813	23:41:52	19aeff07-3aaa-45ad-bb2e-91254f81fa04	PayloadTooLargeError: request entity too large
+20230813	23:41:53	dc282080-d72f-4811-ba7e-5a896ed7aa3f	PayloadTooLargeError: request entity too large
+20230813	23:41:53	6731da24-495f-406c-8cbb-3f08d3e1094d	PayloadTooLargeError: request entity too large
+20230813	23:42:37	7f584ec0-5e74-4f79-99bd-b2dd60945fe8	PayloadTooLargeError: request entity too large
+20230813	23:42:38	b1938d59-e1a4-42b5-b717-f2f9c5c52a8f	PayloadTooLargeError: request entity too large
+20230813	23:42:38	b8346a2b-b678-4a34-968c-2371fe1dcefb	PayloadTooLargeError: request entity too large
+20230813	23:42:38	cceade4b-d311-4633-93ba-b2757ee25cb9	PayloadTooLargeError: request entity too large
+20230813	23:42:39	080ef774-c93b-4a49-b394-f59626d8622a	PayloadTooLargeError: request entity too large
+20230813	23:42:39	fb4afd30-4f72-4857-ae2c-4db904c8946e	PayloadTooLargeError: request entity too large
+20230813	23:42:39	b2b3bcb6-4765-4b6e-a52f-0f1f0a4e114d	PayloadTooLargeError: request entity too large
+20230813	23:42:39	b0979957-cccc-44c9-bef0-3e6d1a117215	PayloadTooLargeError: request entity too large
+20230813	23:42:40	062466e4-0753-458a-945d-4a4047a4e92f	PayloadTooLargeError: request entity too large
+20230813	23:42:40	dce80837-08d6-4dea-b6c0-7a3c06a6c891	PayloadTooLargeError: request entity too large
+20230813	23:42:40	9a973ca8-9545-4d46-a968-fbf42b9cfa7a	PayloadTooLargeError: request entity too large
+20230813	23:42:41	05238df7-b67a-4c26-8869-a5038d389122	PayloadTooLargeError: request entity too large
+20230813	23:42:41	3366ebe8-9034-4980-8db3-b3c4052d82e8	PayloadTooLargeError: request entity too large
+20230813	23:42:41	1e22c745-6530-4e47-8fe4-5ba7ceee1268	PayloadTooLargeError: request entity too large
+20230813	23:42:41	dcffb02f-55f1-41bb-956a-ffe8d58b6b9d	PayloadTooLargeError: request entity too large
+20230813	23:42:42	57ded322-1601-40bb-9a60-4081098b2457	PayloadTooLargeError: request entity too large
+20230813	23:42:51	045592e7-0370-4584-b69c-aa37f28e161a	PayloadTooLargeError: request entity too large
+20230813	23:42:52	b8f70c9c-0b7d-4f86-b036-be8db65ea32d	PayloadTooLargeError: request entity too large
+20230813	23:42:52	854372c8-98e2-493b-bce1-407c3c4e6077	PayloadTooLargeError: request entity too large
+20230813	23:42:52	644e3775-2cea-4381-828f-f0baf249f2bc	PayloadTooLargeError: request entity too large
+20230813	23:42:52	4538f0b9-ef03-4909-a882-32c3f5bd7441	PayloadTooLargeError: request entity too large
+20230813	23:42:52	1f788e6e-b2a8-40de-9e1c-a603cdd0e5a0	PayloadTooLargeError: request entity too large
+20230813	23:42:53	1d1b61c3-bb79-46fe-b67f-c950eb2f0faf	PayloadTooLargeError: request entity too large
+20230813	23:42:53	9cf4cee9-6c88-4b57-ace4-2093410abfc7	PayloadTooLargeError: request entity too large
+20230813	23:42:53	b3face94-f8e9-49f9-883a-997a53ceab40	PayloadTooLargeError: request entity too large
+20230813	23:49:26	0c30ef3a-652b-420c-9438-0bff65159c85	PayloadTooLargeError: request entity too large
+20230813	23:52:34	c4f3b43d-6267-42d6-a81f-02755209516d	PayloadTooLargeError: request entity too large
+20230813	23:52:41	f3516860-2f93-42a3-ae83-c21089949ea1	PayloadTooLargeError: request entity too large
+20230814	00:04:15	4f8d6d96-ac8d-4d62-a685-573d9b97f40c	PayloadTooLargeError: request entity too large
+20230814	00:04:25	5a9e5214-10db-43ea-96a2-7a8312dc38a2	PayloadTooLargeError: request entity too large
+20230814	00:06:58	d4500ff1-3d1f-40d7-9c28-4fb9e118acee	PayloadTooLargeError: request entity too large
+20230814	08:43:51	51241dd9-a6b5-4ee3-aa8e-ab8678060532	PayloadTooLargeError: request entity too large
+20230814	08:48:35	0d6d2ea4-f74c-4b61-812f-f49c481de6cb	PayloadTooLargeError: request entity too large
+20230814	17:00:49	cdb923f4-fdf4-42ad-ab8e-6d863ff41d2f	PayloadTooLargeError: request entity too large
+20230814	17:02:38	849f99d3-691e-4808-943a-e95e5bbf5667	PayloadTooLargeError: request entity too large
+20230814	17:38:49	6e1cf034-7078-4d09-ad88-463089f192b6	PayloadTooLargeError: request entity too large
+20230814	21:13:34	a3ba845f-c533-4688-85f8-06b100417390	PayloadTooLargeError: request entity too large
+20230814	22:03:28	84324781-964f-4e25-9301-57430ac6875c	PayloadTooLargeError: request entity too large
+20230815	10:05:15	81bd0962-4109-4209-baab-438670ae6528	PayloadTooLargeError: request entity too large
+20230815	12:06:12	be5af533-7c36-4fc7-a83b-663b6183aa82	PayloadTooLargeError: request entity too large
+20230823	20:52:46	21ec635f-5f77-4326-a25d-9df663bdea19	SyntaxError: Unexpected token } in JSON at position 81
+20230826	00:28:04	c30e593a-1339-4c60-b1d2-69f1de178c2d	SyntaxError: Unexpected token c in JSON at position 49
+20230826	23:36:56	a54de5ce-6444-4f94-a425-fce601c0f0d2	SyntaxError: Unexpected token m in JSON at position 261
+20230827	16:00:08	7aee7003-45cf-41c0-aef2-3cdf8f67cc88	SyntaxError: Unexpected token } in JSON at position 132
+20230901	10:37:10	21e2d0b3-1585-43d6-828d-5e95dd8c4ead	PayloadTooLargeError: request entity too large

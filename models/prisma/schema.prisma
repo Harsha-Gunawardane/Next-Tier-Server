@@ -81,18 +81,24 @@ model students {
 }
 
 model tutor {
-  tutor_id       String   @id
-  medium         String[] @default(["Sinhala"])
+  tutor_id       String       @id
+  medium         String[]     @default(["Sinhala"])
   school         String?
   subjects       String[]
-  qualifications String[] @default([])
-  description    String @default("Tutor")
+  qualifications String[]     @default([])
+  email          String
+  // status         tutor_status @default(ENABLED)
 
   user         users          @relation(fields: [tutor_id], references: [id])
   staffOnTutor staffOnTutor[]
   study_pack   study_pack[]
   courses      courses[]
 }
+
+// enum tutor_status {
+//   ENABLED
+//   BLOCKED
+// }
 
 model supporting_staff {
   staff_id     String         @id
@@ -340,6 +346,7 @@ model courses {
   start_date    DateTime @default(now())
   studypack_ids Json[]   @default([]) // [{video_id: [], tute_id: []},{video_id: [], tute_id: "tute_id"}] 
   schedule      Json[]   @default([]) // [{day: "monday", start_time: "10:00", end_time: "12:00"},{day: "monday", start_time: "10:00", end_time: "12:00"}]
+  status        course_status @default(PENDING)
 
   tutor                   tutor                     @relation(fields: [tutor_id], references: [tutor_id])
   hall                    halls?                    @relation(fields: [hall_id], references: [id])
