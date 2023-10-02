@@ -91,7 +91,9 @@ const initializeTute = async (req, res) => {
           name,
           description,
           created_at: date,
-          user_name: user,
+          user: {
+            connect: { username: user },
+          },
         },
       });
     }

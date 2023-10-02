@@ -4,12 +4,13 @@ const { PrismaClient } = require("@prisma/client");
 const { User } = require("../config/roleList");
 const prisma = new PrismaClient();
 
+const { videoRawBucket } = require('../middleware/fileUpload/fileUploadPublic');
+
 
 //videoStream
 const path = require('path');
 const fs = require('fs');
-const ffmpeg = require('fluent-ffmpeg');
-const m3u8stream = require('m3u8stream');
+const { uniqueId } = require("lodash");
 
 const getAllContent = asyncHandler(async (req, res) => {
     try {
@@ -20,10 +21,70 @@ const getAllContent = asyncHandler(async (req, res) => {
 })
 
 const getRecommendedContent = asyncHandler(async (req, res) => {
+    const user = req.user;
+    const skip = req.query.skip ? parseInt(req.query.skip) : 0;
+    const take = req.query.take ? parseInt(req.query.take) : 100;
+
+
+
     try {
+        const foundUser = await prisma.users.findFirst({
+            where: {
+                username: user,
+            },
+        });
+
+        if (!foundUser) {
+            return res.status(401).json({
+                message: `User not found`,
+            });
+        }
+
+        const foundContent = await prisma.content.findMany({
+            where: {
+                status: "PUBLIC",
+            },
+            orderBy: {
+                uploaded_at: "desc",
+            },
+            skip: skip,
+            take: take,
+            include: {
+                user: {
+                    select: {
+                        id: true,
+                        first_name: true,
+                        last_name: true,
+                    },
+                },
+            },
+        })
+
+        console.log("foundContent");
+
+        //structure the data to be sent to the client
+        const contentDetails = foundContent.map((content) => {
+            return {
+                id: content.id,
+                title: content.title,
+                description: content.description,
+                user: {
+                    name: `${content.user.first_name} ${content.user.last_name}`,
+                },
+                thumbnail: content.thumbnail,
+                reactions: content.reactions,
+                uploaded_at: content.uploaded_at,
+            }
+        })
+
+
+        res.status(200).json(contentDetails);
 
     } catch (error) {
-
+        console.log(error);
+        return res.status(500).json({
+            message: `Error: ${error.message}`,
+        });
     }
 })
 
@@ -509,6 +570,86 @@ const serveHLSSegment = (req, res) => {
 };
 
 
+const uploadVideoDirect = asyncHandler(async (req, res) => {
+    const user = req.user;
+    const video = req.file;
+
+
+    console.log(video);
+
+    if (!video) {
+        return res.status(400).json({
+            message: "No file uploaded",
+        });
+    }
+    console.log("here")
+
+    try {
+        const foundUser = await prisma.users.findFirst({
+            where: {
+                username: user,
+            },
+        });
+
+        if (!foundUser) {
+            return res.status(401).json({
+                message: `User not found`,
+            });
+        }
+
+
+        const createdContent = await prisma.content.create({
+            data: {
+                title: video.originalname,
+                user_id: foundUser.id,
+                status: "HOLD",
+                available_status: "PENDING",
+            },
+        });
+
+        const date = new Date().toISOString().split('T')[0];
+        const newFileName = `${date}_${uniqueId()}_${video.originalname.replace(/ /g, '_')}`;
+
+        const blob = videoRawBucket.file(newFileName);
+        const blobStream = blob.createWriteStream();
+        blobStream.on('finish', () => {
+            console.log('success')
+        })
+        blobStream.end(video.buffer);
+
+        await prisma.content.update({
+            where: {
+                id: createdContent.id,
+            },
+            data: {
+                file_path: `https://storage.googleapis.com/${videoRawBucket.name}/${newFileName}`,
+            },
+        })
+
+        res.status(200).json({
+            message: `Content uploaded`,
+            data: createdContent,
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            message: `Error: ${error.message}`,
+        });
+    }
+
+})
+
+
+const videoConvertWebhook = asyncHandler(async (req, res) => {
+    console.log("videoConvertWebhook");
+    console.log(req.body);
+    res.status(200).json({
+        message: `videoConvertWebhook`,
+    });
+})
+
+
+
 
 
 
@@ -522,5 +663,8 @@ module.exports = {
     uploadVideo,
     test,
     serveHLS,
-    serveHLSSegment
+    serveHLSSegment,
+    uploadVideoDirect,
+    videoConvertWebhook
+
 }
