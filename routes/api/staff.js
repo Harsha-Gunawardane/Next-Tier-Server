@@ -24,7 +24,7 @@ const teacherController = require("../../controllers/Staff/TeacherRegister");
 const getHallController = require("../../controllers/Staff/ListHalls");
 const getScheduleController = require("../../controllers/Staff/HallSchedule");
 const courseController = require("../../controllers/Staff/CourseApproval");
-const complaintsController = require("../../controllers/Staff/ViewComplaints");
+// const complaintsController = require("../../controllers/Staff/ViewComplaints");
 const staffController = require("../../controllers/Staff/GetStaffDetails");
 const studentController = require("../../controllers/Staff/GetStudentCount");
 
