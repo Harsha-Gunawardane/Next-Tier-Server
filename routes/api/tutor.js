@@ -20,14 +20,13 @@ const staffController = require("../../controllers/tutor/staffController");
 const paperController = require("../../controllers/tutor/paperController");
 
 router
-
   .route("/course")
   .get(verifyRoles(ROLES_LIST.Tutor), courseController.getAllCourses)
   .post(verifyRoles(ROLES_LIST.Tutor), courseController.createCourse);
 
 router
   .route("/course/:id")
-  .get(verifyRoles(ROLES_LIST.Tutor), courseController.getCourseById);
+  .get(courseController.getCourseById);
 
 router
   .route("/course/:id")
@@ -62,9 +61,9 @@ router
   .post(verifyRoles(ROLES_LIST.Tutor), courseController.createPoll);
 // .get(verifyRoles(ROLES_LIST.Tutor), courseController.getAllPolls);
 
-// router
-// .route("/courses/poll/:pollId")
-// .get(verifyRoles(ROLES_LIST.Tutor), courseController.getPoll);
+router
+  .route("/courses/poll/:pollId")
+  .get(verifyRoles(ROLES_LIST.Tutor), courseController.getPoll);
 
 router
   .route("/courses/poll/:courseId")
@@ -94,7 +93,7 @@ router
 
 router
   .route("/studypack/:id")
-  .get(verifyRoles(ROLES_LIST.Tutor), studypackController.getStudypackById);
+  .get(studypackController.getStudypackById);
 
 router
   .route("/weekstudypack/:id")
@@ -139,9 +138,9 @@ router
   .route("/content")
   .get(verifyRoles(ROLES_LIST.Tutor), contentController.getAllContents);
 
-router
-  .route("/getall/:id")
-  .get(verifyRoles(ROLES_LIST.Tutor), contentController.getAll);
+// router
+//   .route("/getall/:id")
+//   .get(verifyRoles(ROLES_LIST.Tutor), contentController.getAll);
 
 router
   .route("/content/:id")
@@ -250,6 +249,10 @@ router
   .put(verifyRoles(ROLES_LIST.Tutor), staffController.updateStaff)
   .delete(verifyRoles(ROLES_LIST.Tutor), staffController.deleteStaff);
 
+
+router
+  .route("/videos")
+  .get(contentController.getVideoByTutorId)
 //Papers
 router
   .route("/papers")
