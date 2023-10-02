@@ -56,3 +56,29 @@ const tutorStaffFormSchema = Joi.object({
 });
 
 module.exports = tutorStaffFormSchema;
+
+// last_name: Joi.string().min(3).max(50).required().messages({
+//     "string.base": "First name should be String",
+//     "string.empty": "First name is required",
+//     "string.min": "First name must be at least 3 characters long",
+//     "string.max": "First name must be at most 50 characters long",
+//     "any.required": "First name is required",
+//   }),
+//   NIC: Joi.string().min(10).max(12).required().messages({
+//     "string.base": "NIC should be String",
+//     "string.empty": "NIC is required",
+//     "string.min": "NIC must be at least 10 characters long",
+//     "string.max": "NIC must be at most 12 characters long",
+//     "any.required": "NIC is required",
+//   }),
+//   DOB: Joi.date().required().messages({
+//     "date.base": "Invalid date format",
+//     "any.required": "Date of birth is required",
+//   }),
+//   address: Joi.string().min(5).max(50).required().messages({
+//     "string.base": "address should be a string",
+//     "string.empty": "address is required",
+//     "string.min": "address must be at least 5 characters long",
+//     "string.max": "address must be at most 50 characters long",
+//     "any.required": "address is required",
+//   }),
