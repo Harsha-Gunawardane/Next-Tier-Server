@@ -143,6 +143,14 @@ router
   .route("/content/:id")
   .get(verifyRoles(ROLES_LIST.Tutor), contentController.getContentById);
 
+  router
+  .route("/content/:id")
+  .delete(verifyRoles(ROLES_LIST.Tutor), contentController.deleteContentById);
+
+  router
+  .route("/videos")
+  .get(contentController.getVideoByTutorId)
+
   
 router
 .route("/tutordetails")

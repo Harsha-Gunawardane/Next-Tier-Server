@@ -601,7 +601,7 @@ const createPoll = async (req, res) => {
         question,
         options: optionsArray,
         votes: initialVotes,
-        user_id,
+        // hell,
         // Initialize votes with all counts set to 0
       },
     });

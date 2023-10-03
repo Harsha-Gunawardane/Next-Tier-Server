@@ -152,14 +152,14 @@ const getStaffDetails = async (req, res) => {
 
 const editDetails = async (req, res) => {
   const { first_name, last_name, phone_number, qualifications, description } = req.body;
-  const user = req.user; // Assuming you have the user information in req.user
+  const user = req.user.id; // Assuming you have the user information in req.user
 
   try {
     // Start a Prisma transaction
     await prisma.$transaction(async (prisma) => {
       // Update the user table
       await prisma.users.update({
-        where: { username: user },
+        where: { id: user },
         data: {
           first_name: first_name,
           last_name: last_name,
@@ -169,13 +169,13 @@ const editDetails = async (req, res) => {
 
       // Check if the user has a related tutor record
       const tutor = await prisma.tutor.findUnique({
-        where: { user_username: user },
+        where: { tutor_id: user },
       });
 
       if (tutor) {
         // Update the tutor table if a related record exists
         await prisma.tutor.update({
-          where: { user_username: user },
+          where: { tutor_id: user },
           data: {
             qualifications: qualifications,
             description: description,
