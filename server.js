@@ -26,7 +26,8 @@ app.use(credentials);
 // Cross Origin Resource Sharing
 app.use(cors(corsOptions));
 
-// app.use("/video", require("./routes/video"));
+app.use("/webhooks", require("./routes/webhooks.js"));
+
 // built-in middleware to handle urlencoded form data
 app.use(express.urlencoded({ extended: false }));
 
@@ -69,6 +70,7 @@ app.use("/tutor", require("./routes/api/tutor"));
 app.use("/stu", require("./routes/api/student"));
 app.use("/parent", require("./routes/api/parent"));
 app.use("/staff", require("./routes/api/staff"));
+app.use("/video", require("./routes/video"));
 
 app.all("*", (req, res) => {
   res.status(404).json({ error: "404 Not Found" });

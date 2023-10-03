@@ -5,7 +5,7 @@ const prisma = new PrismaClient();
 const multer = require('multer');
 const path = require('path');
 const { json } = require("body-parser");
-const { fileBucket } = require("../middleware/fileUpload/fileUpload");
+const { fileBucket } = require("../middleware/fileUpload/fileUploadPublic");
 const { Console } = require("console");
 const uuid = require("uuid").v4;
 

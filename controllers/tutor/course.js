@@ -5,7 +5,6 @@ const asyncHandler = require("express-async-handler");
 
 // const courseregisterFormSchema = require("../../validators/courseregisterValidator");
 
-
 const getAllCourses = async (req, res) => {
   const user = req.user;
   try {
@@ -26,19 +25,17 @@ const getAllCourses = async (req, res) => {
         tutor_id: tutorId,
       },
       // Include the count of courses
-   
+
     });
 
-   // Get the length of the courses array
+    // Get the length of the courses array
 
-    res.json(courses );
+    res.json(courses);
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: error.message });
   }
 };
-
-
 
 
 
@@ -83,7 +80,7 @@ const getCourseById = async (req, res) => {
 
 const createCourse = async (req, res) => {
 
-
+  console.log("here")
   // const { error, data } = courseregisterFormSchema.validate(req.body);
 
   // if (error) {
@@ -96,7 +93,7 @@ const createCourse = async (req, res) => {
   const { title, description, subject, medium, grade, thumbnail, monthly_fee, schedule, start_date } = req.body;
 
 
- 
+
   try {
     const foundUser = await prisma.users.findUnique({
       where: {
@@ -144,7 +141,7 @@ const createCourse = async (req, res) => {
 
 const removeCourse = async (req, res) => {
   const courseId = req.params.id; // Assuming the course ID is passed as a URL parameter (e.g., /courses/:id)
-  
+
   try {
     // Check if the course exists before deleting
 
@@ -194,7 +191,7 @@ const removeCourse = async (req, res) => {
 const editCourse = async (req, res) => {
   const courseId = req.params.id;
   const user = req.user;
-  const { title, description, medium, thumbnail, monthly_fee, schedule, studypack_ids, content_ids,visibility,announcements } = req.body;
+  const { title, description, medium, thumbnail, monthly_fee, schedule, studypack_ids, content_ids, visibility, announcements } = req.body;
 
   try {
 
@@ -458,7 +455,7 @@ const addIds = async (req, res) => {
     }
 
     // Find the index of the specified week in the content_ids array
-    const weekIndex = studypack.content_ids.findIndex((content) => Object.keys(content)[0] === week);
+    const weekIndex = studypack.content_ids.findIndex((content) => content.title === week);
 
     if (weekIndex !== -1) {
       const weekContent = studypack.content_ids[weekIndex][week];
@@ -475,7 +472,8 @@ const addIds = async (req, res) => {
       }
 
       // Update the content_ids array with the modified week content
-      studypack.content_ids[weekIndex][week] = {
+      studypack.content_ids[weekIndex] = {
+        title: week, // "title" property added
         tute_id: updatedTuteIds,
         video_id: updatedVideoIds,
       };
@@ -572,7 +570,7 @@ const removePublicIds = async (req, res) => {
 const createPoll = async (req, res) => {
   const user = req.user;
   const { course_id, question, options } = req.body;
-  
+
   try {
     // Check if the user exists (you can customize this check as needed)
     const foundUser = await prisma.users.findUnique({
@@ -581,7 +579,7 @@ const createPoll = async (req, res) => {
       },
     });
     if (!foundUser) return res.sendStatus(401);
-  
+
     // Split options only if it's a string
     let optionsArray = options;
     if (typeof options === 'string') {
@@ -605,7 +603,7 @@ const createPoll = async (req, res) => {
         // Initialize votes with all counts set to 0
       },
     });
-  
+
     res.status(201).json(newPoll);
   } catch (error) {
     console.error(error);
@@ -623,7 +621,7 @@ const getAllPolls = async (req, res) => {
   const user = req.user;
   const courseId = req.params.courseId;
   try {
-   
+
     const foundUser = await prisma.users.findUnique({
       where: {
         username: user,
@@ -636,7 +634,7 @@ const getAllPolls = async (req, res) => {
 
     const tutorId = foundUser.id;
     console.log(tutorId);
-  
+
 
     const poll = await prisma.poll.findMany({
       where: {
@@ -799,7 +797,7 @@ const getPapers = async (req, res) => {
   const user = req.user;
   const courseId = req.params.courseId;
   try {
-   
+
     const foundUser = await prisma.users.findUnique({
       where: {
         username: user,
@@ -812,7 +810,7 @@ const getPapers = async (req, res) => {
 
     const tutorId = foundUser.id;
     console.log(tutorId);
-  
+
 
     const poll = await prisma.papers.findMany({
       where: {
@@ -833,7 +831,7 @@ const getPapersbyId = async (req, res) => {
   const user = req.user;
   const paperId = req.params.paperId;
   try {
-   
+
     const foundUser = await prisma.users.findUnique({
       where: {
         username: user,
@@ -846,7 +844,7 @@ const getPapersbyId = async (req, res) => {
 
     const tutorId = foundUser.id;
     console.log(tutorId);
-  
+
 
     const poll = await prisma.papers.findUnique({
       where: {
@@ -877,5 +875,5 @@ module.exports = {
   createPoll,
   getAllPolls,
   getPoll,
-  deletePoll,updateVoteCount,getPapers,getPapersbyId
+  deletePoll, updateVoteCount, getPapers, getPapersbyId
 }

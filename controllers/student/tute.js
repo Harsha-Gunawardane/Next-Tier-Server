@@ -7,10 +7,9 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
 const writeOnTute = async (req, res) => {
-  const user = req.user;
   const { id, content } = req.body;
 
-  console.log(content);
+  // console.log(content);
 
   let date = new Date();
   date = date.toISOString();
@@ -22,6 +21,7 @@ const writeOnTute = async (req, res) => {
       },
       data: {
         content: content,
+        recent_activity: date,
       },
     });
 
@@ -34,7 +34,9 @@ const writeOnTute = async (req, res) => {
 
 const initializeTute = async (req, res) => {
   const user = req.user;
-  const { id, name, folderName } = req.body;
+  const { id, name, description, folderName } = req.body;
+
+  // console.log(description)
 
   try {
     const foundTute = await prisma.tutes.findFirst({
@@ -68,7 +70,7 @@ const initializeTute = async (req, res) => {
         },
       });
 
-      console.log(updatedFolder);
+      // console.log(updatedFolder);
       if (!updatedFolder)
         return res.status(400).jso({ message: "No such folder" });
 
@@ -76,6 +78,7 @@ const initializeTute = async (req, res) => {
         data: {
           id,
           name,
+          description,
           created_at: date,
           user_name: user,
           folder_id: updatedFolder.id,
@@ -86,8 +89,11 @@ const initializeTute = async (req, res) => {
         data: {
           id,
           name,
+          description,
           created_at: date,
-          user_name: user,
+          user: {
+            connect: { username: user },
+          },
         },
       });
     }
@@ -147,7 +153,7 @@ const getTutesAndFolders = async (req, res) => {
       if (folder.tute_ids) {
         folder.tute_ids.forEach((tuteId) => {
           const tuteData = tempPages[tuteId];
-          console.log(tuteData);
+          // console.log(tuteData);
           if (tuteData) {
             folderData.pages.push(tuteData);
           }
@@ -157,9 +163,9 @@ const getTutesAndFolders = async (req, res) => {
       folders.push(folderData);
     });
 
-    console.log("pages", pages);
-    console.log("folder", folders);
-    console.log("Temp tutes", tempPages);
+    // console.log("pages", pages);
+    // console.log("folder", folders);
+    // console.log("Temp tutes", tempPages);
 
     res.status(200).json({ data: { pages, folders } });
   } catch (error) {
@@ -173,13 +179,18 @@ const getTuteContent = async (req, res) => {
   const { id } = req.query;
 
   try {
-    const tute = await prisma.tutes.findUnique({
-      where: {
-        id,
+    const activityTime = new Date();
+
+    const tute = await prisma.tutes.update({
+      where: { id },
+      data: {
+        recent_activity: activityTime,
       },
       select: {
         name: true,
         content: true,
+        starred: true,
+        archived: true,
       },
     });
 
@@ -228,7 +239,7 @@ const viewPdf = async (req, res) => {
       },
     });
 
-    console.log(cache);
+    // console.log(cache);
     const cachedData = cache.get(id);
     if (cachedData) {
       // Serve the cached PDF data
@@ -238,11 +249,11 @@ const viewPdf = async (req, res) => {
         file: cachedData,
       };
 
-      console.log(response);
+      // console.log(response);
 
       return res.send({ response });
     } else {
-      console.log(tute);
+      // console.log(tute);
       try {
         const bucketName = "next_tier_file_bucket";
         const [file] = await storage
@@ -267,7 +278,7 @@ const viewPdf = async (req, res) => {
 
         // Cache the PDF data for future requests
         cache.set(id, compressedData);
-        console.log(response);
+        // console.log(response);
 
         res.send({ response });
       } catch (error) {
@@ -317,7 +328,7 @@ const setReminder = async (req, res) => {
   const { message, days } = req.body;
 
   const wDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-  console.log(message, days);
+
   try {
     const userData = await prisma.users.findUnique({
       where: {
@@ -327,7 +338,7 @@ const setReminder = async (req, res) => {
         id: true,
       },
     });
-    console.log("schedule");
+
     let existSchedule = await prisma.reading_schedule.findFirst({
       where: {
         user_id: userData.id,
@@ -338,7 +349,7 @@ const setReminder = async (req, res) => {
       },
     });
 
-    console.log(existSchedule);
+    // console.log(existSchedule);
     let schedule = existSchedule?.schedule;
 
     if (!existSchedule) {
@@ -349,7 +360,7 @@ const setReminder = async (req, res) => {
       });
 
       existSchedule = newSchedule;
-      console.log(newSchedule);
+      // console.log(newSchedule);
       schedule = {
         Sun: null,
         Mon: null,
@@ -421,5 +432,5 @@ module.exports = {
   createFolder,
   setReminder,
   getReminders,
-  deleteTute
+  deleteTute,
 };

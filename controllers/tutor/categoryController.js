@@ -38,6 +38,7 @@ const createNewMcqCategory = asyncHandler(async (req, res) => {
   }
 });
 
+
 const updateMcqCategory = asyncHandler(async (req, res) => {
   const id = req.params.id;
 
@@ -255,26 +256,26 @@ const getMcqsFromCategory = asyncHandler(async (req, res) => {
 });
 
 const mcqDeleteFromCategory = asyncHandler(async (req, res) => {
-  const quizId = req.params.categoryId;
+  const categoryId = req.params.categoryId;
   const mcqId = req.params.mcqId;
 
   try {
     // find quiz available or not before update
     const foundCategory = await prisma.mcq_category.findFirst({
       where: {
-        id: quizId,
+        id: categoryId,
       },
     });
 
     if (!foundCategory) {
       return res.status(400).json({
-        message: `Quiz not found`,
+        message: `Category not found`,
       });
     }
 
     const updatedCategory = await prisma.mcq_category.update({
       where: {
-        id: id,
+        id: categoryId,
       },
       data: {
         question_ids: {
@@ -297,19 +298,20 @@ const mcqDeleteFromCategory = asyncHandler(async (req, res) => {
     }
 
     const deleteMcq = await prisma.questions.delete({
-      where: { id: id },
+      where: { id: mcqId },
     });
 
     console.log("Delete Mcq:", deleteMcq);
 
-    console.log("Delete mcq from the quiz:", updatedCategory);
+    console.log("Delete mcq from the category:", updatedCategory);
 
     res.status(201).json(updatedCategory);
   } catch (error) {
-    console.error("Error handling delete mcq from the quiz:", error);
+    console.error("Error handling delete mcq from the category:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 });
+
 
 module.exports = {
   getAllMcqCategories,

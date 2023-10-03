@@ -19,7 +19,13 @@ const updatePendingPayment = require("../../controllers/Staff/updatePendingPhysi
 const extendExpiredPayment = require("../../controllers/Staff/extendPayment");
 
 //shimra's routes
-const registerTeacherController = require("../../controllers/Staff/TeacherRegister");
+const teacherRegisterController = require("../../controllers/Staff/TeacherRegister");
+const getHallController = require("../../controllers/Staff/ListHalls");
+const getScheduleController = require("../../controllers/Staff/HallSchedule");
+const courseController = require("../../controllers/Staff/CourseApproval");
+const getcomplaintsController = require("../../controllers/Staff/ViewComplaints");
+const staffController = require("../../controllers/Staff/GetStaffCount");
+const studentController = require("../../controllers/Staff/GetStudentCount");
 
 // verify roles
 const ROLES_LIST = require("../../config/roleList");
@@ -41,10 +47,7 @@ router
 
 router
   .route("/profile/:id")
-  .get(
-    verifyRoles(ROLES_LIST.Staff),
-    allStaffProfileController.staffProfile
-  );
+  .get(verifyRoles(ROLES_LIST.Staff), allStaffProfileController.staffProfile);
 
 router
   .route("/complaints")
@@ -101,24 +104,83 @@ router
   .get(verifyRoles(ROLES_LIST.Staff), onlinePaymentReceipt.getOnlineReceipt);
 
 router
-.route("/update-payment/:id")
-.put(verifyRoles(ROLES_LIST.Staff),updatePendingPayment.updatePendingPhysicalPyament);
+  .route("/update-payment/:id")
+  .put(
+    verifyRoles(ROLES_LIST.Staff),
+    updatePendingPayment.updatePendingPhysicalPyament
+  );
 
 router
-.route("/extend-payment/:id")
-.put(verifyRoles(ROLES_LIST.Staff),extendExpiredPayment.extendPyament);
+  .route("/extend-payment/:id")
+  .put(verifyRoles(ROLES_LIST.Staff), extendExpiredPayment.extendPyament);
 
 //shimra's routes
 
 router
   .route("/tutor")
-  .get(
-    verifyRoles(ROLES_LIST.Staff),
-    registerTeacherController.getAllTutorDetails
-  )
-  .post(
-    verifyRoles(ROLES_LIST.Staff),
-    registerTeacherController.handleNewTeacher
-  );
+  .get(verifyRoles(ROLES_LIST.Staff), teacherRegisterController.getAllTutorDetails)
+  .post(verifyRoles(ROLES_LIST.Staff), teacherRegisterController.handleNewTeacher);
+
+router
+  .route("/tutor/:id")
+  .put(verifyRoles(ROLES_LIST.Staff), teacherRegisterController.updateTutorStatus);
+
+router
+  .route("/tutor/count")
+  .get(verifyRoles(ROLES_LIST.Staff), teacherRegisterController.getTutorCount);
+
+router
+  .route("/count")
+  .get(verifyRoles(ROLES_LIST.Staff), staffController.getStaffCount);
+
+router
+  .route("/student/count")
+  .get(verifyRoles(ROLES_LIST.Staff), studentController.getStudentCount);
+
+
+router
+  .route("/hall")
+  .get(verifyRoles(ROLES_LIST.Staff), getHallController.getAllHallDetails)
+  .post(verifyRoles(ROLES_LIST.Staff), getHallController.registerHall)
+  .put(verifyRoles(ROLES_LIST.Staff), getHallController.updateHall);
+
+router
+  .route("/hall/count")
+  .get(verifyRoles(ROLES_LIST.Staff), getHallController.getHallCount);
+
+router
+  .route("/schedule")
+  .get(verifyRoles(ROLES_LIST.Staff), getScheduleController.getAllHallSchedule)
+  .post(verifyRoles(ROLES_LIST.Staff), getScheduleController.createSchedule);
+// .put(verifyRoles(ROLES_LIST.Staff), getScheduleController.updateHallSchedule);
+
+router
+  .route("/schedule/:hall_id/:day/:start_time/:end_time")
+  .put(verifyRoles(ROLES_LIST.Staff), getScheduleController.updateHallSchedule);
+
+router
+  .route("/class")
+  .get(verifyRoles(ROLES_LIST.Staff), courseController.handleRequests)
+  .post(verifyRoles(ROLES_LIST.Staff), courseController.handleNewCourse);
+
+router
+  .route("/class/count")
+  .get(verifyRoles(ROLES_LIST.Staff), courseController.getClassCount),
+
+  router
+    .route("/class/details")
+    .get(verifyRoles(ROLES_LIST.Staff), courseController.getClassDetails);
+
+router
+  .route("/class/approve/:id")
+  .put(verifyRoles(ROLES_LIST.Staff), courseController.approveRequest);
+
+router
+  .route("/class/reject/:id")
+  .put(verifyRoles(ROLES_LIST.Staff), courseController.rejectRequest);
+
+router
+  .route("/complaints")
+  .get(verifyRoles(ROLES_LIST.Staff), getcomplaintsController.complaints);
 
 module.exports = router;
