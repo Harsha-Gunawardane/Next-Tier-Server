@@ -174,7 +174,7 @@ model tutes {
   starred         Boolean  @default(false)
   archived        Boolean  @default(false)
 
-  user users @relation(fields: [user_id], references: [id])
+  user users @relation(fields: [user_name], references: [username])
 }
 
 enum content_type {
@@ -356,6 +356,12 @@ model courses {
   quiz                    quiz[]
   forum                   forum[]
   poll                    poll[]
+}
+
+enum course_status {
+  PENDING
+  APPROVED
+  REJECTED
 }
 
 model student_enrolled_course {
@@ -595,3 +601,41 @@ model poll {
 //   subject_areas String[]        @default([])
  
 // }
+
+
+model student_follow_tutor {
+  student_id String
+  tutor_id   String
+
+  student users @relation(fields: [student_id], references: [id])
+  tutor   tutor @relation(fields: [tutor_id], references: [tutor_id])
+
+  @@id([student_id, tutor_id])
+}
+
+model notifications {
+  id         String   @id @default(uuid())
+  message    String
+  date       DateTime @default(now())
+  url        String?
+  sender_id  String
+  reciver_id String
+
+  sender users @relation(fields: [sender_id], references: [id])
+}
+
+model reading_schedule {
+  id       String @id @default(uuid())
+  schedule Json   @default("{}")
+  user_id  String
+
+  user users @relation(fields: [user_id], references: [id])
+}
+
+model parent {
+  id       String @id
+  child_id String
+
+  user  users    @relation(fields: [id], references: [id])
+  child students @relation(fields: [child_id], references: [student_id])
+}
