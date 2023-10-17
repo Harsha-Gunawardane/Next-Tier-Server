@@ -262,4 +262,4 @@ const deleteContentById = async (req, res) => {
 // }
 
 
-module.exports = { createContent,getAllContents,getContentById,getAll,deleteContentById,getVideoByTutorId }
+module.exports = { createContent,getAllContents,getContentById,deleteContentById,getVideoByTutorId }
