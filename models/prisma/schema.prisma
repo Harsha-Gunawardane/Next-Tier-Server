@@ -136,7 +136,6 @@ model admin {
 model instStaff {
   inst_staff_id  String   @id @default(uuid())
   qualifications String[] @default([])
-  emergency_No   String?
 
   user users @relation(fields: [inst_staff_id], references: [id])
 }
@@ -155,12 +154,12 @@ model files {
 }
 
 model folders {
-  id        String   @id
-  user_name String
-  name      String
-  tute_ids  String[] @default([])
+  id       String   @id
+  user_id  String
+  name     String
+  tute_ids String[] @default([])
 
-  user users @relation(fields: [user_name], references: [username])
+  user users @relation(fields: [user_id], references: [id])
 }
 
 model tutes {
@@ -308,31 +307,19 @@ enum payment_type {
   PHYSICAL
 }
 
-enum payment_status {
-  PENDING
-  PAID
-  FAILED
-}
-
-enum payment_for {
-  EXTEND
-  PURCHASE
-}
-
 model student_purchase_studypack {
-  id               String         @id @default(uuid())
   student_id       String
   pack_id          String
   reciept_location String
   ammount          Int
   type             payment_type
-  purchased_at     DateTime       @default(now())
+  purchased_at     DateTime     @default(now())
   expire_date      DateTime
-  status           payment_status @default(PENDING)
-  payment_for      payment_for    @default(PURCHASE)
 
   student users      @relation(fields: [student_id], references: [id])
   pack    study_pack @relation(fields: [pack_id], references: [id])
+
+  @@id([student_id, pack_id])
 }
 
 enum course_visibility {
@@ -341,7 +328,8 @@ enum course_visibility {
 }
 
 model courses {
-  id            String            @id @default(uuid())
+  id            String   @id @default(uuid())
+  // id            String            @id @default(uuid())
   tutor_id      String
   title         String
   description   String
@@ -468,13 +456,14 @@ model complaints {
   message   String
   posted_at DateTime        @default(now())
   // resolved  Boolean        @default(false)
-  status    ComplaintStatus @default(NEW)
+  status    ComplaintStatus @default(PENDING)
   user      users           @relation(fields: [user_id], references: [id])
 }
 
 enum ComplaintStatus {
-  NEW
-  IN_ACTION
+  PENDING
+  RESOLVED
+  IGNORED
 }
 
 model mcq_category {
@@ -598,9 +587,21 @@ model poll {
   options   String[] @default([]) //
   votes     Json     @default("{}") // {option1: 0, option2: 0, option3: 0, option4: 0}
   datetime  DateTime @default(now())
-  user_id   String[] @default([])
-  course    courses  @relation(fields: [course_id], references: [id])
+  user_id   String[] @default([]) 
+  course courses @relation(fields: [course_id], references: [id])
 }
+
+// model papers {
+//   paper_id      String          @id @default(uuid())
+//   course_id     String?         @default("")
+//   title         String
+//   type          String
+//   date          DateTime
+//   subject       String?
+//   subject_areas String[]        @default([])
+ 
+// }
+
 
 model student_follow_tutor {
   student_id String

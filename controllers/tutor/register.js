@@ -150,37 +150,40 @@ const getStaffDetails = async (req, res) => {
   }
 };
 
+
 const editDetails = async (req, res) => {
-  const { first_name, last_name, phone_number, qualifications, description } = req.body;
-  const user = req.user; // Assuming you have the user information in req.user
+  const { first_name, last_name, phone_number, tutor } = req.body;
+  const user = req.user.id; // Assuming you have the user information in req.user
 
   try {
     // Start a Prisma transaction
-    await prisma.$transaction(async (prisma) => {
+    await prisma.$transaction(async (tx) => {
       // Update the user table
-      await prisma.users.update({
-        where: { username: user },
+      const updatedUser = await tx.users.update({
+        where: { id: user },
         data: {
           first_name: first_name,
           last_name: last_name,
           phone_number: phone_number,
         },
       });
+      console.log("Updated User:", updatedUser);
 
       // Check if the user has a related tutor record
-      const tutor = await prisma.tutor.findUnique({
-        where: { user_username: user },
+      const existingTutor = await tx.tutor.findUnique({
+        where: { tutor_id: user },
       });
 
-      if (tutor) {
+      if (existingTutor) {
         // Update the tutor table if a related record exists
-        await prisma.tutor.update({
-          where: { user_username: user },
+        const updatedTutor = await tx.tutor.update({
+          where: { tutor_id: user },
           data: {
-            qualifications: qualifications,
-            description: description,
+            qualifications: tutor.qualifications,
+            description: tutor.description,
           },
         });
+        console.log("Updated Tutor:", updatedTutor);
       }
     });
 
@@ -193,6 +196,8 @@ const editDetails = async (req, res) => {
     await prisma.$disconnect(); // Disconnect from the Prisma client
   }
 };
+
+
 
 
 
