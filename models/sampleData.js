@@ -320,6 +320,7 @@ const questions = [
 
 const quizzes = [
   {
+    course_id: "7bf364c3-883f-47b4-adc4-fe100d192288",
     title: "2023/07/30 - Morning Quiz (Theory Class)",
     subject: "Physics",
     subject_areas: ["Mechanics", "Electromagnetism", "Particle Physics"],
@@ -327,6 +328,7 @@ const quizzes = [
     number_of_questions: 0,
   },
   {
+    course_id: "7bf364c3-883f-47b4-adc4-fe100d192288",
     title: "2023/07/30 - Evening Quiz (Theory Class)",
     subject: "Physics",
     subject_areas: ["Electromagnetism"],
@@ -334,6 +336,7 @@ const quizzes = [
     number_of_questions: 0,
   },
   {
+    course_id: "7bf364c3-883f-47b4-adc4-fe100d192288",
     title: "2023/08/10 - Morning Quiz (Theory Class)",
     subject: "Physics",
     subject_areas: ["Calculus"],
@@ -341,6 +344,7 @@ const quizzes = [
     number_of_questions: 0,
   },
   {
+    course_id: "7bf364c3-883f-47b4-adc4-fe100d192288",
     title: "2023/08/10 - Evening Quiz (Theory Class)",
     subject: "Physics",
     subject_areas: ["Linear Algebra", "Calculus"],
@@ -348,6 +352,7 @@ const quizzes = [
     number_of_questions: 0,
   },
   {
+    course_id: "7bf364c3-883f-47b4-adc4-fe100d192288",
     title: "2023/09/05 - Morning Quiz (Theory Class)",
     subject: "Chemistry",
     subject_areas: ["Organic Chemistry", "Inorganic Chemistry"],
@@ -424,6 +429,18 @@ const staffs = [
     address: "No. 12, Main Street, Kalutara",
     email: "ravi@gmail.com",
     phone_number: "+94 766016562",
+    staff_title: "Cls Supporting Staff",
+  },
+  {
+    first_name: "Wimal",
+    last_name: "Perera",
+    profile_picture:
+      "https://images.unsplash.com/photo-1632922267756-9b71242b1592?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=250&q=80",
+    NIC: "962758781V",
+    DOB: "1996-02-15T18:30:00.000Z",
+    address: "No. 12, Main Street, Kalutara",
+    email: "ravi@gmail.com",
+    phone_number: "+94 760016522",
     staff_title: "Cls Supporting Staff",
   },
 ];
