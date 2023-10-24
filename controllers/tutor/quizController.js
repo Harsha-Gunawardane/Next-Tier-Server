@@ -56,6 +56,8 @@ const createNewQuiz = asyncHandler(async (req, res) => {
   }
 });
 
+
+
 const updateQuiz = asyncHandler(async (req, res) => {
   const id = req.params.id;
 

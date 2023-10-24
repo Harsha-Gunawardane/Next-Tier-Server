@@ -61,9 +61,9 @@ router
   .post(verifyRoles(ROLES_LIST.Tutor), courseController.createPoll);
 // .get(verifyRoles(ROLES_LIST.Tutor), courseController.getAllPolls);
 
-router
-  .route("/courses/poll/:pollId")
-  .get(verifyRoles(ROLES_LIST.Tutor), courseController.getPoll);
+// router
+//   .route("/courses/poll/:pollId")
+//   .get(verifyRoles(ROLES_LIST.Tutor), courseController.getPoll);
 
 router
   .route("/courses/poll/:courseId")
