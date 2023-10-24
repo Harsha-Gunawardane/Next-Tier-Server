@@ -280,7 +280,7 @@ const getStudentMarksDetails = asyncHandler(async (req, res) => {
         first_name: studentMarkDetail.user.first_name,
         last_name: studentMarkDetail.user.last_name,
         profile_picture: studentMarkDetail.user.profile_picture,
-        weak_areas: studentMarkDetail.weak_areas.area,
+        weak_areas: studentMarkDetail.weak_areas?.area,
         marks: studentMarkDetail.student_marks.map((mark) => mark.marks),
       })
     );
@@ -391,7 +391,7 @@ const addStudentAttendance = asyncHandler(async (req, res) => {
     const foundStudentAttendance = await prisma.student_attendance.findFirst({
       where: {
         student_id: studentId,
-        course_id: "0f1f0bbc-9c80-4fc0-a955-440de26c3e25",
+        course_id: "7bf364c3-883f-47b4-adc4-fe100d192288",
       },
     });
 
@@ -399,7 +399,7 @@ const addStudentAttendance = asyncHandler(async (req, res) => {
       const updatedStudentAttendance = await prisma.student_attendance.update({
         where: {
             student_id: studentId,
-            course_id: "0f1f0bbc-9c80-4fc0-a955-440de26c3e25",
+            course_id: "7bf364c3-883f-47b4-adc4-fe100d192288",
         },
         data: {
           is_present: is_present,
@@ -411,7 +411,7 @@ const addStudentAttendance = asyncHandler(async (req, res) => {
       const addStudentAttendance = await prisma.student_attendance.create({
         data: {
           student_id: studentId,
-          course_id: "0f1f0bbc-9c80-4fc0-a955-440de26c3e25",
+          course_id: "7bf364c3-883f-47b4-adc4-fe100d192288",
           date: date,
           is_present: is_present,
         },
