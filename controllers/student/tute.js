@@ -189,6 +189,8 @@ const getTuteContent = async (req, res) => {
       select: {
         name: true,
         content: true,
+        description: true,
+        recent_activity: true,
         starred: true,
         archived: true,
       },
