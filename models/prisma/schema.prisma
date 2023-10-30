@@ -296,7 +296,7 @@ model study_pack {
   expire_date   DateTime?
   start_date    DateTime?
   month         DateTime?
-  medium        String
+  medium        String?
 
   tutor                      tutor                        @relation(fields: [tutor_id], references: [tutor_id])
   course                     courses                      @relation(fields: [course_id], references: [id])
@@ -330,7 +330,6 @@ enum course_visibility {
 
 model courses {
   id            String   @id @default(uuid())
-  // id            String            @id @default(uuid())
   tutor_id      String
   title         String
   description   String

@@ -18,11 +18,14 @@ const mcqController = require("../../controllers/tutor/mcqController");
 const categoryController = require("../../controllers/tutor/categoryController");
 const staffController = require("../../controllers/tutor/staffController");
 const paperController = require("../../controllers/tutor/paperController");
+const { uploadTute  } = require("../../middleware/fileUpload/fileUploadPublic");
+const { uploadThumbnail  } = require("../../middleware/fileUpload/fileUploadPublic");
+
 
 router
   .route("/course")
   .get(verifyRoles(ROLES_LIST.Tutor), courseController.getAllCourses)
-  .post(verifyRoles(ROLES_LIST.Tutor), courseController.createCourse);
+  .post(verifyRoles(ROLES_LIST.Tutor),uploadThumbnail.single("files"), courseController.createCourse);
 
 router
   .route("/course/:id")
@@ -61,9 +64,9 @@ router
   .post(verifyRoles(ROLES_LIST.Tutor), courseController.createPoll);
 // .get(verifyRoles(ROLES_LIST.Tutor), courseController.getAllPolls);
 
-// router
-//   .route("/courses/poll/:pollId")
-//   .get(verifyRoles(ROLES_LIST.Tutor), courseController.getPoll);
+router
+  .route("/courses/polls/:pollId")
+  .get(verifyRoles(ROLES_LIST.Tutor), courseController.getPoll);
 
 router
   .route("/courses/poll/:courseId")
@@ -89,7 +92,7 @@ router
 
   .route("/studypack")
   .get(studypackController.getAllStudyPacks)
-  .post(verifyRoles(ROLES_LIST.Tutor), studypackController.createStudyPack);
+  .post(verifyRoles(ROLES_LIST.Tutor),uploadThumbnail.single("files"), studypackController.createStudyPack);
 
 router
   .route("/studypack/:id")
@@ -132,7 +135,7 @@ router
 
 router
   .route("/content")
-  .post(verifyRoles(ROLES_LIST.Tutor), contentController.createContent);
+  .post(verifyRoles(ROLES_LIST.Tutor),uploadTute.single("files"),contentController.createContent);
 
 router
   .route("/content")

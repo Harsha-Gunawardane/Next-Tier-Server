@@ -1,6 +1,11 @@
 //import ORM to handle Database
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
+const uuid = require("uuid").v4;
+const multer = require('multer');
+const path = require('path');
+const { json } = require("body-parser");
+const { publicBucket } = require("../../middleware/fileUpload/fileUploadPublic");
 
 
 
@@ -40,11 +45,13 @@ const createStudyPack = async (req, res) => {
     description,
     subject,
     price,
+    medium,
     thumbnail,
     subject_areas,
     access_period,
     type,
   } = req.body;
+  const file=req.file;
 
   try {
     const foundUser = await prisma.users.findUnique({
@@ -75,6 +82,18 @@ const createStudyPack = async (req, res) => {
     // create course
     const tutorId = foundUser.id;
 
+    if (!file) {
+      // Handle the case where there are no files to attach
+      return res.status(400).json({ message: 'No files provided for attachment' });
+    }
+
+ // Assuming you are only adding one file
+    const newFileName = `${uuid()}_${file.originalname.replace(/ /g, '_')}`;
+    const blob = publicBucket.file(newFileName);
+    const blobStream = blob.createWriteStream();
+
+    blobStream.on('finish', async () => {
+
     const newStudypack = await prisma.study_pack.create({
       data: {
         tutor_id: tutorId,
@@ -82,8 +101,9 @@ const createStudyPack = async (req, res) => {
         title,
         description,
         subject,
+        medium,
         price: parseInt(price),
-        thumbnail,
+        thumbnail: `https://storage.googleapis.com/${publicBucket.name}/${newFileName}`,
         subject_areas,
         type,
         access_period,
@@ -92,11 +112,14 @@ const createStudyPack = async (req, res) => {
       },
     });
 
+    console.log('Success');
     res.json(newStudypack);
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ message: error.message });
-  }
+  });
+  blobStream.end(file.buffer);
+} catch (error) {
+  console.log(error);
+  res.status(500).json({ message: error.message });
+}
 };
 
 
