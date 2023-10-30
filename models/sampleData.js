@@ -318,4 +318,131 @@ const questions = [
   },
 ];
 
-module.exports = { questions };
+const quizzes = [
+  {
+    course_id: "7bf364c3-883f-47b4-adc4-fe100d192288",
+    title: "2023/07/30 - Morning Quiz (Theory Class)",
+    subject: "Physics",
+    subject_areas: ["Mechanics", "Electromagnetism", "Particle Physics"],
+    question_ids: [],
+    number_of_questions: 0,
+  },
+  {
+    course_id: "7bf364c3-883f-47b4-adc4-fe100d192288",
+    title: "2023/07/30 - Evening Quiz (Theory Class)",
+    subject: "Physics",
+    subject_areas: ["Electromagnetism"],
+    question_ids: [],
+    number_of_questions: 0,
+  },
+  {
+    course_id: "7bf364c3-883f-47b4-adc4-fe100d192288",
+    title: "2023/08/10 - Morning Quiz (Theory Class)",
+    subject: "Physics",
+    subject_areas: ["Calculus"],
+    question_ids: [],
+    number_of_questions: 0,
+  },
+  {
+    course_id: "7bf364c3-883f-47b4-adc4-fe100d192288",
+    title: "2023/08/10 - Evening Quiz (Theory Class)",
+    subject: "Physics",
+    subject_areas: ["Linear Algebra", "Calculus"],
+    question_ids: [],
+    number_of_questions: 0,
+  },
+  {
+    course_id: "7bf364c3-883f-47b4-adc4-fe100d192288",
+    title: "2023/09/05 - Morning Quiz (Theory Class)",
+    subject: "Chemistry",
+    subject_areas: ["Organic Chemistry", "Inorganic Chemistry"],
+    question_ids: [],
+    number_of_questions: 0,
+  },
+];
+
+const categories = [
+  {
+    title: "Chemical Calculations",
+    number_of_questions: 0,
+    question_ids: [],
+  },
+  {
+    title: "Revison Questions",
+    number_of_questions: 0,
+    question_ids: [],
+  },
+  {
+    title: "2018 - Syllabus Questions",
+    number_of_questions: 0,
+    question_ids: [],
+  },
+  {
+    title: "Mechanics - Revision Questions",
+    number_of_questions: 0,
+    question_ids: [],
+  },
+  {
+    title: "Industrial Chemistry",
+    number_of_questions: 0,
+    question_ids: [],
+  },
+  {
+    title: "Organic Questions",
+    number_of_questions: 0,
+    question_ids: [],
+  },
+];
+
+const staffs = [
+  {
+    first_name: "Sithum",
+    last_name: "Perera",
+    profile_picture:
+      "https://images.unsplash.com/photo-1624298357597-fd92dfbec01d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=250&q=80",
+    NIC: "980756789V",
+    DOB: "1998-08-15T18:30:00.000Z",
+    address: "No. 12, Main Street, Horana",
+    email: "sithum@gmail.com",
+    phone_number: "+94 766016862",
+    staff_title: "Cls Supporting Staff",
+  },
+  {
+    first_name: "Ravindu",
+    last_name: "Samaranayake",
+    profile_picture:
+      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=250&q=80",
+    NIC: "982756781V",
+    DOB: "1998-04-15T18:30:00.000Z",
+    address: "No. 12, Main Street, Kalutara",
+    email: "ravi@gmail.com",
+    phone_number: "+94 766016562",
+    staff_title: "Cls Supporting Staff",
+  },
+  {
+    first_name: "Dinuka",
+    last_name: "Lakshan",
+    profile_picture:
+      "https://images.unsplash.com/photo-1632922267756-9b71242b1592?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=250&q=80",
+    NIC: "982758781V",
+    DOB: "1998-02-15T18:30:00.000Z",
+    address: "No. 12, Main Street, Kalutara",
+    email: "ravi@gmail.com",
+    phone_number: "+94 766016562",
+    staff_title: "Cls Supporting Staff",
+  },
+  {
+    first_name: "Wimal",
+    last_name: "Perera",
+    profile_picture:
+      "https://images.unsplash.com/photo-1632922267756-9b71242b1592?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=250&q=80",
+    NIC: "962758781V",
+    DOB: "1996-02-15T18:30:00.000Z",
+    address: "No. 12, Main Street, Kalutara",
+    email: "ravi@gmail.com",
+    phone_number: "+94 760016522",
+    staff_title: "Cls Supporting Staff",
+  },
+];
+
+module.exports = { questions, quizzes, categories, staffs };

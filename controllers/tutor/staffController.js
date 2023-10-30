@@ -195,13 +195,22 @@ const updateStaff = asyncHandler(async (req, res) => {
       });
     }
 
+    let roles = {};
+
+    if (staff_title === "Cls Supporting Staff") {
+      roles = { User: 2001, TutorSupportStaff: 5566 };
+    } else if (staff_title === "Paper Marking Staff") {
+      roles = { User: 2001, TutorPaperStaff: 5576 };
+    }
+
     const updatedData = {
       first_name: first_name,
       last_name: last_name,
       phone_number: phone_number,
       DOB: DOB,
       address: address,
-      email:email,
+      roles: roles,
+      email: email,
       NIC: NIC,
     };
 

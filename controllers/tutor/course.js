@@ -591,7 +591,8 @@ const createPoll = async (req, res) => {
     optionsArray.forEach(option => {
       initialVotes[option] = 0;
     });
-
+    
+    const user_id = foundUser.id;
     // Create a new poll
     const newPoll = await prisma.poll.create({
       data: {
