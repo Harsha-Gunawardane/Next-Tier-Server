@@ -43,6 +43,171 @@ function getTimeDetails(startTimeStr, endTimeStr) {
   };
 }
 
+const checkQuizAvailability = async (req, res) => {
+  const { quizId } = req.params;
+
+  try {
+    const quiz = await quiz.findUnique({
+      where: {
+        id: quizId,
+      },
+      select: {
+        end_time: true,
+        schedule_time: true,
+      },
+    });
+
+    if (!quiz) return res.status(404).json({ message: "Quiz not found" });
+
+    const now = Date.now();
+    const endTime = new Date(quiz.end_time).getTime();
+    const scheduledTime = new Date(quiz.schedule_time).getTime();
+
+    if (now > endTime) {
+      return res.status(400).json({ message: "Quiz has already ended" });
+    }
+
+    if (now < scheduledTime) {
+      return res.status(400).json({ message: "Quiz is not published yet!" });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: error.message });
+  }
+}
+
+const attempQuiz = async (req, res) => {
+  const { quizId } = req.params;
+
+  try {
+    const quiz = await quiz.findUnique({
+      where: {
+        id: quizId,
+      },
+      select: {
+        end_time: true,
+        schedule_time: true,
+        question_ids: true,
+        title: true,
+        subject: true,
+      },
+    });
+
+    if (!quiz) return res.status(404).json({ message: "Quiz not found" });
+
+    const now = Date.now();
+    const endTime = new Date(quiz.end_time).getTime();
+    const scheduledTime = new Date(quiz.schedule_time).getTime();
+
+    if (now > endTime) {
+      return res.status(400).json({ message: "Quiz has already ended" });
+    }
+
+    if (now < scheduledTime) {
+      return res.status(400).json({ message: "Quiz is not published yet!" });
+    }
+
+    const data = {
+      noOfQuestions: quiz.question_ids.length(),
+      subject: quiz.subject,
+      mcqName: quiz.title,
+    };
+
+    return res.status(200).json({ data });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+const getCourseRelatedQuestions = async (req, res) => {
+  const user = req.user;
+  const { quizId } = req.body;
+
+  try {
+    const foundUser = await prisma.users.findUnique({
+      where: {
+        username: user,
+      },
+      select: {
+        id: true,
+      },
+    });
+    if (!foundUser) return res.sendStatus(401);
+
+    const data = await prisma.quiz.findUnique({
+      where: {
+        id: quizId,
+      },
+      select: {
+        question_ids: true,
+        title: true,
+      },
+    });
+
+    if (!data.question_ids.length)
+      return res.status(500).json({ message: "No questions" });
+
+    // restructure data
+    let mcqIds = [];
+    let answers = [];
+    let responseData = [];
+
+    data.question_ids.forEach(async (id) => {
+      const question = await prisma.questions.findUnique({
+        where: {
+          id: id,
+        },
+        select: {
+          options: true,
+          question: true,
+          correct_answer: true,
+        },
+      });
+
+      mcqIds.push(id);
+      answers.push(question.correct_answer);
+      responseData.push({
+        id: id,
+        options: question.options,
+        question: question.question,
+      });
+    });
+
+    let date = new Date();
+    date = date.toISOString();
+
+    // create a new quiz for student
+    newQuiz = await prisma.student_generate_quiz.create({
+      data: {
+        id: uuidv4(),
+        username: user,
+        mcq_ids: mcqIds,
+        correct_answers: answers,
+        subject: subject,
+        quiz_name: data.title,
+        date: date,
+      },
+    });
+
+    const attemptedQuiz = await prisma.student_attempt_quiz.create({
+      data: {
+        student_id: foundUser.id,
+        quiz_id: quizId,
+      },
+    });
+
+    const response = {
+      questions: responseData,
+      quizName: data.title,
+    };
+
+    res.json({ response });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 const generateQuiz = async (req, res) => {
   const user = req.user;
   let { subject, value } = req.body;
@@ -146,9 +311,31 @@ const generateQuiz = async (req, res) => {
   }
 };
 
+const getQuestionsByIds = async (ids) => {
+  const questionsWithoutOrder = await prisma.questions.findMany({
+    where: {
+      id: {
+        in: ids,
+      },
+    },
+  });
+
+  const questionsMap = new Map();
+  questionsWithoutOrder.forEach((question) => {
+    questionsMap.set(question.id, question);
+  });
+
+  // Arrange the questions in the order of mcq_ids
+  const questions = ids.map((id) => questionsMap.get(id));
+  console.log(questions);
+  return questions;
+};
+
 const doneQuiz = async (req, res) => {
   const user = req.user;
   let { subject, quizName, result, startTime, endTime } = req.body;
+
+  console.log(result);
 
   // restructure subject input
   if (!isFirstLetterInCapital(subject)) {
@@ -172,22 +359,16 @@ const doneQuiz = async (req, res) => {
       },
     });
 
-    console.log(generatedQuiz);
-
     if (!generatedQuiz)
       return res.status(400).json({ message: "No such quiz" });
 
-    const questions = await prisma.questions.findMany({
-      where: {
-        id: {
-          in: generatedQuiz.mcq_ids,
-        },
-      },
-    });
+    const questions = await getQuestionsByIds(generatedQuiz.mcq_ids);
 
+    console.log(questions);
     let noOfCorrectAnswers = 0;
 
     questions.forEach((question, index) => {
+      // console.log(question)
       if (question.correct_answer === result[index]) noOfCorrectAnswers += 1;
     });
 
@@ -195,8 +376,6 @@ const doneQuiz = async (req, res) => {
 
     // update result array in correct format
     const resultInInt = result.map((value) => (value !== null ? value : -1));
-
-    console.log(resultInInt);
 
     // update as quiz is done
     const updatedQuiz = await prisma.student_generate_quiz.update({
@@ -245,23 +424,22 @@ const getQuizMarking = async (req, res) => {
       },
     });
 
+    console.log(generatedQuiz);
+
     if (!generatedQuiz)
       return res.status(400).json({ message: "No such quiz" });
-    const questions = await prisma.questions.findMany({
-      where: {
-        id: {
-          in: generatedQuiz.mcq_ids,
-        },
-      },
-    });
+
     // check user is done the quiz
     if (!generatedQuiz.done)
       return res.status(402).json({ message: "Quiz is not done yet" });
 
+    const questions = await getQuestionsByIds(generatedQuiz.mcq_ids);
+
     // let noOfCorrectAnswers = 0;
     let responseQuestions = [];
 
-    questions.forEach((question, index) => {
+    questions.forEach((question) => {
+      console.log(question);
       const responseQuestion = {
         id: question.id,
         question: question.question,
@@ -411,4 +589,12 @@ const getPreviousQuizzes = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-module.exports = { generateQuiz, getQuizMarking, doneQuiz, getPreviousQuizzes };
+module.exports = {
+  generateQuiz,
+  getQuizMarking,
+  doneQuiz,
+  getPreviousQuizzes,
+  attempQuiz,
+  getCourseRelatedQuestions,
+  checkQuizAvailability
+};

@@ -5,13 +5,28 @@ CREATE TYPE "content_type" AS ENUM ('TUTE', 'VIDEO');
 CREATE TYPE "content_status" AS ENUM ('PUBLIC', 'PAID', 'HOLD');
 
 -- CreateEnum
+CREATE TYPE "available_status" AS ENUM ('AVAILABLE', 'PENDING', 'ERROR');
+
+-- CreateEnum
 CREATE TYPE "study_pack_type" AS ENUM ('NORMAL', 'PAID');
+
+-- CreateEnum
+CREATE TYPE "visibility" AS ENUM ('PUBLIC', 'PRIVATE');
 
 -- CreateEnum
 CREATE TYPE "payment_type" AS ENUM ('ONLINE', 'PHYSICAL');
 
 -- CreateEnum
-CREATE TYPE "visibility" AS ENUM ('PUBLIC', 'PRIVATE');
+CREATE TYPE "payment_status" AS ENUM ('PENDING', 'PAID', 'FAILED');
+
+-- CreateEnum
+CREATE TYPE "payment_for" AS ENUM ('EXTEND', 'PURCHASE');
+
+-- CreateEnum
+CREATE TYPE "course_visibility" AS ENUM ('PUBLIC', 'PRIVATE');
+
+-- CreateEnum
+CREATE TYPE "course_status" AS ENUM ('PENDING', 'APPROVED', 'REJECTED');
 
 -- CreateEnum
 CREATE TYPE "schedule_type" AS ENUM ('RECURRING', 'ONE_TIME');
@@ -20,7 +35,7 @@ CREATE TYPE "schedule_type" AS ENUM ('RECURRING', 'ONE_TIME');
 CREATE TYPE "complaint_type" AS ENUM ('COURSE_RELATED', 'OTHER');
 
 -- CreateEnum
-CREATE TYPE "ComplaintStatus" AS ENUM ('PENDING', 'RESOLVED', 'IGNORED');
+CREATE TYPE "ComplaintStatus" AS ENUM ('NEW', 'IN_ACTION');
 
 -- CreateEnum
 CREATE TYPE "attachment_type" AS ENUM ('IMAGE', 'DOCUMENT');
@@ -80,6 +95,7 @@ CREATE TABLE "students" (
 -- CreateTable
 CREATE TABLE "tutor" (
     "tutor_id" TEXT NOT NULL,
+    "description" TEXT,
     "medium" TEXT[] DEFAULT ARRAY['Sinhala']::TEXT[],
     "school" TEXT,
     "subjects" TEXT[],
@@ -156,13 +172,12 @@ CREATE TABLE "tutes" (
     "folder_id" TEXT NOT NULL DEFAULT '',
     "user_name" TEXT NOT NULL,
     "content" TEXT,
-    "file_id" TEXT NOT NULL DEFAULT '',
     "created_at" TIMESTAMP(3) NOT NULL,
     "name" TEXT NOT NULL,
-    "gcs_name" TEXT,
-    "url" TEXT,
-    "local_url" TEXT,
-    "isUpload" BOOLEAN NOT NULL DEFAULT false,
+    "description" TEXT NOT NULL DEFAULT '',
+    "recent_activity" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "starred" BOOLEAN NOT NULL DEFAULT false,
+    "archived" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "tutes_pkey" PRIMARY KEY ("id")
 );
@@ -171,16 +186,17 @@ CREATE TABLE "tutes" (
 CREATE TABLE "content" (
     "id" TEXT NOT NULL,
     "title" TEXT NOT NULL,
-    "description" TEXT NOT NULL,
+    "description" TEXT NOT NULL DEFAULT '',
     "user_id" TEXT NOT NULL,
-    "type" "content_type",
-    "subject" TEXT NOT NULL,
-    "subject_areas" TEXT[],
+    "type" "content_type" DEFAULT 'VIDEO',
+    "subject" TEXT NOT NULL DEFAULT '',
+    "subject_areas" TEXT[] DEFAULT ARRAY[]::TEXT[],
     "uploaded_at" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
     "status" "content_status" DEFAULT 'PUBLIC',
     "file_path" TEXT,
-    "thumbnail" TEXT,
+    "thumbnail" TEXT DEFAULT '',
     "reactions" JSONB DEFAULT '{}',
+    "available_status" "available_status" DEFAULT 'AVAILABLE',
 
     CONSTRAINT "content_pkey" PRIMARY KEY ("id")
 );
@@ -239,17 +255,22 @@ CREATE TABLE "study_pack" (
     "subject_areas" TEXT[],
     "thumbnail" TEXT,
     "type" "study_pack_type" NOT NULL,
+    "visibility" "visibility" NOT NULL DEFAULT 'PRIVATE',
     "price" INTEGER NOT NULL,
-    "access_period" JSONB NOT NULL DEFAULT '{}',
+    "access_period" JSONB DEFAULT '{}',
     "uploaded_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "content_ids" JSONB[] DEFAULT ARRAY[]::JSONB[],
+    "public_ids" JSONB[] DEFAULT ARRAY[]::JSONB[],
     "expire_date" TIMESTAMP(3),
+    "start_date" TIMESTAMP(3),
+    "month" TIMESTAMP(3),
 
     CONSTRAINT "study_pack_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "student_purchase_studypack" (
+    "id" TEXT NOT NULL,
     "student_id" TEXT NOT NULL,
     "pack_id" TEXT NOT NULL,
     "reciept_location" TEXT NOT NULL,
@@ -257,8 +278,10 @@ CREATE TABLE "student_purchase_studypack" (
     "type" "payment_type" NOT NULL,
     "purchased_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "expire_date" TIMESTAMP(3) NOT NULL,
+    "status" "payment_status" NOT NULL DEFAULT 'PENDING',
+    "payment_for" "payment_for" NOT NULL DEFAULT 'PURCHASE',
 
-    CONSTRAINT "student_purchase_studypack_pkey" PRIMARY KEY ("student_id","pack_id")
+    CONSTRAINT "student_purchase_studypack_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -272,11 +295,14 @@ CREATE TABLE "courses" (
     "grade" TEXT NOT NULL,
     "thumbnail" TEXT NOT NULL,
     "monthly_fee" INTEGER NOT NULL,
+    "visibility" "course_visibility" NOT NULL DEFAULT 'PRIVATE',
     "hall_id" TEXT,
     "content_ids" JSONB[] DEFAULT ARRAY[]::JSONB[],
+    "announcements" JSONB[] DEFAULT ARRAY[]::JSONB[],
     "start_date" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "studypack_ids" JSONB[] DEFAULT ARRAY[]::JSONB[],
     "schedule" JSONB[] DEFAULT ARRAY[]::JSONB[],
+    "status" "course_status" NOT NULL DEFAULT 'PENDING',
 
     CONSTRAINT "courses_pkey" PRIMARY KEY ("id")
 );
@@ -288,6 +314,29 @@ CREATE TABLE "student_enrolled_course" (
     "enrolled_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "student_enrolled_course_pkey" PRIMARY KEY ("student_id","course_id")
+);
+
+-- CreateTable
+CREATE TABLE "papers" (
+    "paper_id" TEXT NOT NULL,
+    "course_id" TEXT DEFAULT '',
+    "title" TEXT NOT NULL,
+    "type" TEXT NOT NULL,
+    "date" TIMESTAMP(3) NOT NULL,
+    "subject" TEXT,
+    "subject_areas" TEXT[] DEFAULT ARRAY[]::TEXT[],
+
+    CONSTRAINT "papers_pkey" PRIMARY KEY ("paper_id")
+);
+
+-- CreateTable
+CREATE TABLE "student_marks" (
+    "student_id" TEXT NOT NULL,
+    "paper_id" TEXT NOT NULL,
+    "course_id" TEXT DEFAULT '',
+    "marks" INTEGER DEFAULT 0,
+
+    CONSTRAINT "student_marks_pkey" PRIMARY KEY ("student_id","paper_id")
 );
 
 -- CreateTable
@@ -335,7 +384,7 @@ CREATE TABLE "complaints" (
     "post_id" TEXT,
     "message" TEXT NOT NULL,
     "posted_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "status" "ComplaintStatus" NOT NULL DEFAULT 'PENDING',
+    "status" "ComplaintStatus" NOT NULL DEFAULT 'NEW',
 
     CONSTRAINT "complaints_pkey" PRIMARY KEY ("id")
 );
@@ -356,6 +405,7 @@ CREATE TABLE "quiz" (
     "course_id" TEXT DEFAULT '',
     "study_pack_id" TEXT,
     "title" TEXT NOT NULL,
+    "schedule_time" TEXT,
     "start_time" TIMESTAMP(3),
     "end_time" TIMESTAMP(3),
     "duration" TEXT,
@@ -461,8 +511,47 @@ CREATE TABLE "poll" (
     "question" TEXT NOT NULL,
     "options" TEXT[] DEFAULT ARRAY[]::TEXT[],
     "votes" JSONB NOT NULL DEFAULT '{}',
+    "datetime" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "user_id" TEXT[] DEFAULT ARRAY[]::TEXT[],
 
     CONSTRAINT "poll_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "student_follow_tutor" (
+    "student_id" TEXT NOT NULL,
+    "tutor_id" TEXT NOT NULL,
+
+    CONSTRAINT "student_follow_tutor_pkey" PRIMARY KEY ("student_id","tutor_id")
+);
+
+-- CreateTable
+CREATE TABLE "notifications" (
+    "id" TEXT NOT NULL,
+    "message" TEXT NOT NULL,
+    "date" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "url" TEXT,
+    "sender_id" TEXT NOT NULL,
+    "reciver_id" TEXT NOT NULL,
+
+    CONSTRAINT "notifications_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "reading_schedule" (
+    "id" TEXT NOT NULL,
+    "schedule" JSONB NOT NULL DEFAULT '{}',
+    "user_id" TEXT NOT NULL,
+
+    CONSTRAINT "reading_schedule_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "parent" (
+    "id" TEXT NOT NULL,
+    "child_id" TEXT NOT NULL,
+
+    CONSTRAINT "parent_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
@@ -562,7 +651,13 @@ ALTER TABLE "student_enrolled_course" ADD CONSTRAINT "student_enrolled_course_st
 ALTER TABLE "student_enrolled_course" ADD CONSTRAINT "student_enrolled_course_course_id_fkey" FOREIGN KEY ("course_id") REFERENCES "courses"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "student_attendance" ADD CONSTRAINT "student_attendance_student_id_fkey" FOREIGN KEY ("student_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "student_marks" ADD CONSTRAINT "student_marks_student_id_fkey" FOREIGN KEY ("student_id") REFERENCES "students"("student_id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "student_marks" ADD CONSTRAINT "student_marks_paper_id_fkey" FOREIGN KEY ("paper_id") REFERENCES "papers"("paper_id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "student_attendance" ADD CONSTRAINT "student_attendance_student_id_fkey" FOREIGN KEY ("student_id") REFERENCES "students"("student_id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "student_attendance" ADD CONSTRAINT "student_attendance_course_id_fkey" FOREIGN KEY ("course_id") REFERENCES "courses"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -605,3 +700,21 @@ ALTER TABLE "attachments" ADD CONSTRAINT "attachments_post_id_fkey" FOREIGN KEY 
 
 -- AddForeignKey
 ALTER TABLE "poll" ADD CONSTRAINT "poll_course_id_fkey" FOREIGN KEY ("course_id") REFERENCES "courses"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "student_follow_tutor" ADD CONSTRAINT "student_follow_tutor_student_id_fkey" FOREIGN KEY ("student_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "student_follow_tutor" ADD CONSTRAINT "student_follow_tutor_tutor_id_fkey" FOREIGN KEY ("tutor_id") REFERENCES "tutor"("tutor_id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "notifications" ADD CONSTRAINT "notifications_sender_id_fkey" FOREIGN KEY ("sender_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "reading_schedule" ADD CONSTRAINT "reading_schedule_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "parent" ADD CONSTRAINT "parent_id_fkey" FOREIGN KEY ("id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "parent" ADD CONSTRAINT "parent_child_id_fkey" FOREIGN KEY ("child_id") REFERENCES "students"("student_id") ON DELETE RESTRICT ON UPDATE CASCADE;
