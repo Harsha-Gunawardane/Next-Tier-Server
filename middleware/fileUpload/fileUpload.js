@@ -10,6 +10,7 @@ const googleCloud = new Storage({
 });
 
 const fileBucket = googleCloud.bucket('next_tier_bucket')
+const publicFileBucket = googleCloud.bucket('next_tier_public')
 
 const VerifyExt = (req, file, callback) => {
   // console.log('req', req)
@@ -33,4 +34,4 @@ const multi_upload = multer({
 })
 
 
-module.exports = { upload, multi_upload, fileBucket, googleCloud };
+module.exports = { upload, multi_upload, fileBucket, googleCloud,publicFileBucket };

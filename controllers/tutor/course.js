@@ -2,6 +2,11 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const asyncHandler = require("express-async-handler");
+const { publicBucket } = require("../../middleware/fileUpload/fileUploadPublic");
+const uuid = require("uuid").v4;
+const multer = require('multer');
+const path = require('path');
+const { json } = require("body-parser");
 
 // const courseregisterFormSchema = require("../../validators/courseregisterValidator");
 
@@ -78,21 +83,73 @@ const getCourseById = async (req, res) => {
 
 
 
+// const createCourse = async (req, res) => {
+
+//   console.log("here")
+//   // const { error, data } = courseregisterFormSchema.validate(req.body);
+
+//   // if (error) {
+//   //   console.log (error);
+//   //   return res.status(400).json({ error: error.details[0].message });
+//   // }
+
+
+//   const user = req.user;
+//   const { title, description, subject, medium, grade, thumbnail, monthly_fee, schedule, start_date } = req.body;
+
+
+
+//   try {
+//     const foundUser = await prisma.users.findUnique({
+//       where: {
+//         username: user,
+//       },
+//     });
+//     if (!foundUser) return res.sendStatus(401);
+
+//     // create course
+//     const tutorId = foundUser.id;
+
+//     const newCourse = await prisma.courses.create({
+//       data: {
+//         tutor_id: tutorId,
+//         title,
+//         description,
+//         subject,
+//         medium,
+//         grade,
+//         thumbnail,
+//         start_date,
+//         monthly_fee,
+//         visibility: 'PRIVATE',
+//         content_ids: [
+//           {
+//             tute_id: [],
+//             video_id: [],
+//           }
+//         ],
+//         schedule: [
+//           schedule
+//         ]
+//       },
+//     });
+//     console.log(newCourse);
+//     res.status(201).json(newCourse);
+//   } catch (error) {
+//     console.log(error)
+//     res.status(500).json({ message: error.message });
+//   }
+// };
+
+
+
+
 const createCourse = async (req, res) => {
-
-  console.log("here")
-  // const { error, data } = courseregisterFormSchema.validate(req.body);
-
-  // if (error) {
-  //   console.log (error);
-  //   return res.status(400).json({ error: error.details[0].message });
-  // }
-
-
   const user = req.user;
-  const { title, description, subject, medium, grade, thumbnail, monthly_fee, schedule, start_date } = req.body;
-
-
+  const { title, description, subject, medium,monthly_fee, grade, schedule, start_date } = req.body;
+  const file=req.file;
+  
+  
 
   try {
     const foundUser = await prisma.users.findUnique({
@@ -100,41 +157,65 @@ const createCourse = async (req, res) => {
         username: user,
       },
     });
-    if (!foundUser) return res.sendStatus(401);
 
-    // create course
+    if (!foundUser) {
+      return res.sendStatus(401);
+    }
+
+    // Create course
     const tutorId = foundUser.id;
+    const monthly_fee = parseInt(req.body.monthly_fee, 10);
 
-    const newCourse = await prisma.courses.create({
-      data: {
-        tutor_id: tutorId,
-        title,
-        description,
-        subject,
-        medium,
-        grade,
-        thumbnail,
-        start_date,
-        monthly_fee,
-        visibility: 'PRIVATE',
-        content_ids: [
-          {
-            tute_id: [],
-            video_id: [],
-          }
-        ],
-        schedule: [
-          schedule
-        ]
-      },
+    // Upload the file
+    if (!file) {
+      // Handle the case where there are no files to attach
+      return res.status(400).json({ message: 'No files provided for attachment' });
+    }
+
+ // Assuming you are only adding one file
+    const newFileName = `${uuid()}_${file.originalname.replace(/ /g, '_')}`;
+    const blob = publicBucket.file(newFileName);
+    const blobStream = blob.createWriteStream();
+
+    // blobStream.on('error', (err) => {
+    //   console.error(err);
+    //   res.status(500).json({ message: 'File upload error' });
+    // });
+
+    blobStream.on('finish', async () => {
+    
+        const newCourse = await prisma.courses.create({
+          data: {
+            tutor_id: tutorId,
+            title,
+            description,
+            subject,
+            medium,
+            grade,
+            thumbnail: `https://storage.googleapis.com/${publicBucket.name}/${newFileName}`,
+            start_date,
+            monthly_fee,
+            visibility: 'PRIVATE',
+            content_ids: [
+              {
+                tute_id: [],
+                video_id: [],
+              }
+           ],
+            schedule: [schedule],
+          },
+        });
+        console.log('Success');
+      res.json(newCourse);
     });
-    console.log(newCourse);
-    res.status(201).json(newCourse);
+
+    blobStream.end(file.buffer);
   } catch (error) {
-    console.log(error)
+    console.log(error);
     res.status(500).json({ message: error.message });
   }
 };
+
 
 
 
@@ -591,7 +672,8 @@ const createPoll = async (req, res) => {
     optionsArray.forEach(option => {
       initialVotes[option] = 0;
     });
-
+    
+    const user_id = foundUser.id;
     // Create a new poll
     const newPoll = await prisma.poll.create({
       data: {
@@ -599,7 +681,7 @@ const createPoll = async (req, res) => {
         question,
         options: optionsArray,
         votes: initialVotes,
-        // hell,
+        // user_id,
         // Initialize votes with all counts set to 0
       },
     });
@@ -637,12 +719,13 @@ const getAllPolls = async (req, res) => {
 
 
     const poll = await prisma.poll.findMany({
+      // select:{user_id:true},
       where: {
         course_id: courseId,
       },
     });
 
-    res.json(poll);
+    res.json({ userId: tutorId, poll });
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: error.message });
@@ -739,6 +822,7 @@ const updateVoteCount = async (req, res) => {
   const user = req.user;
   const pollId = req.params.pollId;
   const option = req.params.option;
+  const userId = req.user.id;
 
   try {
     // Check if the user exists (you can customize this check as needed)
@@ -752,6 +836,7 @@ const updateVoteCount = async (req, res) => {
       return res.status(401).json({ message: 'Not logged in' });
     }
 
+    const userId = foundUser.id;
     // Fetch the poll by pollId
     const poll = await prisma.poll.findUnique({
       where: {
@@ -772,13 +857,17 @@ const updateVoteCount = async (req, res) => {
     const updatedVotes = { ...poll.votes };
     updatedVotes[option] += 1;
 
-    // Update the poll with the new vote counts
+    // Append the user ID to the user_id array
+    const updatedUserIds = [...poll.user_id, userId];
+
+    // Update the poll with the new vote counts and the updated user_id array
     const updatedPoll = await prisma.poll.update({
       where: {
         id: pollId,
       },
       data: {
         votes: updatedVotes,
+        user_id: updatedUserIds,
       },
     });
 
@@ -788,6 +877,7 @@ const updateVoteCount = async (req, res) => {
     return res.status(500).json({ message: 'Internal server error' });
   }
 };
+
 
 
 

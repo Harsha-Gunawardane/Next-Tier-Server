@@ -1,10 +1,60 @@
 //import ORM to handle Database
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
+const asyncHandler = require("express-async-handler");
+const { publicBucket } = require("../../middleware/fileUpload/fileUploadPublic");
+const uuid = require("uuid").v4;
+const multer = require('multer');
+const path = require('path');
+const { json } = require("body-parser");
+
+
+
+// const createContent = async (req, res) => {
+//   const user = req.user;
+//   const { title, description, subject, files, type, subject_areas, status } = req.body;
+
+//   try {
+//     const foundUser = await prisma.users.findUnique({
+//       where: {
+//         username: user,
+//       },
+//     });
+//     if (!foundUser) return res.sendStatus(401);
+//     const tutorId = foundUser.id;
+
+//     // create content
+
+
+//     const newContent = await prisma.content.create({
+//       data: {
+
+//         title,
+//         user_id:tutorId,
+//         description,
+//         type,
+//         subject,
+//         subject_areas,
+//         status,
+        
+  
+//       },
+//     });
+
+//     res.json(newContent);
+//   } catch (error) {
+//     console.log(error)
+//     res.status(500).json({ message: error.message });
+//   }
+// };
+
+// const multer = require('multer');
+// const upload = multer({ dest: 'uploads/' }); // Specify the destination folder for uploaded files
 
 const createContent = async (req, res) => {
   const user = req.user;
-  const { title, description, subject, thumbnail, type, subject_areas, status } = req.body;
+  const { title, description, subject, type, subject_areas, status } = req.body;
+  const file=req.file;
 
   try {
     const foundUser = await prisma.users.findUnique({
@@ -12,33 +62,51 @@ const createContent = async (req, res) => {
         username: user,
       },
     });
-    if (!foundUser) return res.sendStatus(401);
+
+    if (!foundUser) {
+      return res.sendStatus(401);
+    }
+
     const tutorId = foundUser.id;
+    console.log(req.body);
 
-    // create content
+    if (!file) {
+      // Handle the case where there are no files to attach
+      return res.status(400).json({ message: 'No files provided for attachment' });
+    }
 
+ // Assuming you are only adding one file
+    const newFileName = `${uuid()}_${file.originalname.replace(/ /g, '_')}`;
+    const blob = publicBucket.file(newFileName);
+    const blobStream = blob.createWriteStream();
 
-    const newContent = await prisma.content.create({
-      data: {
+    blobStream.on('finish', async () => {
+      const attachment = await prisma.content.create({
+        data: {
+          file_path: `https://storage.googleapis.com/${publicBucket.name}/${newFileName}`,
+          title,
+          user_id: tutorId,
+          description,
+          type,
+          subject,
+          subject_areas,
+          status,
+        },
+      });
 
-        title,
-        user_id:tutorId,
-        description,
-        type,
-        subject,
-        subject_areas,
-        status,
-        thumbnail,
-  
-      },
+      console.log('Success');
+      res.json(attachment);
     });
 
-    res.json(newContent);
+    blobStream.end(file.buffer);
   } catch (error) {
-    console.log(error)
+    console.log(error);
     res.status(500).json({ message: error.message });
   }
 };
+
+
+
 
 
 const getAllContents = async (req, res) => {

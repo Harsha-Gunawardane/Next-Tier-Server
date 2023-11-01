@@ -4,9 +4,10 @@ const router = express.Router();
 const studentInfoController = require("../../controllers/student/studentInfo");
 const studentQuizController = require("../../controllers/student/quiz");
 const tuteController = require("../../controllers/student/tute");
-const courseController = require("../../controllers/student/course")
-const paymentController = require("../../controllers/payementController")
+const courseController = require("../../controllers/student/course");
+const paymentController = require("../../controllers/payementController");
 const tuteActivityController = require("../../controllers/student/tuteActivity");
+const pollController = require("../../controllers/student/poll")
 
 // Verify roles
 const ROLES_LIST = require("../../config/roleList");
@@ -24,9 +25,7 @@ router
   );
 
 //Added for paper marking feature
-router
-  .route("/students")
-  .get(studentInfoController.getAllStudentsInfo);
+router.route("/students").get(studentInfoController.getAllStudentsInfo);
 
 router
   .route("/students/attendance/:courseId")
@@ -50,6 +49,25 @@ router
   .route("/quiz")
   .post(verifyRoles(ROLES_LIST.Student), studentQuizController.generateQuiz)
   .patch(verifyRoles(ROLES_LIST.Student), studentQuizController.doneQuiz);
+
+router
+  .route("/quiz/meta")
+  .get(verifyRoles(ROLES_LIST.Student), studentQuizController.getMetaData);
+
+router
+  .route("quiz/available")
+  .get(
+    verifyRoles(ROLES_LIST.Student),
+    studentQuizController.checkQuizAvailability
+  );
+
+router
+  .route("/quiz/attempt")
+  .get(verifyRoles(ROLES_LIST.Student), studentQuizController.attempQuiz)
+  .post(
+    verifyRoles(ROLES_LIST.Student),
+    studentQuizController.getCourseRelatedQuestions
+  );
 
 router
   .route("/marking")
@@ -87,7 +105,10 @@ router
 
 router
   .route("/courses")
-  .get(verifyRoles(ROLES_LIST.Student), courseController.getAllCoursesForStudent);
+  .get(
+    verifyRoles(ROLES_LIST.Student),
+    courseController.getAllCoursesForStudent
+  );
 
 router
   .route("/courses/:courseId")
@@ -99,27 +120,40 @@ router
 
 router
   .route("/courses/:courseId/payment")
-  .get(verifyRoles(ROLES_LIST.Student), courseController.getCoursePayementDetailsByCourseId);
+  .get(
+    verifyRoles(ROLES_LIST.Student),
+    courseController.getCoursePayementDetailsByCourseId
+  );
 
 router
   .route("/mycourses")
-  .get(verifyRoles(ROLES_LIST.Student), courseController.getAllEnrolledCoursesForStudent);
+  .get(
+    verifyRoles(ROLES_LIST.Student),
+    courseController.getAllEnrolledCoursesForStudent
+  );
 
 router
   .route("/studypacks")
-  .get(verifyRoles(ROLES_LIST.Student), courseController.getAllStudyPacksForStudent);
+  .get(
+    verifyRoles(ROLES_LIST.Student),
+    courseController.getAllStudyPacksForStudent
+  );
 
 router
   .route("/mystudypacks")
-  .get(verifyRoles(ROLES_LIST.Student), courseController.getAllPurchasedStudyPacksForStudent);
+  .get(
+    verifyRoles(ROLES_LIST.Student),
+    courseController.getAllPurchasedStudyPacksForStudent
+  );
 
-router
-  .route("/studypacks/:studyPackId")
-  .get(courseController.getStudyPackById);
+router.route("/studypacks/:studyPackId").get(courseController.getStudyPackById);
 
 router
   .route("/studypacks/:studyPackId/payment")
-  .get(verifyRoles(ROLES_LIST.Student), courseController.getPaymentDetailsByStudyPackId);
+  .get(
+    verifyRoles(ROLES_LIST.Student),
+    courseController.getPaymentDetailsByStudyPackId
+  );
 
 router
   .route("/studypacks/:studyPackId/content")
@@ -127,7 +161,10 @@ router
 
 router
   .route("/tutors")
-  .get(verifyRoles(ROLES_LIST.Student), courseController.getAllTutorsForStudent);
+  .get(
+    verifyRoles(ROLES_LIST.Student),
+    courseController.getAllTutorsForStudent
+  );
 
 router
   .route("/payment/create-payment-intent")
@@ -154,5 +191,13 @@ router
   .route("/tute/star")
   .get(verifyRoles(ROLES_LIST.Student), tuteActivityController.getStarredTutes)
   .put(verifyRoles(ROLES_LIST.Student), tuteActivityController.starredTute);
+
+  router
+  .route("/courses/poll/:courseId")
+  .get(verifyRoles(ROLES_LIST.Student), pollController.getAllPolls);
+
+router
+  .route("/courses/poll/:pollId/:option")
+  .put(verifyRoles(ROLES_LIST.Student), pollController.updateVoteCount);
 
 module.exports = router;

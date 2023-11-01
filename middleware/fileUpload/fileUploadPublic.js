@@ -3,6 +3,7 @@ const multer = require("multer");
 const { Storage } = require("@google-cloud/storage");
 
 const FILE_TYPE_VIDEO = require('../../config/allowedFilesVideo')
+const FILE_TYPE = require('../../config/allowedFileTypes')
 
 const googleCloud = new Storage({
   keyFilename: path.join(__dirname, "../../gcsKeyFilePublic.json"),
@@ -11,9 +12,10 @@ const googleCloud = new Storage({
 
 const fileBucket = googleCloud.bucket('next_tier_bucket')
 const videoRawBucket = googleCloud.bucket('hls-streaming-gcp-raw-files-fluted-clock-395620')
+const publicBucket = googleCloud.bucket('next_tier_public')
 
-const VerifyExt = (req, file, callback) => {
-  // console.log('req', req)
+const VerifyExtVideo = (req, file, callback) => {
+  console.log("file", file)
   if (FILE_TYPE_VIDEO.includes(file.mimetype.split("/")[0])) {
     callback(null, true);
   } else {
@@ -22,9 +24,31 @@ const VerifyExt = (req, file, callback) => {
   }
 };
 
-const upload = multer({
+const VerifyExtImage = (req, file, callback) => {
+  console.log("file", file)
+  if (FILE_TYPE.includes(file.mimetype.split("/")[0])) {
+    callback(null, true);
+  } else {
+    req.fileError = "Invalid file type";
+    callback(null, false);
+  }
+}
+
+const uploadVideo = multer({
   storage: multer.memoryStorage(),
-  fileFilter: VerifyExt,
+  fileFilter: VerifyExtVideo,
+});
+
+const uploadThumbnail = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 10 * 1024 * 1024 },
+
+});
+
+const uploadTute = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 10 * 1024 * 1024 },
+
 });
 
 const multi_upload = multer({
@@ -34,10 +58,13 @@ const multi_upload = multer({
 
 
 module.exports = {
-  upload,
+  uploadThumbnail,
+  uploadTute,
+  uploadVideo,
   multi_upload,
   fileBucket,
   googleCloud,
-  videoRawBucket
+  videoRawBucket,
+  publicBucket
 
 };

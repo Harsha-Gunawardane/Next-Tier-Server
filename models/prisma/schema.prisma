@@ -296,6 +296,7 @@ model study_pack {
   expire_date   DateTime?
   start_date    DateTime?
   month         DateTime?
+  medium        String?
 
   tutor                      tutor                        @relation(fields: [tutor_id], references: [tutor_id])
   course                     courses                      @relation(fields: [course_id], references: [id])
@@ -329,7 +330,6 @@ enum course_visibility {
 
 model courses {
   id            String   @id @default(uuid())
-  // id            String            @id @default(uuid())
   tutor_id      String
   title         String
   description   String
@@ -478,6 +478,7 @@ model quiz {
   course_id           String?   @default("")
   study_pack_id       String?
   title               String
+  schedule_time       DateTime?
   start_time          DateTime?
   end_time            DateTime?
   duration            String?
@@ -506,9 +507,9 @@ model questions {
 model student_attempt_quiz {
   student_id String
   quiz_id    String
-  score      Int
+  score      Int?
   started_at DateTime @default(now())
-  ended_at   DateTime
+  ended_at   DateTime?
   answers    Int[]    @default([]) // [{question_id: "question_id", answer: "answer"},{question_id: "question_id", answer: "answer"}]
 
   student users @relation(fields: [student_id], references: [id])
