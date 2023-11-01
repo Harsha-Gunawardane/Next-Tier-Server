@@ -5,7 +5,6 @@ const prisma = new PrismaClient();
 const { questions, quizzes, categories } = require("../models/sampleData");
 
 const addQuestions = async (req, res) => {
-  console.log(questions);
   try {
     for (const question of questions) {
         await prisma.questions.create({
