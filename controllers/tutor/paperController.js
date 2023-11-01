@@ -5,12 +5,16 @@ const bcrypt = require("bcrypt");
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
-
-
 const getAllPapers = asyncHandler(async (req, res) => {
+  const courseId = req.params.courseId;
+
   try {
     // Use Prisma Client to retrieve all papers
-    const allPapers = await prisma.papers.findMany();
+    const allPapers = await prisma.papers.findMany({
+      where: {
+        course_id: courseId,
+      },
+    });
 
     if (!allPapers) return res.sendStatus(401);
 
@@ -22,16 +26,15 @@ const getAllPapers = asyncHandler(async (req, res) => {
 
 const addNewPaper = asyncHandler(async (req, res) => {
   try {
-    
+    console.log(req.body);
 
     // Destructuring
-    const { title, type, date, subject, subject_areas, } =
-      req.body;
+    const { course_id, title, type, date, subject, subject_areas } = req.body;
 
     // Store new paper
     const addedPaper = await prisma.papers.create({
       data: {
-        course_id: null,
+        course_id,
         title,
         type,
         date,
@@ -65,7 +68,6 @@ const updatePaper = asyncHandler(async (req, res) => {
         message: `Paper not found`,
       });
     }
-
 
     const updatedPaper = await prisma.papers.update({
       where: {
@@ -112,7 +114,6 @@ const deletePaper = asyncHandler(async (req, res) => {
 const getPaper = asyncHandler(async (req, res) => {
   const id = req.params.id;
 
-
   try {
     const getPaper = await prisma.papers.findUnique({
       where: {
@@ -120,20 +121,15 @@ const getPaper = asyncHandler(async (req, res) => {
       },
     });
 
-
-
     if (!getPaper) {
       return res.status(400).json({ message: "Paper not found" });
     }
 
     res.status(201).json(getPaper);
-
   } catch (error) {
     throw new Error("Error fetching paper: " + error.message);
   }
 });
-
-
 
 module.exports = {
   getAllPapers,
@@ -141,5 +137,4 @@ module.exports = {
   updatePaper,
   deletePaper,
   getPaper,
-  
 };

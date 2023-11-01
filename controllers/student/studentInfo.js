@@ -326,6 +326,8 @@ const getStudent = asyncHandler(async (req, res) => {
 });
 
 const getStudentAttendance = asyncHandler(async (req, res) => {
+  const courseId = req.params.courseId;
+
   try {
     const studentAttendances = await prisma.students.findMany({
       include: {
@@ -337,6 +339,9 @@ const getStudentAttendance = asyncHandler(async (req, res) => {
           },
         },
         student_attendance: {
+          where: {
+            course_id: courseId,
+          },
           select: {
             is_present: true,
           },
@@ -368,9 +373,10 @@ const getStudentAttendance = asyncHandler(async (req, res) => {
 });
 
 const addStudentAttendance = asyncHandler(async (req, res) => {
+  const courseId = req.params.courseId;
   const studentId = req.params.studentId;
 
-  console.log("Here")
+  console.log("Here");
   console.log(req.body);
 
   const { is_present, date } = req.body;
@@ -391,15 +397,15 @@ const addStudentAttendance = asyncHandler(async (req, res) => {
     const foundStudentAttendance = await prisma.student_attendance.findFirst({
       where: {
         student_id: studentId,
-        course_id: "7bf364c3-883f-47b4-adc4-fe100d192288",
+        course_id: courseId,
       },
     });
 
     if (foundStudentAttendance) {
       const updatedStudentAttendance = await prisma.student_attendance.update({
         where: {
-            student_id: studentId,
-            course_id: "7bf364c3-883f-47b4-adc4-fe100d192288",
+          student_id: studentId,
+          course_id: courseId,
         },
         data: {
           is_present: is_present,
@@ -411,7 +417,7 @@ const addStudentAttendance = asyncHandler(async (req, res) => {
       const addStudentAttendance = await prisma.student_attendance.create({
         data: {
           student_id: studentId,
-          course_id: "7bf364c3-883f-47b4-adc4-fe100d192288",
+          course_id: courseId,
           date: date,
           is_present: is_present,
         },
@@ -419,9 +425,6 @@ const addStudentAttendance = asyncHandler(async (req, res) => {
 
       res.status(201).json(addStudentAttendance);
     }
-
-    
-
   } catch (error) {
     console.error("Error handling add student attendance:", error);
     res.status(500).json({ error: "Internal server error" });

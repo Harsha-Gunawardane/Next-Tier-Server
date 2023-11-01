@@ -591,17 +591,6 @@ model poll {
   course courses @relation(fields: [course_id], references: [id])
 }
 
-// model papers {
-//   paper_id      String          @id @default(uuid())
-//   course_id     String?         @default("")
-//   title         String
-//   type          String
-//   date          DateTime
-//   subject       String?
-//   subject_areas String[]        @default([])
- 
-// }
-
 
 model student_follow_tutor {
   student_id String
