@@ -220,13 +220,57 @@ const createCourse = async (req, res) => {
 
 
 
+// const removeCourse = async (req, res) => {
+//   const courseId = req.params.id; // Assuming the course ID is passed as a URL parameter (e.g., /courses/:id)
+
+//   try {
+//     // Check if the course exists before deleting
+
+
+//     const course = await prisma.courses.findUnique({
+//       where: {
+//         id: courseId,
+//       },
+//     });
+
+//     if (!course) {
+//       return res.status(404).json({ message: 'Course not found' });
+//     }
+
+
+//     const user = req.user;
+//     const tutorId = course.tutor_id;
+
+//     const foundUser = await prisma.users.findUnique({
+//       where: {
+//         username: user,
+//       },
+//     });
+
+//     if (!foundUser || foundUser.id !== tutorId) {
+//       return res.status(401).json({ message: 'Unauthorized to remove this course' });
+//     }
+
+
+//     await prisma.courses.delete({
+//       where: {
+//         id: courseId,
+//       },
+//     });
+
+//     res.json({ message: 'Course removed successfully' });
+//   } catch (error) {
+//     console.log(error);
+//     res.status(500).json({ message: error.message });
+//   }
+// };
+
+
+
 const removeCourse = async (req, res) => {
-  const courseId = req.params.id; // Assuming the course ID is passed as a URL parameter (e.g., /courses/:id)
+  const courseId = req.params.id;
 
   try {
-    // Check if the course exists before deleting
-
-
     const course = await prisma.courses.findUnique({
       where: {
         id: courseId,
@@ -236,7 +280,6 @@ const removeCourse = async (req, res) => {
     if (!course) {
       return res.status(404).json({ message: 'Course not found' });
     }
-
 
     const user = req.user;
     const tutorId = course.tutor_id;
@@ -251,7 +294,15 @@ const removeCourse = async (req, res) => {
       return res.status(401).json({ message: 'Unauthorized to remove this course' });
     }
 
+    // Check and handle related records in the "poll" table
+    // Delete all poll records where course_id matches courseId
+    await prisma.poll.deleteMany({
+      where: {
+        course_id: courseId,
+      },
+    });
 
+    // Now you can safely delete the course
     await prisma.courses.delete({
       where: {
         id: courseId,
@@ -264,6 +315,7 @@ const removeCourse = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
 
 
 

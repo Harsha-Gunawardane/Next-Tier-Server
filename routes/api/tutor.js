@@ -126,6 +126,10 @@ router
   .route("/studypack/removecontent/:id/:part/:contentId")
   .delete(verifyRoles(ROLES_LIST.Tutor), studypackController.removeIds);
 
+  router
+  .route("/studypack/removecontenttute/:id/:part/:contentId")
+  .delete(verifyRoles(ROLES_LIST.Tutor), studypackController.removeIds2);
+
 router
   .route("/studypack/remove/:id/:part/:contentId")
   .delete(
