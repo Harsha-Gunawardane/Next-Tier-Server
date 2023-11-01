@@ -1,13 +1,13 @@
 const path = require('path');
 const fs = require('fs');
-const ffmpeg = require('fluent-ffmpeg');
-const { round } = require('lodash');
-const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
-const ffprobePath = require('@ffprobe-installer/ffprobe').path;
-ffmpeg.setFfmpegPath(ffmpegPath);
-ffmpeg.setFfprobePath(ffprobePath);
+// const ffmpeg = require('fluent-ffmpeg');
+// const { round } = require('lodash');
+// const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
+// const ffprobePath = require('@ffprobe-installer/ffprobe').path;
+// ffmpeg.setFfmpegPath(ffmpegPath);
+// ffmpeg.setFfprobePath(ffprobePath);
 
-const setupRabbitMQ = require('../../core/setupRabbitMq');
+// const setupRabbitMQ = require('../../core/setupRabbitMq');
 
 const convertVideoAll = async (req, res, next) => {
     // console.log('Converting video', req.file);
@@ -148,38 +148,38 @@ const convertVideoAll = async (req, res, next) => {
 
     // publish message to rabbit mq
 
-    try {
+    // try {
 
-        const queueName = 'videoConvert';
+    //     const queueName = 'videoConvert';
 
-        const connection = await setupRabbitMQ.createConnection(process.env.RABBITMQ_URL);
-        const channel = await connection.createChannel();
-        await channel.assertQueue(queueName);
+    //     const connection = await setupRabbitMQ.createConnection(process.env.RABBITMQ_URL);
+    //     const channel = await connection.createChannel();
+    //     await channel.assertQueue(queueName);
 
-        //create unique id
-        const uniqueId = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    //     //create unique id
+    //     const uniqueId = Date.now() + '-' + Math.round(Math.random() * 1E9);
 
-        // {"file":{"fieldname":"video","originalname":"sample1.mp4","encoding":"7bit","mimetype":"video/mp4","destination":"uploads/videos/1696132332955-627900538","filename":"video-1696132332955-627900538.mp4","path":"uploads\\videos\\1696132332955-627900538\\video-1696132332955-627900538.mp4","size":14134814}}
-        const message = {
-            file: {
-                id: uniqueId,
-                fieldname: req.file.fieldname,
-                originalname: req.file.originalname,
-                encoding: req.file.encoding,
-                mimetype: req.file.mimetype,
-                destination: req.file.destination,
-                filename: req.file.filename,
-                path: req.file.path,
-                size: req.file.size
-            }
-        }
+    //     // {"file":{"fieldname":"video","originalname":"sample1.mp4","encoding":"7bit","mimetype":"video/mp4","destination":"uploads/videos/1696132332955-627900538","filename":"video-1696132332955-627900538.mp4","path":"uploads\\videos\\1696132332955-627900538\\video-1696132332955-627900538.mp4","size":14134814}}
+    //     const message = {
+    //         file: {
+    //             id: uniqueId,
+    //             fieldname: req.file.fieldname,
+    //             originalname: req.file.originalname,
+    //             encoding: req.file.encoding,
+    //             mimetype: req.file.mimetype,
+    //             destination: req.file.destination,
+    //             filename: req.file.filename,
+    //             path: req.file.path,
+    //             size: req.file.size
+    //         }
+    //     }
 
-        await channel.sendToQueue(queueName, Buffer.from(JSON.stringify(message)));
-        console.log('Message sent to queue');
-        next();
-    } catch (err) {
-        console.log(err);
-    }
+    //     await channel.sendToQueue(queueName, Buffer.from(JSON.stringify(message)));
+    //     console.log('Message sent to queue');
+    //     next();
+    // } catch (err) {
+    //     console.log(err);
+    // }
 
 };
 

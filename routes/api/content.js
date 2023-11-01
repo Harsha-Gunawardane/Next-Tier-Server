@@ -10,9 +10,9 @@ const commentsController = require("../../controllers/commentsController");
 // Verify roles
 const ROLES_LIST = require("../../config/roleList");
 const verifyRoles = require("../../middleware/verifyRoles");
-const convertVideo = require("../../middleware/fileUpload/convertVideo");
+// const convertVideo = require("../../middleware/fileUpload/convertVideo");
 const { upload, uploadDirect } = require("../../middleware/fileUpload/videoUpload");
-const convertVideoAll = require("../../middleware/fileUpload/convertVideoAll");
+// const convertVideoAll = require("../../middleware/fileUpload/convertVideoAll");
 
 
 
@@ -25,18 +25,18 @@ router
         contentController.getRecommendedContent
     )
 
-router
-    .route("/upload")
-    .get(
-        contentController.test
-    )
-    .post(
-        // verifyRoles([ROLES_LIST.Tutor]),
-        upload.single("video"),
-        convertVideoAll,
-        contentController.test,
-        contentController.uploadVideo
-    )
+// router
+//     .route("/upload")
+//     .get(
+//         contentController.test
+//     )
+//     .post(
+//         // verifyRoles([ROLES_LIST.Tutor]),
+//         upload.single("video"),
+//         convertVideoAll,
+//         contentController.test,
+//         contentController.uploadVideo
+//     )
 
 router
     .route("/upload_direct")
