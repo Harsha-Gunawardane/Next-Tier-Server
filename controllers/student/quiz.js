@@ -74,13 +74,14 @@ const checkQuizAvailability = async (req, res) => {
     console.log(error);
     res.status(500).json({ message: error.message });
   }
-}
+};
 
 const attempQuiz = async (req, res) => {
-  const { quizId } = req.params;
+  const { quizId } = req.query;
+  console.log(quizId);
 
   try {
-    const quiz = await quiz.findUnique({
+    const quiz = await prisma.quiz.findUnique({
       where: {
         id: quizId,
       },
@@ -108,7 +109,7 @@ const attempQuiz = async (req, res) => {
     }
 
     const data = {
-      noOfQuestions: quiz.question_ids.length(),
+      noOfQuestions: quiz.question_ids.length,
       subject: quiz.subject,
       mcqName: quiz.title,
     };
@@ -118,6 +119,25 @@ const attempQuiz = async (req, res) => {
     console.log(error);
     res.status(500).json({ message: error.message });
   }
+};
+
+const getQuestionsByIds = async (ids) => {
+  const questionsWithoutOrder = await prisma.questions.findMany({
+    where: {
+      id: {
+        in: ids,
+      },
+    },
+  });
+
+  const questionsMap = new Map();
+  questionsWithoutOrder.forEach((question) => {
+    questionsMap.set(question.id, question);
+  });
+
+  // Arrange the questions in the order of mcq_ids
+  const questions = ids.map((id) => questionsMap.get(id));
+  return questions;
 };
 
 const getCourseRelatedQuestions = async (req, res) => {
@@ -135,6 +155,19 @@ const getCourseRelatedQuestions = async (req, res) => {
     });
     if (!foundUser) return res.sendStatus(401);
 
+    const alreadyAttemptedQuiz = await prisma.student_attempt_quiz.findFirst({
+      where: {
+        student_id: foundUser.id,
+        quiz_id: quizId,
+      },
+      select: {
+        score: true,
+      },
+    });
+
+    if (alreadyAttemptedQuiz)
+      return res.status(400).json({ message: "You are already attempted" });
+
     const data = await prisma.quiz.findUnique({
       where: {
         id: quizId,
@@ -142,6 +175,7 @@ const getCourseRelatedQuestions = async (req, res) => {
       select: {
         question_ids: true,
         title: true,
+        subject: true,
       },
     });
 
@@ -153,22 +187,14 @@ const getCourseRelatedQuestions = async (req, res) => {
     let answers = [];
     let responseData = [];
 
-    data.question_ids.forEach(async (id) => {
-      const question = await prisma.questions.findUnique({
-        where: {
-          id: id,
-        },
-        select: {
-          options: true,
-          question: true,
-          correct_answer: true,
-        },
-      });
+    const questions = await getQuestionsByIds(data.question_ids);
 
-      mcqIds.push(id);
+    questions.forEach((question) => {
+      mcqIds.push(question.id);
       answers.push(question.correct_answer);
+
       responseData.push({
-        id: id,
+        id: question.id,
         options: question.options,
         question: question.question,
       });
@@ -184,7 +210,7 @@ const getCourseRelatedQuestions = async (req, res) => {
         username: user,
         mcq_ids: mcqIds,
         correct_answers: answers,
-        subject: subject,
+        subject: data.subject,
         quiz_name: data.title,
         date: date,
       },
@@ -207,6 +233,48 @@ const getCourseRelatedQuestions = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+const getRelatedQuestions = async (weakAreas, numberOfQuestions, subject) => {
+  const questions = await prisma.questions.findMany({
+    where: {
+      subject: subject,
+      subject_areas: {
+        hasSome: weakAreas,
+      },
+    },
+    take: numberOfQuestions,
+  });
+
+  return questions;
+};
+
+const getRandomQuestions = async (
+  noOfQuestions,
+  excludedQuestionIDs,
+  subject
+) => {
+  const questions = await prisma.questions.findMany({
+    where: {
+      id: {
+        notIn: excludedQuestionIDs,
+      },
+      subject: subject,
+    },
+    take: noOfQuestions,
+  });
+
+  return questions;
+};
+
+function shuffleArray(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1)); // Generate a random index
+
+    // Swap elements at i and j
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
 
 const generateQuiz = async (req, res) => {
   const user = req.user;
@@ -241,13 +309,51 @@ const generateQuiz = async (req, res) => {
     });
     if (!foundUser) return res.sendStatus(401);
 
-    // get questions
-    const questions = await prisma.questions.findMany({
+    let questions;
+
+    // get weak areas
+    const weakAreasOfStudent = await prisma.students.findUnique({
       where: {
-        subject: subject,
+        student_id: foundUser.id,
       },
-      take: value,
+      select: {
+        weak_areas: true,
+      },
     });
+
+    const weakAreas = weakAreasOfStudent.weak_areas[subject];
+
+    if (weakAreas) {
+      const noOfRelatedQuestions = Math.floor(value * 0.6);
+      const noOfRandomQuestions = value - noOfRelatedQuestions;
+
+      const relatedQuestions = await getRelatedQuestions(
+        weakAreas,
+        noOfRelatedQuestions,
+        subject
+      );
+
+      let relatedQuestionIds = [];
+      relatedQuestions.forEach((question) => {
+        relatedQuestionIds.push(question.id);
+      });
+
+      const randomQuestions = await getRandomQuestions(
+        noOfRandomQuestions,
+        relatedQuestionIds,
+        subject
+      );
+      const mergedQuestions = relatedQuestions.concat(randomQuestions);
+
+      questions = shuffleArray(mergedQuestions);
+    } else {
+      questions = await prisma.questions.findMany({
+        where: {
+          subject: subject,
+        },
+        take: value,
+      });
+    }
 
     if (!questions.length)
       return res.status(500).json({ message: "No questions" });
@@ -311,31 +417,105 @@ const generateQuiz = async (req, res) => {
   }
 };
 
-const getQuestionsByIds = async (ids) => {
-  const questionsWithoutOrder = await prisma.questions.findMany({
+function findDuplicates(arr, duplicateValue = 1) {
+  let duplicates = [];
+  let uniqueItems = {};
+
+  arr.forEach(function (item) {
+    if (uniqueItems[item]) {
+      if (uniqueItems[item] === duplicateValue) {
+        duplicates.push(item);
+      }
+      uniqueItems[item]++;
+    } else {
+      uniqueItems[item] = 1;
+    }
+  });
+
+  return duplicates;
+}
+
+const identifyWeakAreas = (questions, answers) => {
+  let weakAreas = [];
+
+  questions.forEach((question, index) => {
+    if (question.correct_answer != answers[index]) {
+      if (question.subject_areas.length) {
+        question.subject_areas.forEach((area) => {
+          weakAreas.push(area);
+        });
+      }
+    }
+  });
+
+  return findDuplicates(weakAreas);
+};
+
+const identifyRecoveredAreas = (questions, answers) => {
+  let recoveredAreas = [];
+
+  questions.forEach((question, index) => {
+    if (question.correct_answer === answers[index]) {
+      if (question.subject_areas.length) {
+        question.subject_areas.forEach((area) => {
+          recoveredAreas.push(area);
+        });
+      }
+    }
+  });
+
+  return findDuplicates(recoveredAreas, 2);
+};
+
+const updateWeakAreas = async (
+  weakAreas,
+  subject,
+  studentId,
+  recoveredAreas = null
+) => {
+  const student = prisma.students.findUnique({
     where: {
-      id: {
-        in: ids,
-      },
+      student_id: studentId,
+    },
+    select: {
+      weak_areas: true,
     },
   });
 
-  const questionsMap = new Map();
-  questionsWithoutOrder.forEach((question) => {
-    questionsMap.set(question.id, question);
+  if (!student) return false;
+
+  const newWeakAreas = { ...(student.weak_areas || {}) }; // Clone the existing weak areas or initialize as empty object
+
+  if (!newWeakAreas[subject]) {
+    newWeakAreas[subject] = []; // Initialize if the subject doesn't exist
+  }
+
+  // Remove duplicates and update weak areas for the given subject
+  newWeakAreas[subject] = [
+    ...new Set([...newWeakAreas[subject], ...weakAreas]),
+  ];
+
+  if (recoveredAreas) {
+    newWeakAreas[subject] = newWeakAreas[subject].filter(
+      (area) => !recoveredAreas.includes(area)
+    );
+  }
+
+  await prisma.students.update({
+    where: {
+      student_id: studentId,
+    },
+    data: {
+      weak_areas: newWeakAreas,
+    },
   });
 
-  // Arrange the questions in the order of mcq_ids
-  const questions = ids.map((id) => questionsMap.get(id));
-  console.log(questions);
-  return questions;
+  return true;
 };
 
 const doneQuiz = async (req, res) => {
   const user = req.user;
   let { subject, quizName, result, startTime, endTime } = req.body;
-
-  console.log(result);
 
   // restructure subject input
   if (!isFirstLetterInCapital(subject)) {
@@ -363,8 +543,6 @@ const doneQuiz = async (req, res) => {
       return res.status(400).json({ message: "No such quiz" });
 
     const questions = await getQuestionsByIds(generatedQuiz.mcq_ids);
-
-    console.log(questions);
     let noOfCorrectAnswers = 0;
 
     questions.forEach((question, index) => {
@@ -390,6 +568,10 @@ const doneQuiz = async (req, res) => {
         mark,
       },
     });
+    const weakAreas = identifyWeakAreas(questions, result);
+    const recoveredAreas = identifyRecoveredAreas(questions, result);
+
+    updateWeakAreas(weakAreas, subject, foundUser.id, recoveredAreas);
 
     res.sendStatus(204);
   } catch (error) {
@@ -589,6 +771,36 @@ const getPreviousQuizzes = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+const getMetaData = async (req, res) => {
+  const { subject } = req.query;
+  const user = req.user;
+
+  try {
+    const result = await prisma.student_generate_quiz.aggregate({
+      where: {
+        subject: subject,
+        username: user,
+        done: true,
+      },
+      _avg: {
+        mark: true,
+      },
+      _count: true,
+    });
+
+    const response = {
+      averageMark: result._avg,
+      count: result._count,
+    };
+
+    res.send(response);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   generateQuiz,
   getQuizMarking,
@@ -596,5 +808,6 @@ module.exports = {
   getPreviousQuizzes,
   attempQuiz,
   getCourseRelatedQuestions,
-  checkQuizAvailability
+  checkQuizAvailability,
+  getMetaData
 };

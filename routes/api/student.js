@@ -50,6 +50,10 @@ router
   .patch(verifyRoles(ROLES_LIST.Student), studentQuizController.doneQuiz);
 
 router
+  .route("/quiz/meta")
+  .get(verifyRoles(ROLES_LIST.Student), studentQuizController.getMetaData);
+
+router
   .route("quiz/available")
   .get(
     verifyRoles(ROLES_LIST.Student),
@@ -57,7 +61,7 @@ router
   );
 
 router
-  .route("/attempt_quiz")
+  .route("/quiz/attempt")
   .get(verifyRoles(ROLES_LIST.Student), studentQuizController.attempQuiz)
   .post(
     verifyRoles(ROLES_LIST.Student),
