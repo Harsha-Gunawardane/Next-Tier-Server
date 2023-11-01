@@ -11,7 +11,7 @@ const { upload } = require("../../middleware/fileUpload/fileUpload");
 // import controllers
 const userPasswordController = require("../../controllers/user/resetPassword");
 const userProfileController = require("../../controllers/user/profilePicture");
-const userInfoController = require("../../controllers/user/userInfo");
+const userInfoController = require("../../controllers/user/userinfo");
 const feedbackController = require("../../controllers/admin/feedback");
 const userFeedbackController = require("../../controllers/user/feedback");
 
