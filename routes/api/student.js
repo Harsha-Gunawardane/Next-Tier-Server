@@ -7,6 +7,7 @@ const tuteController = require("../../controllers/student/tute");
 const courseController = require("../../controllers/student/course");
 const paymentController = require("../../controllers/payementController");
 const tuteActivityController = require("../../controllers/student/tuteActivity");
+const pollController = require("../../controllers/student/poll")
 
 // Verify roles
 const ROLES_LIST = require("../../config/roleList");
@@ -190,5 +191,13 @@ router
   .route("/tute/star")
   .get(verifyRoles(ROLES_LIST.Student), tuteActivityController.getStarredTutes)
   .put(verifyRoles(ROLES_LIST.Student), tuteActivityController.starredTute);
+
+  router
+  .route("/courses/poll/:courseId")
+  .get(verifyRoles(ROLES_LIST.Student), pollController.getAllPolls);
+
+router
+  .route("/courses/poll/:pollId/:option")
+  .put(verifyRoles(ROLES_LIST.Student), pollController.updateVoteCount);
 
 module.exports = router;
