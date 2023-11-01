@@ -321,7 +321,7 @@ const questions = [
 const quizzes = [
   {
     course_id: "7bf364c3-883f-47b4-adc4-fe100d192288",
-    title: "2023/07/30 - Morning Quiz (Theory Class)",
+    title: "NJMQT - Morning Quiz (2023-07-30)",
     subject: "Physics",
     subject_areas: ["Mechanics", "Electromagnetism", "Particle Physics"],
     question_ids: [],
@@ -329,7 +329,7 @@ const quizzes = [
   },
   {
     course_id: "7bf364c3-883f-47b4-adc4-fe100d192288",
-    title: "2023/07/30 - Evening Quiz (Theory Class)",
+    title: "NJEQT - Evening Quiz (2023-07-30)",
     subject: "Physics",
     subject_areas: ["Electromagnetism"],
     question_ids: [],
@@ -337,7 +337,7 @@ const quizzes = [
   },
   {
     course_id: "7bf364c3-883f-47b4-adc4-fe100d192288",
-    title: "2023/08/10 - Morning Quiz (Theory Class)",
+    title: "NJMQP - Morning Quiz (2023-08-10)",
     subject: "Physics",
     subject_areas: ["Calculus"],
     question_ids: [],
@@ -345,7 +345,7 @@ const quizzes = [
   },
   {
     course_id: "7bf364c3-883f-47b4-adc4-fe100d192288",
-    title: "2023/08/10 - Evening Quiz (Theory Class)",
+    title: "NJEQP - Evening Quiz (2023-09-05)",
     subject: "Physics",
     subject_areas: ["Linear Algebra", "Calculus"],
     question_ids: [],
@@ -353,9 +353,25 @@ const quizzes = [
   },
   {
     course_id: "7bf364c3-883f-47b4-adc4-fe100d192288",
-    title: "2023/09/05 - Morning Quiz (Theory Class)",
-    subject: "Chemistry",
-    subject_areas: ["Organic Chemistry", "Inorganic Chemistry"],
+    title: "NJMQT- Morning Quiz (2023-09-05)",
+    subject: "Physics",
+    subject_areas: ["Mechanics", "Electromagnetism", "Particle Physics"],
+    question_ids: [],
+    number_of_questions: 0,
+  },
+  {
+    course_id: "7bf364c3-883f-47b4-adc4-fe100d192288",
+    title: "NJMQT- Morning Quiz (2023-09-12)",
+    subject: "Physics",
+    subject_areas: ["Mechanics", "Electromagnetism", "Particle Physics"],
+    question_ids: [],
+    number_of_questions: 0,
+  },
+  {
+    course_id: "7bf364c3-883f-47b4-adc4-fe100d192288",
+    title: "NJEQT- Evening Quiz (2023-09-19)",
+    subject: "Physics",
+    subject_areas: ["Mechanics", "Particle Physics"],
     question_ids: [],
     number_of_questions: 0,
   },
@@ -391,6 +407,65 @@ const categories = [
     title: "Organic Questions",
     number_of_questions: 0,
     question_ids: [],
+  },
+];
+
+const papers = [
+  {
+    course_id: "7bf364c3-883f-47b4-adc4-fe100d192288",
+    title: "NJRP - Revision Paper (2023-08-22)",
+    type: "MCQ Paper",
+    date:"2023-11-05T18:30:00.000Z",
+    subject: "Physics",
+    subject_areas: ["Mechanics", "Electromagnetism", "Particle Physics"],
+  },
+  {
+    course_id: "7bf364c3-883f-47b4-adc4-fe100d192288",
+    title: "NJRP - Revision Paper (2023-08-29)",
+    type: "MCQ Paper",
+    date:"2023-11-05T18:30:00.000Z",
+    subject: "Physics",
+    subject_areas: ["Electromagnetism"],
+  },
+  {
+    course_id: "7bf364c3-883f-47b4-adc4-fe100d192288",
+    title: "NJRP - Revision Paper (2023-09-04)",
+    type: "MCQ Paper",
+    date:"2023-11-05T18:30:00.000Z",
+    subject: "Physics",
+    subject_areas: ["Calculus"],
+  },
+  {
+    course_id: "7bf364c3-883f-47b4-adc4-fe100d192288",
+    title: "NJRP - Theory Paper (2023-09-11)",
+    type: "MCQ Paper",
+    date:"2023-11-01T18:30:00.000Z",
+    subject: "Physics",
+    subject_areas: ["Linear Algebra", "Calculus"],
+  },
+  {
+    course_id: "7bf364c3-883f-47b4-adc4-fe100d192288",
+    title: "NJRP - Revision Paper (2023-09-18)",
+    type: "MCQ Paper",
+    date:"2023-11-08T18:30:00.000Z",
+    subject: "Physics",
+    subject_areas: ["Mechanics", "Electromagnetism", "Particle Physics"],
+  },
+  {
+    course_id: "7bf364c3-883f-47b4-adc4-fe100d192288",
+    title: "NJRP - Revision Paper (2023-09-25)",
+    type: "MCQ Paper",
+    date:"2023-11-05T18:30:00.000Z",
+    subject: "Physics",
+    subject_areas: ["Mechanics", "Electromagnetism", "Particle Physics"],
+  },
+  {
+    course_id: "7bf364c3-883f-47b4-adc4-fe100d192288",
+    title: "NJRP - Theory Paper (2023-09-11)",
+    type: "MCQ Paper",
+    date:"2023-11-10T18:30:00.000Z",
+    subject: "Physics",
+    subject_areas: ["Mechanics", "Particle Physics"],
   },
 ];
 
@@ -445,4 +520,4 @@ const staffs = [
   },
 ];
 
-module.exports = { questions, quizzes, categories, staffs };
+module.exports = { questions, quizzes, categories, papers, staffs };

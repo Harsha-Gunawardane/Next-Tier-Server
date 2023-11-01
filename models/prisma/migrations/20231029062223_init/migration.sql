@@ -396,7 +396,7 @@ CREATE TABLE "quiz" (
     "course_id" TEXT DEFAULT '',
     "study_pack_id" TEXT,
     "title" TEXT NOT NULL,
-    "schedule_time" TEXT,
+    "schedule_time" TIMESTAMP(3),
     "start_time" TIMESTAMP(3),
     "end_time" TIMESTAMP(3),
     "duration" TEXT,
@@ -428,9 +428,9 @@ CREATE TABLE "questions" (
 CREATE TABLE "student_attempt_quiz" (
     "student_id" TEXT NOT NULL,
     "quiz_id" TEXT NOT NULL,
-    "score" INTEGER NOT NULL,
+    "score" INTEGER,
     "started_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "ended_at" TIMESTAMP(3) NOT NULL,
+    "ended_at" TIMESTAMP(3),
     "answers" INTEGER[] DEFAULT ARRAY[]::INTEGER[],
 
     CONSTRAINT "student_attempt_quiz_pkey" PRIMARY KEY ("student_id","quiz_id")

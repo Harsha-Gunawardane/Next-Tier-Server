@@ -2,7 +2,7 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
-const { questions, quizzes, categories } = require("../models/sampleData");
+const { questions, quizzes, categories, papers } = require("../models/sampleData");
 
 const addQuestions = async (req, res) => {
   console.log(questions);
@@ -48,4 +48,18 @@ const addCategories = async (req, res) => {
   }
 };
 
-module.exports = { addQuestions, addQuizzes, addCategories };
+const addPapers = async (req, res) => {
+  try {
+    for (const paper of papers) {
+      await prisma.papers.create({
+        data: paper,
+      });
+    }
+
+    res.status(200).json({ message: "Success" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+module.exports = { addQuestions, addQuizzes, addCategories, addPapers };

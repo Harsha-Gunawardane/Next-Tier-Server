@@ -17,12 +17,6 @@ CREATE TYPE "visibility" AS ENUM ('PUBLIC', 'PRIVATE');
 CREATE TYPE "payment_type" AS ENUM ('ONLINE', 'PHYSICAL');
 
 -- CreateEnum
-CREATE TYPE "payment_status" AS ENUM ('PENDING', 'PAID', 'FAILED');
-
--- CreateEnum
-CREATE TYPE "payment_for" AS ENUM ('EXTEND', 'PURCHASE');
-
--- CreateEnum
 CREATE TYPE "course_visibility" AS ENUM ('PUBLIC', 'PRIVATE');
 
 -- CreateEnum
@@ -35,7 +29,7 @@ CREATE TYPE "schedule_type" AS ENUM ('RECURRING', 'ONE_TIME');
 CREATE TYPE "complaint_type" AS ENUM ('COURSE_RELATED', 'OTHER');
 
 -- CreateEnum
-CREATE TYPE "ComplaintStatus" AS ENUM ('NEW', 'IN_ACTION');
+CREATE TYPE "ComplaintStatus" AS ENUM ('PENDING', 'RESOLVED', 'IGNORED');
 
 -- CreateEnum
 CREATE TYPE "attachment_type" AS ENUM ('IMAGE', 'DOCUMENT');
@@ -137,7 +131,6 @@ CREATE TABLE "admin" (
 CREATE TABLE "instStaff" (
     "inst_staff_id" TEXT NOT NULL,
     "qualifications" TEXT[] DEFAULT ARRAY[]::TEXT[],
-    "emergency_No" TEXT,
 
     CONSTRAINT "instStaff_pkey" PRIMARY KEY ("inst_staff_id")
 );
@@ -159,7 +152,7 @@ CREATE TABLE "files" (
 -- CreateTable
 CREATE TABLE "folders" (
     "id" TEXT NOT NULL,
-    "user_name" TEXT NOT NULL,
+    "user_id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "tute_ids" TEXT[] DEFAULT ARRAY[]::TEXT[],
 
@@ -264,13 +257,13 @@ CREATE TABLE "study_pack" (
     "expire_date" TIMESTAMP(3),
     "start_date" TIMESTAMP(3),
     "month" TIMESTAMP(3),
+    "medium" TEXT NOT NULL,
 
     CONSTRAINT "study_pack_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "student_purchase_studypack" (
-    "id" TEXT NOT NULL,
     "student_id" TEXT NOT NULL,
     "pack_id" TEXT NOT NULL,
     "reciept_location" TEXT NOT NULL,
@@ -278,10 +271,8 @@ CREATE TABLE "student_purchase_studypack" (
     "type" "payment_type" NOT NULL,
     "purchased_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "expire_date" TIMESTAMP(3) NOT NULL,
-    "status" "payment_status" NOT NULL DEFAULT 'PENDING',
-    "payment_for" "payment_for" NOT NULL DEFAULT 'PURCHASE',
 
-    CONSTRAINT "student_purchase_studypack_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "student_purchase_studypack_pkey" PRIMARY KEY ("student_id","pack_id")
 );
 
 -- CreateTable
@@ -384,7 +375,7 @@ CREATE TABLE "complaints" (
     "post_id" TEXT,
     "message" TEXT NOT NULL,
     "posted_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "status" "ComplaintStatus" NOT NULL DEFAULT 'NEW',
+    "status" "ComplaintStatus" NOT NULL DEFAULT 'PENDING',
 
     CONSTRAINT "complaints_pkey" PRIMARY KEY ("id")
 );
@@ -405,7 +396,7 @@ CREATE TABLE "quiz" (
     "course_id" TEXT DEFAULT '',
     "study_pack_id" TEXT,
     "title" TEXT NOT NULL,
-    "schedule_time" TEXT,
+    "schedule_time" TIMESTAMP(3),
     "start_time" TIMESTAMP(3),
     "end_time" TIMESTAMP(3),
     "duration" TEXT,
@@ -437,9 +428,9 @@ CREATE TABLE "questions" (
 CREATE TABLE "student_attempt_quiz" (
     "student_id" TEXT NOT NULL,
     "quiz_id" TEXT NOT NULL,
-    "score" INTEGER NOT NULL,
+    "score" INTEGER,
     "started_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "ended_at" TIMESTAMP(3) NOT NULL,
+    "ended_at" TIMESTAMP(3),
     "answers" INTEGER[] DEFAULT ARRAY[]::INTEGER[],
 
     CONSTRAINT "student_attempt_quiz_pkey" PRIMARY KEY ("student_id","quiz_id")
@@ -585,7 +576,7 @@ ALTER TABLE "instStaff" ADD CONSTRAINT "instStaff_inst_staff_id_fkey" FOREIGN KE
 ALTER TABLE "files" ADD CONSTRAINT "files_uploaded_by_fkey" FOREIGN KEY ("uploaded_by") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "folders" ADD CONSTRAINT "folders_user_name_fkey" FOREIGN KEY ("user_name") REFERENCES "users"("username") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "folders" ADD CONSTRAINT "folders_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "tutes" ADD CONSTRAINT "tutes_user_name_fkey" FOREIGN KEY ("user_name") REFERENCES "users"("username") ON DELETE RESTRICT ON UPDATE CASCADE;

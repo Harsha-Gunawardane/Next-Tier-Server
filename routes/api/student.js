@@ -28,11 +28,11 @@ router
 router.route("/students").get(studentInfoController.getAllStudentsInfo);
 
 router
-  .route("/students/attendance")
+  .route("/students/attendance/:courseId")
   .get(studentInfoController.getStudentAttendance);
 
 router
-  .route("/students/attendance/:studentId")
+  .route("/students/attendance/:courseId/:studentId")
   .post(studentInfoController.addStudentAttendance);
 
 router.route("/students/:id").get(studentInfoController.getStudent);
@@ -51,6 +51,10 @@ router
   .patch(verifyRoles(ROLES_LIST.Student), studentQuizController.doneQuiz);
 
 router
+  .route("/quiz/meta")
+  .get(verifyRoles(ROLES_LIST.Student), studentQuizController.getMetaData);
+
+router
   .route("quiz/available")
   .get(
     verifyRoles(ROLES_LIST.Student),
@@ -58,7 +62,7 @@ router
   );
 
 router
-  .route("/attempt_quiz")
+  .route("/quiz/attempt")
   .get(verifyRoles(ROLES_LIST.Student), studentQuizController.attempQuiz)
   .post(
     verifyRoles(ROLES_LIST.Student),
