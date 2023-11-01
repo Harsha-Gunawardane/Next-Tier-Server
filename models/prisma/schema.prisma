@@ -296,11 +296,7 @@ model study_pack {
   expire_date   DateTime?
   start_date    DateTime?
   month         DateTime?
-<<<<<<< HEAD
-  // medium        String?
-=======
   medium        String?
->>>>>>> 87b643f08fa46d45463bc18dfb3bb12598356cce
 
   tutor                      tutor                        @relation(fields: [tutor_id], references: [tutor_id])
   course                     courses                      @relation(fields: [course_id], references: [id])
