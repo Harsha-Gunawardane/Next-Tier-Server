@@ -3,6 +3,8 @@ const router = express.Router();
 
 const parentInfoController = require("../../controllers/parent/parentInfo");
 const parentController = require("../../controllers/parent/profile");
+const childInfoController = require("../../controllers/parent/childInfo");
+
 // Verify roles
 const ROLES_LIST = require("../../config/roleList");
 const verifyRoles = require("../../middleware/verifyRoles");
@@ -22,5 +24,9 @@ router
   .route("/profile")
   .get(verifyRoles(ROLES_LIST.Parent), parentController.getProfile)
   .patch(verifyRoles(ROLES_LIST.Parent), parentController.edit);
+
+router
+  .route("/child/info")
+  .get(verifyRoles(ROLES_LIST.Parent), childInfoController.getChildInfo);
 
 module.exports = router;

@@ -257,7 +257,7 @@ CREATE TABLE "study_pack" (
     "expire_date" TIMESTAMP(3),
     "start_date" TIMESTAMP(3),
     "month" TIMESTAMP(3),
-    "medium" TEXT NOT NULL,
+    "medium" TEXT,
 
     CONSTRAINT "study_pack_pkey" PRIMARY KEY ("id")
 );

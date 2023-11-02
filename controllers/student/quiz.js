@@ -321,9 +321,10 @@ const generateQuiz = async (req, res) => {
       },
     });
 
-    const weakAreas = weakAreasOfStudent.weak_areas[subject];
+    const weakAreas = weakAreasOfStudent.weak_areas ? weakAreasOfStudent.weak_areas[subject] : [];
 
-    if (weakAreas) {
+    if (weakAreas.length) {
+
       const noOfRelatedQuestions = Math.floor(value * 0.6);
       const noOfRandomQuestions = value - noOfRelatedQuestions;
 
@@ -354,6 +355,8 @@ const generateQuiz = async (req, res) => {
         take: value,
       });
     }
+
+    console.log(questions)
 
     if (!questions.length)
       return res.status(500).json({ message: "No questions" });

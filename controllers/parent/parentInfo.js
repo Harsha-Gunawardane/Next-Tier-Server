@@ -2,7 +2,7 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
-const parentInfoSchema = require("../../validators/parent/ParentInfoValidator")
+const parentInfoSchema = require("../../validators/parent/ParentInfoValidator");
 
 const getParentInfo = async (req, res) => {
   const user = req.user;
@@ -66,13 +66,58 @@ const updateParentInfo = async (req, res) => {
     const updatedStudent = await prisma.students.update({
       where: { student_id: studentId },
       data: {
-        emergency_contact: parentInfo
+        emergency_contact: parentInfo,
       },
     });
+
+    // add parent to DB
+
+    const student = await prisma.students.findUnique({
+      where: {
+        student_id: studentId,
+      },
+      include: {
+        parent: true,
+      },
+    });
+
+    const joinedTime = new Date();
+
+    if (!student.parent.length) {
+      console.log("********************************");
+      const fullName = fName.split(" ");
+      const parent = await prisma.users.create({
+        data: {
+          username: phoneNo,
+          first_name: fullName[0],
+          last_name: fullName[1] ? fullName[1] : "",
+          phone_number: phoneNo,
+          roles: { User: 2001, Parent: 1924 },
+          password: "password",
+          join_date: joinedTime,
+        },
+      });
+
+      const ParentWithChild = await prisma.parent.create({
+        data: {
+          child: {
+            connect: {
+              student_id: studentId,
+            },
+          },
+          user: {
+            connect: {
+              id: parent.id,
+            },
+          },
+        },
+      });
+    }
 
     const updatedStudentInfo = req.body;
     res.json(updatedStudentInfo);
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: error.message });
   }
 };
