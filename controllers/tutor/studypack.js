@@ -37,6 +37,96 @@ const getAllStudyPacks = async (req, res) => {
   }
 };
 
+
+
+
+// const createStudyPack = async (req, res) => {
+//   const user = req.user;
+//   const {
+//     course_id,
+//     title,
+//     description,
+//     subject,
+//     price,
+//     medium,
+//     thumbnail,
+//     subject_areas,
+//     access_period,
+//     type,
+//   } = req.body;
+//   const file=req.file;
+
+//   try {
+//     const foundUser = await prisma.users.findUnique({
+//       where: {
+//         username: user,
+//       },
+//     });
+//     if (!foundUser) return res.sendStatus(401);
+
+//     // Calculate the expiration date based on the access_period if it's provided and valid
+//     let expirationDate;
+
+//     if (access_period && access_period.days) {
+//       const currentDate = new Date();
+//       expirationDate = new Date(currentDate);
+//       expirationDate.setDate(currentDate.getDate() + access_period.days);
+//     } else {
+//       // Set a default expiration of 30 days if access_period is not provided or invalid
+//       const currentDate = new Date();
+//       expirationDate = new Date(currentDate);
+//       expirationDate.setMonth(expirationDate.getMonth() + 1);
+//       expirationDate.setDate(0); // Set to the last day of the current month
+//     }
+
+//     // Calculate the end of the month for the expiration date
+  
+
+//     // create course
+//     const tutorId = foundUser.id;
+
+//     if (!file) {
+//       // Handle the case where there are no files to attach
+//       return res.status(400).json({ message: 'No files provided for attachment' });
+//     }
+
+//  // Assuming you are only adding one file
+//     const newFileName = `${uuid()}_${file.originalname.replace(/ /g, '_')}`;
+//     const blob = publicBucket.file(newFileName);
+//     const blobStream = blob.createWriteStream();
+
+//     blobStream.on('finish', async () => {
+
+//     const newStudypack = await prisma.study_pack.create({
+//       data: {
+//         tutor_id: tutorId,
+//         course_id,
+//         title,
+//         description,
+//         subject,
+//         medium,
+//         price: parseInt(price),
+//         thumbnail: `https://storage.googleapis.com/${publicBucket.name}/${newFileName}`,
+//         subject_areas,
+//         type,
+//         access_period,
+//         // start_date: null, // No start_date provided
+//         expire_date: expirationDate, // Set the expire_date in DateTime format
+//       },
+//     });
+
+//     console.log('Success');
+//     res.json(newStudypack);
+//   });
+//   blobStream.end(file.buffer);
+// } catch (error) {
+//   console.log(error);
+//   res.status(500).json({ message: error.message });
+// }
+// };
+
+
+
 const createStudyPack = async (req, res) => {
   const user = req.user;
   const {
@@ -46,12 +136,11 @@ const createStudyPack = async (req, res) => {
     subject,
     price,
     medium,
-    thumbnail,
     subject_areas,
     access_period,
     type,
   } = req.body;
-  const file=req.file;
+  const file = req.file;
 
   try {
     const foundUser = await prisma.users.findUnique({
@@ -76,51 +165,69 @@ const createStudyPack = async (req, res) => {
       expirationDate.setDate(0); // Set to the last day of the current month
     }
 
-    // Calculate the end of the month for the expiration date
-  
-
     // create course
     const tutorId = foundUser.id;
 
     if (!file) {
       // Handle the case where there are no files to attach
-      return res.status(400).json({ message: 'No files provided for attachment' });
+      // Set the thumbnail to an empty string when no file is provided
+      const newStudypack = await prisma.study_pack.create({
+        data: {
+          tutor_id: tutorId,
+          course_id,
+          title,
+          description,
+          subject,
+          medium,
+          price: parseInt(price),
+          thumbnail: '', // Set thumbnail to an empty string
+          subject_areas,
+          type,
+          access_period,
+          // start_date: null, // No start_date provided
+          expire_date: expirationDate, // Set the expire_date in DateTime format
+        },
+      });
+
+      console.log('Success');
+      return res.json(newStudypack);
     }
 
- // Assuming you are only adding one file
+    // If a file is provided
     const newFileName = `${uuid()}_${file.originalname.replace(/ /g, '_')}`;
     const blob = publicBucket.file(newFileName);
     const blobStream = blob.createWriteStream();
 
     blobStream.on('finish', async () => {
+      const newStudypack = await prisma.study_pack.create({
+        data: {
+          tutor_id: tutorId,
+          course_id,
+          title,
+          description,
+          subject,
+          medium,
+          price: parseInt(price),
+          thumbnail: `https://storage.googleapis.com/${publicBucket.name}/${newFileName}`,
+          subject_areas,
+          type,
+          access_period,
+          // start_date: null, // No start_date provided
+          expire_date: expirationDate, // Set the expire_date in DateTime format
+        },
+      });
 
-    const newStudypack = await prisma.study_pack.create({
-      data: {
-        tutor_id: tutorId,
-        course_id,
-        title,
-        description,
-        subject,
-        medium,
-        price: parseInt(price),
-        thumbnail: `https://storage.googleapis.com/${publicBucket.name}/${newFileName}`,
-        subject_areas,
-        type,
-        access_period,
-        // start_date: null, // No start_date provided
-        expire_date: expirationDate, // Set the expire_date in DateTime format
-      },
+      console.log('Success');
+      res.json(newStudypack);
     });
 
-    console.log('Success');
-    res.json(newStudypack);
-  });
-  blobStream.end(file.buffer);
-} catch (error) {
-  console.log(error);
-  res.status(500).json({ message: error.message });
-}
+    blobStream.end(file.buffer);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: error.message });
+  }
 };
+
 
 
 
@@ -797,6 +904,81 @@ const removeIds = async (req, res) => {
 
 
 
+const removeIds2 = async (req, res) => {
+  const studypackId = req.params.id;
+  const partToDelete = req.params.part;
+  const contentIdToRemove = req.params.contentId;
+
+  try {
+    // Check if the study pack exists before deleting
+    const studypack = await prisma.study_pack.findUnique({
+      where: {
+        id: studypackId,
+      },
+    });
+
+    if (!studypack) {
+      return res.status(404).json({ message: 'Study pack not found' });
+    }
+
+    const user = req.user;
+    const tutorId = studypack.tutor_id;
+
+    const foundUser = await prisma.users.findUnique({
+      where: {
+        username: user,
+      },
+    });
+
+    if (!foundUser || foundUser.id !== tutorId) {
+      return res.status(401).json({ message: 'Unauthorized to remove content from this study pack' });
+    }
+
+    // Find the content with the specified "title" in the content_ids array
+    const updatedContentIds = studypack.content_ids.map((content) => {
+      if (content.title === partToDelete) {
+        // Filter out the contentIdToRemove from quiz_id, tute_id, and video_id arrays
+        const updatedQuizIds = content.quiz_id.filter(id => id !== contentIdToRemove);
+        const updatedTuteIds = content.tute_id.filter(id => id !== contentIdToRemove);
+        const updatedVideoIds = content.video_id.filter(id => id !== contentIdToRemove);
+
+        return {
+          title: content.title,
+          quiz_id: updatedQuizIds,
+          tute_id: updatedTuteIds,
+          video_id: updatedVideoIds,
+        };
+      }
+
+      return content;
+    });
+
+    // Update the study pack with the modified content_ids
+    await prisma.study_pack.update({
+      where: {
+        id: studypackId,
+      },
+      data: {
+        content_ids: updatedContentIds,
+      },
+    });
+
+    // Assuming there is a separate content table, remove the content with contentIdToRemove from it
+    await prisma.content.delete({
+      where: {
+        id: contentIdToRemove,
+      },
+    });
+
+    res.json({ message: `Content with ID ${contentIdToRemove} removed from ${partToDelete} and the Content table successfully` });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
+
 
 
 const removecoursepackIds = async (req, res) => {
@@ -887,4 +1069,4 @@ removeStudypack,
 getCourses,
 editContent_ids,
 removeContent,
-removeIds,editWeekStudypack,removecoursepackIds }
+removeIds,removeIds2,editWeekStudypack,removecoursepackIds }

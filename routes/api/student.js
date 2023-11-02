@@ -28,11 +28,11 @@ router
 router.route("/students").get(studentInfoController.getAllStudentsInfo);
 
 router
-  .route("/students/attendance")
+  .route("/students/attendance/:courseId")
   .get(studentInfoController.getStudentAttendance);
 
 router
-  .route("/students/attendance/:studentId")
+  .route("/students/attendance/:courseId/:studentId")
   .post(studentInfoController.addStudentAttendance);
 
 router.route("/students/:id").get(studentInfoController.getStudent);

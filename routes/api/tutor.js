@@ -126,6 +126,10 @@ router
   .route("/studypack/removecontent/:id/:part/:contentId")
   .delete(verifyRoles(ROLES_LIST.Tutor), studypackController.removeIds);
 
+  router
+  .route("/studypack/removecontenttute/:id/:part/:contentId")
+  .delete(verifyRoles(ROLES_LIST.Tutor), studypackController.removeIds2);
+
 router
   .route("/studypack/remove/:id/:part/:contentId")
   .delete(
@@ -265,11 +269,16 @@ router
 router
   .route("/videos")
   .get(contentController.getVideoByTutorId)
+  
 //Papers
 router
   .route("/papers")
   .get(paperController.getAllPapers)
   .post(verifyRoles(ROLES_LIST.Tutor), paperController.addNewPaper);
+
+router
+  .route("/papers/course/:courseId")
+  .get(paperController.getAllPapers)
 
 router
   .route("/papers/:id")
