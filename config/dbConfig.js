@@ -4,19 +4,16 @@ const Pool = require("pg").Pool;
 //   user: "postgres",
 //   host: "localhost",
 //   database: "test",
-//   password: "125437",
+//   password: "",
 //   port: 5432,
 // });
 
 const pool = new Pool({
   user: "Harsha-Gunawardane",
-  host: "ep-ancient-bush-22062538-pooler.ap-southeast-1.aws.neon.tech",
+  host: "",
   database: "next-tier-db",
-  password: "V3EOfZXR6LxI",
+  password: "",
   port: 5432,
 });
 
 module.exports = pool;
-// postgres://Harsha-Gunawardane:V3EOfZXR6LxI@ep-ancient-bush-22062538.ap-southeast-1.aws.neon.tech/next-tier-db
-
-// postgres://Harsha-Gunawardane:V3EOfZXR6LxI@ep-ancient-bush-22062538-pooler.ap-southeast-1.aws.neon.tech/next-tier-db
